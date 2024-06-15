@@ -1,0 +1,10 @@
+name: LuckPrefix
+version: 1.3
+main: dev.eztxm.luckprefix.LuckPrefix
+authors: [ ezTxmMC ]
+api-version: 1.16
+description: A LuckPerms Addon for Tab and Chat Prefix
+website: https://eztxm.de
+
+depend:
+  - LuckPerms

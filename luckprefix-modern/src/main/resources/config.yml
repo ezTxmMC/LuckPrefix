@@ -1,0 +1,19 @@
+# _               _    ____            __ _
+#| |   _   _  ___| | _|  _ \ _ __ ___ / _(_)_  __
+#| |  | | | |/ __| |/ / |_) | '__/ _ \ |_| \ \/ /
+#| |__| |_| | (__|   <|  __/| | |  __/  _| |>  <
+#|_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
+#v2 | by ezTxmMC
+ColoredPermission: "luckprefix.colored"
+Groups:
+  default:
+    Prefix: "&7Player"
+    Suffix: ""
+    TabFormat: "&7Player &8| "
+    ChatFormat: "&7%prefix &8| &7%player &8%>> &7%message"
+    SortID: "1"
+    Color: "gray"
+    Gradient:
+      Enable: false
+      Color1: "#545454"
+      Color2: "#767676"

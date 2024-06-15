@@ -1,0 +1,9 @@
+name: LuckPrefix
+version: '${version}'
+main: dev.eztxm.luckprefix.LuckPrefix
+authors: [ ezTxmMC ]
+description: A LuckPerms Addon for Tab and Chat Prefix
+website: https://eztxm.dev
+
+depend:
+  - LuckPerms
