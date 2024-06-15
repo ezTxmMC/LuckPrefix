@@ -1,19 +1,29 @@
-# _               _    ____            __ _
-#| |   _   _  ___| | _|  _ \ _ __ ___ / _(_)_  __
-#| |  | | | |/ __| |/ / |_) | '__/ _ \ |_| \ \/ /
-#| |__| |_| | (__|   <|  __/| | |  __/  _| |>  <
-#|_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
-#v2 | by ezTxmMC
+#  _               _    ____            __ _
+# | |   _   _  ___| | _|  _ \ _ __ ___ / _(_)_  __
+# | |  | | | |/ __| |/ / |_) | '__/ _ \ |_| \ \/ /
+# | |__| |_| | (__|   <|  __/| | |  __/  _| |>  <
+# |_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
+# Modern 2.0.0 | by ezTxmMC
+
+# The permission to write with &-color-codes
 ColoredPermission: "luckprefix.colored"
+
+# Automatically reload of the config
+AutoReloadConfig: false
+
+# The time of updating the prefix in the tablist in seconds
+UpdateTime: 10
+
+# The group values. Gradient is optional
 Groups:
   default:
     Prefix: "&7Player"
     Suffix: ""
-    TabFormat: "&7Player &8| "
-    ChatFormat: "&7%prefix &8| &7%player &8%>> &7%message"
-    SortID: "1"
+    Tabformat: "&7Player &8| "
+    Chatformat: "&7%prefix &8| &7%player &8%>> &7%message"
+    SortID: 1
     Color: "gray"
     Gradient:
-      Enable: false
+      Enabled: false
       Color1: "#545454"
       Color2: "#767676"

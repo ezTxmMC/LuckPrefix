@@ -1,40 +1,49 @@
 package de.eztxm.luckprefix;
 
-import de.eztxm.luckprefix.event.JoinEvent;
-import de.eztxm.luckprefix.event.QuitEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
+import de.eztxm.luckprefix.command.LuckPrefixCommand;
+import de.eztxm.luckprefix.listener.ChatListener;
+import de.eztxm.luckprefix.listener.GroupListener;
+import de.eztxm.luckprefix.listener.JoinListener;
+import de.eztxm.luckprefix.listener.QuitListener;
+import de.eztxm.luckprefix.util.Groups;
+import de.eztxm.luckprefix.util.PlayerUtil;
+import lombok.Getter;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import de.eztxm.luckprefix.event.AsyncChatEvent;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-
+@Getter
 public final class LuckPrefix extends JavaPlugin {
+    @Getter
     private static LuckPrefix instance;
-    public static final HashMap<Player, BukkitTask> JOIN_SCHEDULERS = new HashMap<>();
+
+    private LuckPerms luckPerms;
+    private Registry registry;
+    private PlayerUtil playerUtil;
+    private Groups groups;
+    private GroupListener groupListener;
 
     @Override
     public void onEnable() {
         instance = this;
+        luckPerms = LuckPermsProvider.get();
+        registry = new Registry(instance);
+        registry.registerCommand("luckprefix", new LuckPrefixCommand());
+        registry.registerListener(new JoinListener());
+        registry.registerListener(new QuitListener());
+        registry.registerListener(new ChatListener());
+        playerUtil = new PlayerUtil();
+        groups = new Groups();
+        groupListener = new GroupListener();
+        groupListener.createGroup();
+        groupListener.deleteGroup();
         saveDefaultConfig();
-        registerListeners();
     }
 
     @Override
     public void onDisable() {
         instance = null;
-    }
-
-    private void registerListeners() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new JoinEvent(), this);
-        pluginManager.registerEvents(new QuitEvent(), this);
-        pluginManager.registerEvents(new AsyncChatEvent(), this);
-    }
-
-    public static LuckPrefix getInstance() {
-        return instance;
+        registry = null;
+        playerUtil = null;
     }
 }
