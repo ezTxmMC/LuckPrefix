@@ -1,7 +1,7 @@
-package de.eztxm.luckprefix.event;
+package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.tablist.Teams;
+import de.eztxm.luckprefix.scoreboard.Teams;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 
-public class JoinEvent implements Listener {
+public class JoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {

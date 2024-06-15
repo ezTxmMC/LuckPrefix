@@ -1,8 +1,8 @@
 package de.eztxm.luckprefix;
 
-import de.eztxm.luckprefix.event.AsyncChatEvent;
-import de.eztxm.luckprefix.event.JoinEvent;
-import de.eztxm.luckprefix.event.QuitEvent;
+import de.eztxm.luckprefix.listener.ChatListener;
+import de.eztxm.luckprefix.listener.JoinListener;
+import de.eztxm.luckprefix.listener.QuitListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -29,9 +29,9 @@ public final class LuckPrefix extends JavaPlugin {
 
     private void registerListeners() {
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new JoinEvent(), this);
-        pluginManager.registerEvents(new QuitEvent(), this);
-        pluginManager.registerEvents(new AsyncChatEvent(), this);
+        pluginManager.registerEvents(new JoinListener(), this);
+        pluginManager.registerEvents(new QuitListener(), this);
+        pluginManager.registerEvents(new ChatListener(), this);
     }
 
     public static LuckPrefix getInstance() {
