@@ -5,8 +5,11 @@
 # |_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
 # Modern 2.0.0 | by ezTxmMC
 
-# The permission to write with &-color-codes
+# The permission to write with color-codes in the chat
 ColoredPermission: "luckprefix.colored"
+
+# The char, which started the color-code
+ColorCodeChar: '&'
 
 # Automatically reload of the config
 AutoReloadConfig: false
@@ -25,5 +28,5 @@ Groups:
     Color: "gray"
     Gradient:
       Enabled: false
-      Color1: "#545454"
-      Color2: "#767676"
+      Course: "#545454->#767676"
+      WithPlayerName: false
