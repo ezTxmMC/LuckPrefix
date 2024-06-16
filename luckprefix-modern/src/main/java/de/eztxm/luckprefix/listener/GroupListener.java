@@ -12,11 +12,6 @@ public class GroupListener {
         eventBus.subscribe(GroupCreateEvent.class, event -> LuckPrefix.getInstance().getGroups().createGroup(event.getGroup()));
     }
 
-    public void renameGroup() {
-        EventBus eventBus = LuckPrefix.getInstance().getLuckPerms().getEventBus();
-        eventBus.subscribe(GroupDeleteEvent.class, event -> LuckPrefix.getInstance().getGroups().deleteGroup(event.getGroupName()));
-    }
-
     public void deleteGroup() {
         EventBus eventBus = LuckPrefix.getInstance().getLuckPerms().getEventBus();
         eventBus.subscribe(GroupDeleteEvent.class, event -> LuckPrefix.getInstance().getGroups().deleteGroup(event.getGroupName()));
