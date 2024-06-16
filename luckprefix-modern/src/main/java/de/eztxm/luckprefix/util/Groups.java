@@ -22,8 +22,8 @@ public class Groups {
     private final Map<Group, Integer> groupID;
     private final Map<Group, ChatColor> groupColor;
     private final Map<Group, Boolean> groupGradient;
-    private final Map<Group, String> groupGradientColorOne;
-    private final Map<Group, String> groupGradientColorTwo;
+    private final Map<Group, String> groupGradientCourse;
+    private final Map<Group, String> groupGradientWithPlayerName;
 
     public Groups() {
         groups = new ArrayList<>();
@@ -34,8 +34,8 @@ public class Groups {
         groupID = new HashMap<>();
         groupColor = new HashMap<>();
         groupGradient = new HashMap<>();
-        groupGradientColorOne = new HashMap<>();
-        groupGradientColorTwo = new HashMap<>();
+        groupGradientCourse = new HashMap<>();
+        groupGradientWithPlayerName = new HashMap<>();
     }
 
     public void setGroup(Group group, Player player) {
@@ -56,8 +56,8 @@ public class Groups {
         if (config.get("Groups." + group.getName() + ".Gradient.Enabled") == null) return;
         this.groupGradient.put(group, config.getBoolean("Groups." + group.getName() + ".Gradient.Enabled"));
         if (!config.getBoolean("Groups." + group.getName() + ".Gradient.Enabled")) return;
-        this.groupGradientColorOne.put(group, config.getString("Groups." + group.getName() + ".Gradient.Color1"));
-        this.groupGradientColorTwo.put(group, config.getString("Groups." + group.getName() + ".Gradient.Color2"));
+        this.groupGradientCourse.put(group, config.getString("Groups." + group.getName() + ".Gradient.Course"));
+        this.groupGradientWithPlayerName.put(group, config.getString("Groups." + group.getName() + ".Gradient.WithPlayerName"));
     }
 
     public void deleteGroup(String groupName) {
@@ -71,8 +71,8 @@ public class Groups {
         this.groupID.remove(group);
         this.groupColor.remove(group);
         this.groupGradient.remove(group);
-        this.groupGradientColorOne.remove(group);
-        this.groupGradientColorTwo.remove(group);
+        this.groupGradientCourse.remove(group);
+        this.groupGradientWithPlayerName.remove(group);
     }
 
     private boolean gradientEnabled(Scoreboard scoreboard, Group group, String sortID, ChatColor color, String tabFormat) {
