@@ -7,4 +7,9 @@
     <groupId>de.eztxm</groupId>
     <artifactId>luckprefix-parent</artifactId>
 
+    <modules>
+        <module>luckprefix-legacy</module>
+        <module>luckprefix-modern</module>
+    </modules>
+
 </project>
