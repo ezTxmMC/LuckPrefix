@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.command;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import lombok.SneakyThrows;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Set;
 
 public class LuckPrefixCommand implements TabExecutor {
 
+    @SneakyThrows
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -42,7 +45,7 @@ public class LuckPrefixCommand implements TabExecutor {
                 LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
             }
             case "reloadconfig" -> {
-
+                LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
             }
         }
         return false;
@@ -68,7 +71,7 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("group")) {
-                List<String> arguments = new ArrayList<>(List.of("prefix", "suffix", "tabformat", "chatformat", "sortID", "color", "gradient", "gradientCourse"));
+                List<String> arguments = new ArrayList<>(List.of("prefix", "suffix", "tabformat", "chatformat", "sortID", "color"));
                 arguments.removeIf(argument -> !argument.startsWith(args[2]));
                 return arguments;
             }
@@ -77,27 +80,27 @@ public class LuckPrefixCommand implements TabExecutor {
             if (args[0].equalsIgnoreCase("group")) {
                 if (args[2].equalsIgnoreCase("prefix")) {
                     List<String> arguments = new ArrayList<>(List.of("<text>"));
-                    arguments.forEach(arguments::remove);
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("suffix")) {
                     List<String> arguments = new ArrayList<>(List.of("<text>"));
-                    arguments.forEach(arguments::remove);
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("tabformat")) {
                     List<String> arguments = new ArrayList<>(List.of("<text>"));
-                    arguments.forEach(arguments::remove);
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("chatformat")) {
                     List<String> arguments = new ArrayList<>(List.of("<text>"));
-                    arguments.forEach(arguments::remove);
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("sortID")) {
                     List<String> arguments = new ArrayList<>(List.of("<number>"));
-                    arguments.forEach(arguments::remove);
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("color")) {
@@ -109,11 +112,6 @@ public class LuckPrefixCommand implements TabExecutor {
                     }
                     colors.removeIf(argument -> !argument.startsWith(args[3]));
                     return colors;
-                }
-                if (args[2].equalsIgnoreCase("gradient")) {
-                    List<String> arguments = new ArrayList<>(List.of("on", "off"));
-                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
-                    return arguments;
                 }
             }
         }
