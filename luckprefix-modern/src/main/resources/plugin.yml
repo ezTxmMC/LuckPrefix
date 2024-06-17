@@ -8,3 +8,6 @@ website: https://eztxm.de
 
 depend:
   - LuckPerms
+
+commands:
+  luckprefix:
