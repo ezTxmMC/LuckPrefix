@@ -8,9 +8,6 @@
 # The permission to write with color-codes in the chat
 ColoredPermission: "luckprefix.colored"
 
-# The char, which started the color-code
-ColorCodeChar: '&'
-
 # Automatically reload of the config
 AutoReloadConfig: false
 
@@ -19,14 +16,12 @@ UpdateTime: 10
 
 # The group values. Gradient is optional
 Groups:
+  # The name of the group
   default:
-    Prefix: "&7Player"
+    # Prefix, Suffix, Tabformat and Chatformat are only works with adventure minimessage format
+    Prefix: "<gray>Player"
     Suffix: ""
-    Tabformat: "&7Player &8| "
-    Chatformat: "&7%prefix &8| &7%player &8%>> &7%message"
+    Tabformat: "<prefix> <dark_gray>- <gray><player>"
+    Chatformat: "<prefix> <dark_gray>- <gray><player> <dark_gray>%>><gray><message>"
     SortID: 1
     Color: "gray"
-    Gradient:
-      Enabled: false
-      Course: "#545454->#767676"
-      WithPlayerName: false

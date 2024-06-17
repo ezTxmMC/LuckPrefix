@@ -9,11 +9,11 @@ public class GroupListener {
 
     public void createGroup() {
         EventBus eventBus = LuckPrefix.getInstance().getLuckPerms().getEventBus();
-        eventBus.subscribe(GroupCreateEvent.class, event -> LuckPrefix.getInstance().getGroups().createGroup(event.getGroup()));
+        eventBus.subscribe(GroupCreateEvent.class, event -> LuckPrefix.getInstance().getGroupManager().createGroup(event.getGroup().getName()));
     }
 
     public void deleteGroup() {
         EventBus eventBus = LuckPrefix.getInstance().getLuckPerms().getEventBus();
-        eventBus.subscribe(GroupDeleteEvent.class, event -> LuckPrefix.getInstance().getGroups().deleteGroup(event.getGroupName()));
+        eventBus.subscribe(GroupDeleteEvent.class, event -> LuckPrefix.getInstance().getGroupManager().deleteGroup(event.getGroupName()));
     }
 }
