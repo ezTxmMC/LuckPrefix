@@ -1,9 +1,10 @@
 package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.util.PlayerManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,11 +21,16 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        Group group = luckPerms.getGroupManager().getGroup(user.getPrimaryGroup());
+        PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
+        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        String group = user.getPrimaryGroup();
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
+        playerManager.initializePlayer(player.getUniqueId(), group);
+        groupManager.setupGroups(player);
         BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> {
-            LuckPrefix.getInstance().getGroups().setGroup(group, player);
-        }, 1, config.getLong("UpdateTime"));
-        LuckPrefix.getInstance().getPlayerUtil().addJoinScheduler(player.getUniqueId(), bukkitTask);
+            groupManager.setGroups(player);
+        }, 1, config.getLong("UpdateTime") * 20);
+        playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
+        playerManager.addUserGroup(player.getUniqueId(), group);
     }
 }
