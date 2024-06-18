@@ -6,7 +6,7 @@
 # Modern 2.0.0 | by ezTxmMC
 
 # The permission to write with color-codes in the chat
-ColoredPermission: "luckprefix.colored"
+ColoredPermission: "luckprefix.coloredmessages"
 
 # Automatically reload of the config
 AutoReloadConfig: false
@@ -14,14 +14,41 @@ AutoReloadConfig: false
 # The time of updating the prefix in the tablist in seconds
 UpdateTime: 10
 
+# Shows the nametag above the players
+ShowNameTags: true
+
 # The group values. Gradient is optional
 Groups:
   # The name of the group
   default:
-    # Prefix, Suffix, Tabformat and Chatformat are only works with adventure minimessage format
+    # Prefix, Suffix, Tabformat and Chatformat are only works with adventure minimessage format,
+    # but the legacy '&'-codes also work
+    # https://docs.advntr.dev/minimessage/format.html
     Prefix: "<gray>Player"
     Suffix: ""
     Tabformat: "<prefix> <dark_gray>- <gray><player>"
-    Chatformat: "<prefix> <dark_gray>- <gray><player> <dark_gray>%>><gray><message>"
-    SortID: 1
-    Color: "gray"
+    Chatformat: "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>"
+    # The sort-id is important for the ordner on the tablist
+    # The lowest value is on top and the highest at the bottom.
+    # You only can set the sort-id between 1 and 9999. More can execute issues.
+    SortID: 99
+    # The color of the name above a player
+    NameColor: "gray"
+
+  # Gradient example:
+  #admin:
+    #Prefix: "Admin"
+    #Suffix: "<dark_gray>[<#ff5555>Team<dark_gray>]"
+    #Tabformat: "<gradient:#ff0000:#ff9999><prefix> - <player>"
+    #Chatformat: "<gradient:#ff0000:#ff9999><prefix> - <player> » <message>"
+    #SortID: 1
+    #NameColor: "gray"
+
+  # Legacy color-codes example:
+  #owner:
+    #Prefix: "&4Owner"
+    #Suffix: ""
+    #Tabformat: "<prefix> &8| &7<player>"
+    #Chatformat: "<prefix> &8| &7<player> &8» &7<message>"
+    #SortID: 1
+    #NameColor: "dark_red"
