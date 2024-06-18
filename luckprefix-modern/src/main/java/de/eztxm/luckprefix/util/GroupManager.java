@@ -37,20 +37,22 @@ public class GroupManager {
     }
 
     public void setGroups(Player player) {
-        Scoreboard scoreboard = player.getScoreboard();
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
-            Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
-                    + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
-            Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
-            if (currentTeam == null) {
+        for (Player players : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = players.getScoreboard();
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
+                Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
+                        + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
+                Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
+                if (currentTeam == null) {
+                    team.addEntry(onlinePlayer.getName());
+                    return;
+                }
+                if (team.getName().equalsIgnoreCase(currentTeam.getName())) {
+                    return;
+                }
                 team.addEntry(onlinePlayer.getName());
-                return;
             }
-            if (team.getName().equalsIgnoreCase(currentTeam.getName())) {
-                return;
-            }
-            team.addEntry(onlinePlayer.getName());
         }
     }
 
