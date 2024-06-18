@@ -12,6 +12,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -62,12 +63,35 @@ public final class LuckPrefix extends JavaPlugin {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (!playerManager.getUserGroups().containsKey(onlinePlayer.getUniqueId())) return;
                 String group = playerManager.getUserGroups().get(onlinePlayer.getUniqueId());
-                onlinePlayer.setPlayerListName(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
-                        Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group))),
-                        Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group))),
+                if (groupManager.getGroupPrefix().get(group) == null) {
+                    if (groupManager.getGroupSuffix().get(group) == null) {
+                        return;
+                    }
+                    TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+                    onlinePlayer.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                            LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                                    Placeholder.component("prefix", Component.text("")),
+                                    suffix,
+                                    Placeholder.component("player", Component.text(onlinePlayer.getName()))))));
+                    return;
+                }
+                TagResolver.Single prefix = Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group)));
+                if (groupManager.getGroupSuffix().get(group) == null) {
+                    onlinePlayer.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                            LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                                    prefix,
+                                    Placeholder.component("suffix", Component.text("")),
+                                    Placeholder.component("player", Component.text(onlinePlayer.getName()))))));
+                    return;
+                }
+                TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+                onlinePlayer.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                        LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                                prefix,
+                                suffix,
                         Placeholder.component("player", Component.text(onlinePlayer.getName()))))));
             }
-        }, 1, getConfig().getLong("UpdateTime"));
+        }, 1, getConfig().getLong("UpdateTime") * 20);
     }
 
     @Override
