@@ -37,22 +37,24 @@ public class GroupManager {
     }
 
     public void setGroups(Player player) {
-        for (Player players : Bukkit.getOnlinePlayers()) {
-            Scoreboard scoreboard = players.getScoreboard();
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
-                Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
-                        + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
-                Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
-                if (currentTeam == null) {
-                    team.addEntry(onlinePlayer.getName());
-                    return;
-                }
-                if (team.getName().equalsIgnoreCase(currentTeam.getName())) {
-                    return;
-                }
-                team.addEntry(onlinePlayer.getName());
+        Scoreboard scoreboard = player.getScoreboard();
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
+            Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
+                    + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
+            if (team == null) {
+                scoreboard.getTeam(this.groupID.get("default") + "default").addEntry(player.getName());
+                return;
             }
+            Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
+            if (currentTeam == null) {
+                team.addEntry(onlinePlayer.getName());
+                return;
+            }
+            if (team.getEntries().contains(player.getName())) {
+                return;
+            }
+            team.addEntry(onlinePlayer.getName());
         }
     }
 
@@ -69,21 +71,27 @@ public class GroupManager {
         int currentLength = sortIDraw.length();
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, ChatColor.valueOf(config.getString("Groups." + group + ".Color").toUpperCase()));
+        this.groupColor.put(group, ChatColor.valueOf(config.getString("Groups." + group + ".NameColor").toUpperCase()));
     }
 
     public void setupGroups(Player player) {
         Scoreboard scoreboard = player.getScoreboard();
         for (String group : this.groups) {
             Team team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
-            team.setPrefix(ChatColor.translateAlternateColorCodes('&',
-                    LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupTabformat.get(group)
-                            .replace("<prefix>", this.groupPrefix.get(group))
-                            .replace("<player>", "")
-                            .replace("<suffix>", "")))));
-            team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&',
-                            LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupSuffix.get(group)))));
-            team.setColor(this.groupColor.get(group));
+            if (this.groupPrefix.get(group) != null) {
+                team.setPrefix(ChatColor.translateAlternateColorCodes('&',
+                        LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupTabformat.get(group)
+                                .replace("<prefix>", this.groupPrefix.get(group))
+                                .replace("<player>", "")
+                                .replace("<suffix>", "")))));
+            }
+            if (this.groupSuffix.get(group) != null) {
+                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&',
+                        LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupSuffix.get(group)))));
+            }
+            if (this.groupColor.get(group) != null) {
+                team.setColor(this.groupColor.get(group));
+            }
         }
     }
 
