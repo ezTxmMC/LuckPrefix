@@ -1,7 +1,14 @@
 package de.eztxm.luckprefix.util;
 
+import de.eztxm.luckprefix.LuckPrefix;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,6 +33,43 @@ public class PlayerManager {
         }
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         userGroups.put(uuid, group);
+    }
+
+    public void setPlayerListName(UUID uuid) {
+        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) {
+            return;
+        }
+        if (!userGroups.containsKey(uuid)) return;
+        String group = userGroups.get(uuid);
+        if (groupManager.getGroupPrefix().get(group) == null) {
+            if (groupManager.getGroupSuffix().get(group) == null) {
+                return;
+            }
+            TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+            player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                    LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                            Placeholder.component("prefix", Component.text("")),
+                            suffix,
+                            Placeholder.component("player", Component.text(player.getName()))))));
+            return;
+        }
+        TagResolver.Single prefix = Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group)));
+        if (groupManager.getGroupSuffix().get(group) == null) {
+            player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                    LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                            prefix,
+                            Placeholder.component("suffix", Component.text("")),
+                            Placeholder.component("player", Component.text(player.getName()))))));
+            return;
+        }
+        TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+        player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
+                LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
+                        prefix,
+                        suffix,
+                        Placeholder.component("player", Component.text(player.getName()))))));
     }
 
     public void addJoinScheduler(UUID uuid, BukkitTask bukkitTask) {
