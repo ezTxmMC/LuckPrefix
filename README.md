@@ -15,3 +15,5 @@ Legacy (1.8 - 1.15): https://modrinth.com/plugin/luckprefix/version/legacy+4
 - Auto-Reload config option
 - LuckPrefix command
 - Database support
+- Multi-File support
+- Extra groups.yml
