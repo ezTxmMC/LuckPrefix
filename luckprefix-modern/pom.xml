@@ -53,6 +53,10 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>eztxm-repo</id>
+            <url>https://repo.eztxm.de/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -99,6 +103,16 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
             <version>4.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.eztxm</groupId>
+            <artifactId>ezlib-database-mariadb</artifactId>
+            <version>1.0-ALPHA10</version>
+        </dependency>
+        <dependency>
+            <groupId>de.eztxm</groupId>
+            <artifactId>ezlib-database-sqlite</artifactId>
+            <version>1.0-ALPHA10</version>
         </dependency>
     </dependencies>
 

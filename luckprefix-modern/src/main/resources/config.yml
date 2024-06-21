@@ -12,16 +12,30 @@ ColoredPermission: "luckprefix.coloredmessages"
 AutoReloadConfig: false
 
 # The time of updating the prefix in the tablist in seconds
-UpdateTime: 10
+UpdateTime: 5
 
 # Shows the nametag above the players
 ShowNameTags: true
 
-# The group values. Gradient is optional
+# The both supported types are sqlite and mariadb, otherwise you can still disable it for file-save
+Database:
+  Enabled: false
+  Type: "SQLITE"
+  SQLite:
+    Path: "plugins/LuckPrefix/storage"
+    FileName: "sqlite.db"
+  MariaDB:
+    Host: "localhost"
+    Port: 3306
+    Database: "luckprefix"
+    User: "luckprefix"
+    Password: "< insert >"
+
+# The group values
 Groups:
   # The name of the group
   default:
-    # Prefix, Suffix, Tabformat and Chatformat are only works with adventure minimessage format,
+    # Prefix, Suffix, Tabformat and Chatformat are working with adventure minimessage format,
     # but the legacy '&'-codes also work
     # https://docs.advntr.dev/minimessage/format.html
     Prefix: "<gray>Player"
