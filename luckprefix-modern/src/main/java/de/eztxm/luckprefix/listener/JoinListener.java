@@ -3,10 +3,14 @@ package de.eztxm.luckprefix.listener;
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
+import de.eztxm.luckprefix.util.UpdateChecker;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,5 +36,13 @@ public class JoinListener implements Listener {
         }, 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.addUserGroup(player.getUniqueId(), group);
+        if (!new UpdateChecker(LuckPrefix.getInstance().getDescription().getVersion()).latestVersion()) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    LegacyComponentSerializer.legacyAmpersand().serialize(
+                            MiniMessage.miniMessage().deserialize(LuckPrefix.getInstance().getPrefix() +
+                                    "There is a new update available: https://modrinth.com/plugin/luckprefix")
+                    )
+            ));
+        }
     }
 }
