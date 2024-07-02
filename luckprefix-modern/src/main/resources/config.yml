@@ -3,7 +3,7 @@
 # | |  | | | |/ __| |/ / |_) | '__/ _ \ |_| \ \/ /
 # | |__| |_| | (__|   <|  __/| | |  __/  _| |>  <
 # |_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
-# Modern 2.0.0 | by ezTxmMC
+# Modern ${project.version} | by ezTxmMC
 
 # The permission to write with color-codes in the chat
 ColoredPermission: "luckprefix.coloredmessages"
@@ -11,58 +11,11 @@ ColoredPermission: "luckprefix.coloredmessages"
 # Automatically reload of the config
 AutoReloadConfig: false
 
-# The time of updating the prefix in the tablist in seconds
+# The time of updating the prefix in seconds
 UpdateTime: 5
 
 # Shows the nametag above the players
 ShowNameTags: true
 
-# The both supported types are sqlite and mariadb, otherwise you can still disable it for file-save
-Database:
-  Enabled: false
-  Type: "SQLITE"
-  SQLite:
-    Path: "plugins/LuckPrefix/storage"
-    FileName: "sqlite.db"
-  MariaDB:
-    Host: "localhost"
-    Port: 3306
-    Database: "luckprefix"
-    User: "luckprefix"
-    Password: "< insert >"
-
-# The group values
-Groups:
-  # The name of the group
-  default:
-    # Prefix, Suffix, Tabformat and Chatformat are working with adventure minimessage format,
-    # but the legacy '&'-codes also work
-    # https://docs.advntr.dev/minimessage/format.html
-    Prefix: "<gray>Player"
-    Suffix: ""
-    Tabformat: "<prefix> <dark_gray>- <gray><player>"
-    Chatformat: "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>"
-    # The sort-id is important for the ordner on the tablist
-    # The lowest value is on top and the highest at the bottom.
-    # You only can set the sort-id between 1 and 9999. More can execute issues.
-    SortID: 99
-    # The color of the name above a player
-    NameColor: "gray"
-
-  # Gradient example:
-  #admin:
-    #Prefix: "Admin"
-    #Suffix: "<dark_gray>[<#ff5555>Team<dark_gray>]"
-    #Tabformat: "<gradient:#ff0000:#ff9999><prefix> - <player>"
-    #Chatformat: "<gradient:#ff0000:#ff9999><prefix> - <player> » <message>"
-    #SortID: 1
-    #NameColor: "gray"
-
-  # Legacy color-codes example:
-  #owner:
-    #Prefix: "&4Owner"
-    #Suffix: ""
-    #Tabformat: "<prefix> &8| &7<player>"
-    #Chatformat: "<prefix> &8| &7<player> &8» &7<message>"
-    #SortID: 1
-    #NameColor: "dark_red"
+# The message that shows the information that a new update is available
+UpdateAvailableMessage: true

@@ -1,0 +1,13 @@
+# The both supported types are sqlite and mariadb, otherwise you can still disable it for file-save
+Database:
+  Enabled: false
+  Type: "SQLITE"
+  SQLite:
+    Path: "plugins/LuckPrefix/storage"
+    FileName: "sqlite.db"
+  MariaDB:
+    Host: "localhost"
+    Port: 3306
+    Database: "luckprefix"
+    User: "luckprefix"
+    Password: "< insert >"
