@@ -2,18 +2,20 @@ package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.object.ObjectConverter;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.List;
 
-public class FileManager {
+public class ConfigManager {
     private final File file;
+    @Getter
     private final YamlConfiguration configuration;
 
     @SneakyThrows
-    public FileManager(String fileName) {
+    public ConfigManager(String fileName) {
         this.file = new File("plugins/" + LuckPrefix.getInstance().getDescription().getName() + "/" + fileName);
         if (!this.file.exists()) {
             this.file.createNewFile();

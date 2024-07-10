@@ -46,6 +46,8 @@ public class LuckPrefixCommand implements TabExecutor {
             }
             case "reloadconfig" -> {
                 LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
+                LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/database.yml"));
+                LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/groups.yml"));
             }
         }
         return false;

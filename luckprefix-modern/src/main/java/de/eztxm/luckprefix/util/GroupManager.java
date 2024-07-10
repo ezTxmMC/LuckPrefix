@@ -59,7 +59,7 @@ public class GroupManager {
     }
 
     public void createGroup(String group) {
-        FileConfiguration config = LuckPrefix.getInstance().getConfig();
+        FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
         if (config.get("Groups." + group) == null) return;
         this.groups.add(group);
         this.groupPrefix.put(group, config.getString("Groups." + group + ".Prefix"));
