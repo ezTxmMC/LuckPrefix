@@ -24,26 +24,25 @@ public class ConfigUtil {
 
     public static ConfigManager addGroupsDefault(String fileName) {
         ConfigManager configManager = new ConfigManager(fileName);
-        configManager.addDefault("Groups.default.Prefix", "<gray>Player");
-        configManager.addDefault("Groups.default.Suffix", "");
-        configManager.addDefault("Tabformat", "<prefix> <dark_gray>- <gray><player>");
-        configManager.addDefault("Chatformat", "<prefix <dark_gray>- <gray><player> <dark_gray>» <gray><message>");
-        configManager.addDefault("SortID", 999);
-        configManager.addDefault("NameColor", "gray");
+        configManager.addDefault("default.Prefix", "<gray>Player");
+        configManager.addDefault("default.Suffix", "");
+        configManager.addDefault("default.Tabformat", "<prefix> <dark_gray>- <gray><player>");
+        configManager.addDefault("default.Chatformat", "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>");
+        configManager.addDefault("default.SortID", 999);
+        configManager.addDefault("default.NameColor", "gray");
         configManager.saveDefaults();
-        configManager.setComments("Groups", new ArrayList<>(List.of("The groups")));
-        configManager.setComments("Groups.default", new ArrayList<>(List.of("The name of the group")));
-        configManager.setComments("Groups.default.Prefix", new ArrayList<>(List.of(
+        configManager.setComments("default", new ArrayList<>(List.of("The name of the group")));
+        configManager.setComments("default.Prefix", new ArrayList<>(List.of(
                 "Prefix, suffix, tabformat and chatformat are working with the adventure minimessage format,",
                 "but the legacy '&'-codes also work",
                 "https://docs.advntr.dev/minimessage/format.html"
         )));
-        configManager.setComments("SortID", new ArrayList<>(List.of(
+        configManager.setComments("default.SortID", new ArrayList<>(List.of(
                 "The sort-id is important for the ordner on the tablist.",
                 "The lowest value is on top and the highest at the bottom.",
                 "You only can set the sort-id between 1 and 999. More can execute issues."
         )));
-        configManager.setComments("NameColor", new ArrayList<>(List.of("The color of the name above a player")));
+        configManager.setComments("default.NameColor", new ArrayList<>(List.of("The color of the name above a player")));
         configManager.saveComments();
         return configManager;
     }

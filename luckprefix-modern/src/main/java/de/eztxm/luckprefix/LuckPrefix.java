@@ -58,7 +58,7 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.createGroup();
         groupListener.deleteGroup();
         luckPerms.getGroupManager().getLoadedGroups().forEach(group -> {
-            if (groupsFile.contains("Groups." + group.getName())) {
+            if (groupsFile.contains(group.getName())) {
                 groupManager.createGroup(group.getName());
                 return;
             }

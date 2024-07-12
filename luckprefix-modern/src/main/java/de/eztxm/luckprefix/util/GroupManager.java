@@ -60,18 +60,30 @@ public class GroupManager {
 
     public void createGroup(String group) {
         FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
-        if (config.get("Groups." + group) == null) return;
         this.groups.add(group);
-        this.groupPrefix.put(group, config.getString("Groups." + group + ".Prefix"));
-        this.groupSuffix.put(group, config.getString("Groups." + group + ".Suffix"));
-        this.groupTabformat.put(group, config.getString("Groups." + group + ".Tabformat"));
-        this.groupChatformat.put(group, config.getString("Groups." + group + ".Chatformat"));
-        String sortIDraw = String.valueOf(config.getInt("Groups." + group + ".SortID"));
+        if (config.get(group) == null) {
+            this.groupPrefix.put(group, config.getString("default.Prefix"));
+            this.groupSuffix.put(group, config.getString("default.Suffix"));
+            this.groupTabformat.put(group, config.getString("default.Tabformat"));
+            this.groupChatformat.put(group, config.getString("default.Chatformat"));
+            String sortIDraw = String.valueOf(config.getInt("default.SortID"));
+            int maxLength = 4;
+            int currentLength = sortIDraw.length();
+            String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
+            this.groupID.put(group, sortIDBuilt);
+            this.groupColor.put(group, ChatColor.valueOf(config.getString("default.NameColor").toUpperCase()));
+            return;
+        }
+        this.groupPrefix.put(group, config.getString(group + ".Prefix"));
+        this.groupSuffix.put(group, config.getString(group + ".Suffix"));
+        this.groupTabformat.put(group, config.getString(group + ".Tabformat"));
+        this.groupChatformat.put(group, config.getString(group + ".Chatformat"));
+        String sortIDraw = String.valueOf(config.getInt(group + ".SortID"));
         int maxLength = 4;
         int currentLength = sortIDraw.length();
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, ChatColor.valueOf(config.getString("Groups." + group + ".NameColor").toUpperCase()));
+        this.groupColor.put(group, ChatColor.valueOf(config.getString(group + ".NameColor").toUpperCase()));
     }
 
     public void setupGroups(Player player) {

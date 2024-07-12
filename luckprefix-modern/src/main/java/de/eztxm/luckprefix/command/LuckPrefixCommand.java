@@ -1,16 +1,19 @@
 package de.eztxm.luckprefix.command;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.util.GroupManager;
 import lombok.SneakyThrows;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,6 +51,19 @@ public class LuckPrefixCommand implements TabExecutor {
                 LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
                 LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/database.yml"));
                 LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/groups.yml"));
+                GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.getScoreboard().getTeams().forEach(Team::unregister);
+                    if (!groupManager.getGroups().isEmpty()) {
+                        List<String> groups = new ArrayList<>(groupManager.getGroups());
+                        for (String group : groups) {
+                            groupManager.deleteGroup(group);
+                        }
+                    }
+                    onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+                    groupManager.setupGroups(onlinePlayer);
+                }
+                return true;
             }
         }
         return false;

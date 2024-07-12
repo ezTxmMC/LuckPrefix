@@ -24,17 +24,18 @@ public class ChatListener implements Listener {
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
+        FileConfiguration groupsConfig = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
         if (player.hasPermission(config.getString("ColoredPermission"))) {
-            event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(config.getString("Groups." + group + ".Chatformat"),
+            event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
                             Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group))),
                             Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group))),
                             Placeholder.component("player", Component.text(player.getName())),
                             Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage())))))));
             return;
         }
-        event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(config.getString("Groups." + group + ".Chatformat"),
+        event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
                 Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group))),
                 Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group))),
                 Placeholder.component("player", Component.text(player.getName())),
