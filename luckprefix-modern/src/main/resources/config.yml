@@ -19,3 +19,6 @@ ShowNameTags: true
 
 # The message that shows the information that a new update is available
 UpdateAvailableMessage: true
+
+# If true it send a warning for each group that not be in groups.yml
+Warning-If-Group-Can-Not-Loaded: true

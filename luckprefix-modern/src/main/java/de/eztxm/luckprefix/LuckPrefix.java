@@ -11,6 +11,7 @@ import lombok.Getter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,13 +58,15 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener = new GroupListener();
         groupListener.createGroup();
         groupListener.deleteGroup();
-        luckPerms.getGroupManager().getLoadedGroups().forEach(group -> {
+        for (Group group : luckPerms.getGroupManager().getLoadedGroups()) {
             if (groupsFile.contains(group.getName())) {
                 groupManager.createGroup(group.getName());
-                return;
+                continue;
             }
-            getLogger().warning("Group '" + group.getName() + "' can't be loaded. Please check your config!");
-        });
+            if (getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
+                getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
+            }
+        }
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty()) return;
             for (Player player : Bukkit.getOnlinePlayers()) {
