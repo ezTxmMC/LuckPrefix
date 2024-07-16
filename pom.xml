@@ -6,6 +6,7 @@
 
     <groupId>de.eztxm</groupId>
     <artifactId>luckprefix-parent</artifactId>
+    <version>2.0.0-SNAPSHOT+4</version>
 
     <modules>
         <module>luckprefix-legacy</module>
