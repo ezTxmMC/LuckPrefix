@@ -11,9 +11,6 @@ import lombok.Getter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.group.Group;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -40,9 +37,7 @@ public final class LuckPrefix extends JavaPlugin {
         prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
-        if (databaseFile.getValue("Database.Enabled").asBoolean()) {
-            connection = DatabaseManager.createDatabaseConnection();
-        }
+        connection = DatabaseManager.createDatabaseConnection();
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
@@ -50,29 +45,13 @@ public final class LuckPrefix extends JavaPlugin {
         registry.registerListener(new JoinListener());
         registry.registerListener(new QuitListener());
         registry.registerListener(new ChatListener());
-        if (connection != null) {
-            databaseManager = new DatabaseManager(connection);
-        }
+        databaseManager = new DatabaseManager(connection);
         playerManager = new PlayerManager();
         groupManager = new GroupManager();
         groupListener = new GroupListener();
         groupListener.createGroup();
         groupListener.deleteGroup();
-        for (Group group : luckPerms.getGroupManager().getLoadedGroups()) {
-            if (groupsFile.contains(group.getName())) {
-                groupManager.createGroup(group.getName());
-                continue;
-            }
-            if (getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
-                getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
-            }
-        }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
-            if (Bukkit.getOnlinePlayers().isEmpty()) return;
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                playerManager.setPlayerListName(player.getUniqueId());
-            }
-        }, 1, getConfig().getLong("UpdateTime") * 20);
+        groupManager.loadGroups();
     }
 
     @Override

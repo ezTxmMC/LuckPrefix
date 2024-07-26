@@ -4,6 +4,7 @@ import de.eztxm.luckprefix.LuckPrefix;
 import lombok.Getter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -115,5 +116,24 @@ public class GroupManager {
         this.groupChatformat.remove(group);
         this.groupID.remove(group);
         this.groupColor.remove(group);
+    }
+    
+    public void loadGroups() {
+        LuckPrefix instance = LuckPrefix.getInstance();
+        for (Group group : instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
+            if (instance.getGroupsFile().contains(group.getName())) {
+                instance.getGroupManager().createGroup(group.getName());
+                continue;
+            }
+            if (instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
+                instance.getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
+            }
+        }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
+            if (Bukkit.getOnlinePlayers().isEmpty()) return;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                instance.getPlayerManager().setPlayerListName(player.getUniqueId());
+            }
+        }, 1, instance.getConfig().getLong("UpdateTime") * 20);
     }
 }
