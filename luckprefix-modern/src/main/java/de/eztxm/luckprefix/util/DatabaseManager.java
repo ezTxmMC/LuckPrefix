@@ -4,14 +4,16 @@ import de.eztxm.api.database.SQLConnection;
 import de.eztxm.database.MariaDBConnection;
 import de.eztxm.database.SQLiteConnection;
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.util.database.DatabaseProcessor;
+import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 
+@Getter
 public class DatabaseManager {
-    private SQLConnection connection;
+    private final DatabaseProcessor processor;
 
     public DatabaseManager(SQLConnection connection) {
-        if (connection == null) return;
-        this.connection = connection;
+        this.processor = new DatabaseProcessor(connection);
     }
 
     public static SQLConnection createDatabaseConnection() {
