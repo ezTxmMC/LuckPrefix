@@ -42,7 +42,22 @@ public class GroupManager {
             Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
                     + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
             if (team == null) {
-                scoreboard.getTeam(this.groupID.get("default") + "default").addEntry(player.getName());
+                Team defaultRole = scoreboard.getTeam(this.groupID.get("default") + "default");
+                if (defaultRole == null) {
+                    scoreboard.getTeams().forEach(Team::unregister);
+                    for (Group loadedGroup : LuckPrefix.getInstance().getLuckPerms().getGroupManager().getLoadedGroups()) {
+                        createGroup(loadedGroup.getName());
+                    }
+                    setupGroups(player);
+                    defaultRole = scoreboard.getTeam(this.groupID.get("default") + "default");
+                    if (defaultRole == null) {
+                        continue;
+                    }
+                    defaultRole.addEntry(onlinePlayer.getName());
+                    LuckPrefix.getInstance().getPlayerManager().setPlayerListName(player.getUniqueId());
+                    return;
+                }
+                defaultRole.addEntry(onlinePlayer.getName());
                 return;
             }
             Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
@@ -50,7 +65,10 @@ public class GroupManager {
                 team.addEntry(onlinePlayer.getName());
                 return;
             }
-            if (team.getEntries().contains(player.getName())) {
+            if (currentTeam != team) {
+                currentTeam.removeEntry(onlinePlayer.getName());
+            }
+            if (team.getEntries().contains(onlinePlayer.getName())) {
                 return;
             }
             team.addEntry(onlinePlayer.getName());

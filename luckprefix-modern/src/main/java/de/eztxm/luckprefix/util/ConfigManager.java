@@ -23,6 +23,12 @@ public class ConfigManager {
         this.configuration = YamlConfiguration.loadConfiguration(file);
     }
 
+    @SneakyThrows
+    public void reloadConfig() {
+        saveConfiguration();
+        this.configuration.load(this.file);
+    }
+
     public void addDefault(String path, Object value) {
         this.configuration.addDefault(path, value);
     }

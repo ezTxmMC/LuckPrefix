@@ -5,7 +5,6 @@ import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.TextUtil;
 import de.eztxm.luckprefix.util.UpdateChecker;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -31,17 +30,13 @@ public class JoinListener implements Listener {
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> {
-            groupManager.setGroups(player);
-        }, 1, config.getLong("UpdateTime") * 20);
+        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> groupManager.setGroups(player), 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.addUserGroup(player.getUniqueId(), group);
-        UpdateChecker checker = new UpdateChecker(LuckPrefix.getInstance().getDescription().getVersion());
+        UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion()) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    LegacyComponentSerializer.legacyAmpersand().serialize(new TextUtil(LuckPrefix.getInstance().getPrefix() +
-                            "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).miniMessage())
-            ));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', new TextUtil(LuckPrefix.getInstance().getPrefix() +
+                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).legacyMiniMessage()));
         }
     }
 }

@@ -29,6 +29,7 @@ public final class LuckPrefix extends JavaPlugin {
     private PlayerManager playerManager;
     private GroupManager groupManager;
     private GroupListener groupListener;
+    private UpdateChecker updateChecker;
 
     @Override
     public void onEnable() {
@@ -52,6 +53,7 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.createGroup();
         groupListener.deleteGroup();
         groupManager.loadGroups();
+        updateChecker = new UpdateChecker(getDescription().getVersion());
     }
 
     @Override

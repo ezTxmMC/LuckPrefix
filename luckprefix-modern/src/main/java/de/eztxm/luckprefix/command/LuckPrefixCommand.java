@@ -42,15 +42,25 @@ public class LuckPrefixCommand implements TabExecutor {
             return false;
         }
         if (args.length < 1) {
-            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This command needs arguments to work.").miniMessage());
+            adventurePlayer.sendMessage(new TextUtil("""
+                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
+                                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
+                                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
+                                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
+                                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
+                                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
+                                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
+                                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
+                                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
+                                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
+                                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
+                                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
+                                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
+                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
             return false;
         }
         switch (args[0]) {
             case "group" -> {
-                ConfigManager groupsFile = LuckPrefix.getInstance().getGroupsFile();
-                FileConfiguration groupsConfig = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
-                LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
-                Group group = luckPerms.getGroupManager().getGroup(args[1]);
                 if (args.length < 3) {
                     adventurePlayer.sendMessage(new TextUtil("""
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
@@ -69,6 +79,10 @@ public class LuckPrefixCommand implements TabExecutor {
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
                     return false;
                 }
+                ConfigManager groupsFile = LuckPrefix.getInstance().getGroupsFile();
+                FileConfiguration groupsConfig = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
+                LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
+                Group group = luckPerms.getGroupManager().getGroup(args[1]);
                 if (group == null) {
                     adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This group doesn't exist.").miniMessage());
                     return false;
@@ -83,7 +97,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                     builder.append(" ").append(args[i]);
                                 }
                                 groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
-                                groupsFile.saveConfiguration();
+                                groupsFile.reloadConfig();
                                 return true;
                             }
                             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
@@ -98,7 +112,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                     builder.append(" ").append(args[i]);
                                 }
                                 groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
-                                groupsFile.saveConfiguration();
+                                groupsFile.reloadConfig();
                                 return true;
                             }
                             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
@@ -113,7 +127,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                     builder.append(" ").append(args[i]);
                                 }
                                 groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
-                                groupsFile.saveConfiguration();
+                                groupsFile.reloadConfig();
                                 return true;
                             }
                             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
@@ -128,7 +142,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                     builder.append(" ").append(args[i]);
                                 }
                                 groupsConfig.set(group.getName().toLowerCase() + ".Tabformat", builder.toString());
-                                groupsFile.saveConfiguration();
+                                groupsFile.reloadConfig();
                                 return true;
                             }
                             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Tabformat");
@@ -141,7 +155,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                 try {
                                     int sortID = Integer.parseInt(args[4]);
                                     groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
-                                    groupsFile.saveConfiguration();
+                                    groupsFile.reloadConfig();
                                     return true;
                                 } catch (NumberFormatException e) {
                                     adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
@@ -162,7 +176,7 @@ public class LuckPrefixCommand implements TabExecutor {
                                         return false;
                                     }
                                     groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
-                                    groupsFile.saveConfiguration();
+                                    groupsFile.reloadConfig();
                                     return true;
                                 } catch (EnumConstantNotPresentException e) {
                                     adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
@@ -181,8 +195,8 @@ public class LuckPrefixCommand implements TabExecutor {
             case "reloadconfig" -> {
                 adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "Reloading configurations...").miniMessage());
                 LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
-                LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/database.yml"));
-                LuckPrefix.getInstance().getDatabaseFile().getConfiguration().load(new File("plugins/LuckPrefix/groups.yml"));
+                LuckPrefix.getInstance().getDatabaseFile().reloadConfig();
+                LuckPrefix.getInstance().getGroupsFile().reloadConfig();
                 GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.getScoreboard().getTeams().forEach(Team::unregister);
@@ -230,28 +244,62 @@ public class LuckPrefixCommand implements TabExecutor {
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("group")) {
                 if (args[2].equalsIgnoreCase("prefix")) {
-                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("suffix")) {
-                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("tabformat")) {
-                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("chatformat")) {
-                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("sortID")) {
-                    List<String> arguments = new ArrayList<>(List.of("<number>"));
+                    List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
+                    return arguments;
+                }
+                if (args[2].equalsIgnoreCase("color")) {
+                    List<String> arguments = new ArrayList<>(List.of("set"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[3]));
+                    return arguments;
+                }
+            }
+        }
+        if (args.length == 5) {
+            if (args[0].equalsIgnoreCase("group")) {
+                if (args[2].equalsIgnoreCase("prefix")) {
+                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[4]));
+                    return arguments;
+                }
+                if (args[2].equalsIgnoreCase("suffix")) {
+                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[4]));
+                    return arguments;
+                }
+                if (args[2].equalsIgnoreCase("tabformat")) {
+                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[4]));
+                    return arguments;
+                }
+                if (args[2].equalsIgnoreCase("chatformat")) {
+                    List<String> arguments = new ArrayList<>(List.of("<text>"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[4]));
+                    return arguments;
+                }
+                if (args[2].equalsIgnoreCase("sortID")) {
+                    List<String> arguments = new ArrayList<>(List.of("<number>"));
+                    arguments.removeIf(argument -> !argument.startsWith(args[4]));
                     return arguments;
                 }
                 if (args[2].equalsIgnoreCase("color")) {
@@ -261,7 +309,7 @@ public class LuckPrefixCommand implements TabExecutor {
                             colors.add(color.name().toUpperCase());
                         }
                     }
-                    colors.removeIf(argument -> !argument.startsWith(args[3]));
+                    colors.removeIf(argument -> !argument.startsWith(args[4]));
                     return colors;
                 }
             }
