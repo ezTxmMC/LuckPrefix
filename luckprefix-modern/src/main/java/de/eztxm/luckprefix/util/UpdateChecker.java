@@ -15,15 +15,22 @@ public class UpdateChecker {
     }
 
     public boolean latestVersion() {
+        String latestVersion = getLatestVersion();
+        if (latestVersion == null) return true;
+        return latestVersion.equalsIgnoreCase(version);
+    }
+
+    public String getLatestVersion() {
         try {
             String urlString = "https://cdn.eztxm.de/plugin/luckprefix/manifest.json";
             URL url = new URL(urlString);
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             String line = reader.readLine();
             JSONObject jsonObject = new JSONObject(line);
-            return jsonObject.getString("Latest-Version").equalsIgnoreCase(version);
+            return jsonObject.getString("Latest-Version");
         } catch (IOException e) {
-            return true;
+            e.fillInStackTrace();
         }
+        return null;
     }
 }
