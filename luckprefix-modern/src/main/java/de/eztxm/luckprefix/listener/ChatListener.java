@@ -2,6 +2,7 @@ package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.util.TextUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -29,15 +30,15 @@ public class ChatListener implements Listener {
         String group = user.getPrimaryGroup();
         if (player.hasPermission(config.getString("ColoredPermission"))) {
             event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
-                            Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group))),
-                            Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group))),
+                            Placeholder.component("prefix", new TextUtil(groupManager.getGroupPrefix().get(group)).miniMessage()),
+                            Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage()),
                             Placeholder.component("player", Component.text(player.getName())),
                             Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage())))))));
             return;
         }
         event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
-                Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group))),
-                Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group))),
+                Placeholder.component("prefix", new TextUtil(groupManager.getGroupPrefix().get(group)).miniMessage()),
+                Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage()),
                 Placeholder.component("player", Component.text(player.getName())),
                 Placeholder.component("message", Component.text(event.getMessage()))))));
     }

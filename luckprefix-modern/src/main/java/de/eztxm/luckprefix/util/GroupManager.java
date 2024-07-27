@@ -2,8 +2,6 @@ package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import lombok.Getter;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -63,16 +61,7 @@ public class GroupManager {
         FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
         this.groups.add(group);
         if (config.get(group) == null) {
-            this.groupPrefix.put(group, config.getString("default.Prefix"));
-            this.groupSuffix.put(group, config.getString("default.Suffix"));
-            this.groupTabformat.put(group, config.getString("default.Tabformat"));
-            this.groupChatformat.put(group, config.getString("default.Chatformat"));
-            String sortIDraw = String.valueOf(config.getInt("default.SortID"));
-            int maxLength = 4;
-            int currentLength = sortIDraw.length();
-            String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
-            this.groupID.put(group, sortIDBuilt);
-            this.groupColor.put(group, ChatColor.valueOf(config.getString("default.NameColor").toUpperCase()));
+            LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             return;
         }
         this.groupPrefix.put(group, config.getString(group + ".Prefix"));
@@ -92,15 +81,13 @@ public class GroupManager {
         for (String group : this.groups) {
             Team team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
             if (this.groupPrefix.get(group) != null) {
-                team.setPrefix(ChatColor.translateAlternateColorCodes('&',
-                        LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupTabformat.get(group)
-                                .replace("<prefix>", this.groupPrefix.get(group))
-                                .replace("<player>", "")
-                                .replace("<suffix>", "")))));
+                team.setPrefix(ChatColor.translateAlternateColorCodes('&', new TextUtil(this.groupTabformat.get(group)
+                        .replace("<prefix>", this.groupPrefix.get(group))
+                        .replace("<player>", "")
+                        .replace("<suffix>", "")).legacyMiniMessage()));
             }
             if (this.groupSuffix.get(group) != null) {
-                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&',
-                        LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(this.groupSuffix.get(group)))));
+                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&', new TextUtil(this.groupSuffix.get(group)).legacyMiniMessage()));
             }
             if (this.groupColor.get(group) != null) {
                 team.setColor(this.groupColor.get(group));

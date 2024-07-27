@@ -47,7 +47,7 @@ public class PlayerManager {
             if (groupManager.getGroupSuffix().get(group) == null) {
                 return;
             }
-            TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+            TagResolver.Single suffix = Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage());
             player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
                     LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
                             Placeholder.component("prefix", Component.text("")),
@@ -55,7 +55,7 @@ public class PlayerManager {
                             Placeholder.component("player", Component.text(player.getName()))))));
             return;
         }
-        TagResolver.Single prefix = Placeholder.component("prefix", MiniMessage.miniMessage().deserialize(groupManager.getGroupPrefix().get(group)));
+        TagResolver.Single prefix = Placeholder.component("prefix", new TextUtil(groupManager.getGroupPrefix().get(group)).miniMessage());
         if (groupManager.getGroupSuffix().get(group) == null) {
             player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
                     LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
@@ -64,7 +64,7 @@ public class PlayerManager {
                             Placeholder.component("player", Component.text(player.getName()))))));
             return;
         }
-        TagResolver.Single suffix = Placeholder.component("suffix", MiniMessage.miniMessage().deserialize(groupManager.getGroupSuffix().get(group)));
+        TagResolver.Single suffix = Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage());
         player.setPlayerListName(ChatColor.translateAlternateColorCodes('&',
                 LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupManager.getGroupTabformat().get(group),
                         prefix,

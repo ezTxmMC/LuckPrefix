@@ -19,5 +19,8 @@ public class QuitListener implements Listener {
             playerManager.removeJoinScheduler(player.getUniqueId());
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
+        if (playerManager.getUserGroups().containsKey(player.getUniqueId())) {
+            playerManager.getUserGroups().remove(player.getUniqueId());
+        }
     }
 }

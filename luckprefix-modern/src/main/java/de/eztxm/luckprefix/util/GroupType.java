@@ -8,4 +8,5 @@ public enum GroupType {
     CHATFORMAT,
     SORTID,
     NAMECOLOR
+
 }
