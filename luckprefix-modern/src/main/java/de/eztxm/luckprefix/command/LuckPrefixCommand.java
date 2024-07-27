@@ -68,7 +68,21 @@ public class LuckPrefixCommand implements TabExecutor {
                 Group group = luckPerms.getGroupManager().getGroup(args[1]);
                 if (args.length < 3) {
                     adventurePlayer.sendMessage(
-                            MiniMessage.miniMessage().deserialize(LuckPrefix.getInstance().getPrefix() + "<#ff3333>Argumentlength ist too short."));
+                            MiniMessage.miniMessage().deserialize("""
+                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
+                                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
+                                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
+                                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
+                                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
+                                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
+                                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
+                                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
+                                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
+                                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
+                                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
+                                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
+                                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
+                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>"""));
                     return false;
                 }
                 if (group == null) {
