@@ -17,24 +17,21 @@ public class DatabaseManager {
     }
 
     public static SQLConnection createDatabaseConnection() {
-        if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            FileConfiguration config = LuckPrefix.getInstance().getConfig();
-            String type = config.getString("Database.Type");
-            return switch (type.toUpperCase()) {
-                case "SQLITE" -> new SQLiteConnection(
-                        config.getString("Database.SQLite.Path"),
-                        config.getString("Database.SQLite.FileName")
-                );
-                case "MARIADB" -> new MariaDBConnection(
-                        config.getString("Database.MariaDB.Host"),
-                        config.getInt("Database.MariaDB.Port"),
-                        config.getString("Database.MariaDB.Database"),
-                        config.getString("Database.MariaDB.User"),
-                        config.getString("Database.MariaDB.Password")
-                );
-                default -> null;
-            };
-        }
-        return null;
+        FileConfiguration config = LuckPrefix.getInstance().getConfig();
+        String type = config.getString("Database.Type");
+        return switch (type.toUpperCase()) {
+            case "SQLITE" -> new SQLiteConnection(
+                    config.getString("Database.SQLite.Path"),
+                    config.getString("Database.SQLite.FileName")
+            );
+            case "MARIADB" -> new MariaDBConnection(
+                    config.getString("Database.MariaDB.Host"),
+                    config.getInt("Database.MariaDB.Port"),
+                    config.getString("Database.MariaDB.Database"),
+                    config.getString("Database.MariaDB.User"),
+                    config.getString("Database.MariaDB.Password")
+            );
+            default -> null;
+        };
     }
 }

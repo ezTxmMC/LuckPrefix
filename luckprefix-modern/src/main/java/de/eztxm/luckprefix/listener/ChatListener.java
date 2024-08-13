@@ -2,11 +2,9 @@ package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.TextUtil;
+import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -29,17 +27,17 @@ public class ChatListener implements Listener {
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
         if (player.hasPermission(config.getString("ColoredPermission"))) {
-            event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
-                            Placeholder.component("prefix", new TextUtil(groupManager.getGroupPrefix().get(group)).miniMessage()),
-                            Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage()),
-                            Placeholder.component("player", Component.text(player.getName())),
-                            Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage())))))));
+            event.setFormat(ChatColor.translateAlternateColorCodes('&', new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
+                    Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
+                    Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
+                    Placeholder.component("player", Component.text(player.getName())),
+                    Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage()))))));
             return;
         }
-        event.setFormat(ChatColor.translateAlternateColorCodes('&', LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(groupsConfig.getString(group + ".Chatformat"),
-                Placeholder.component("prefix", new TextUtil(groupManager.getGroupPrefix().get(group)).miniMessage()),
-                Placeholder.component("suffix", new TextUtil(groupManager.getGroupSuffix().get(group)).miniMessage()),
+        event.setFormat(ChatColor.translateAlternateColorCodes('&', new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
+                Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
+                Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
                 Placeholder.component("player", Component.text(player.getName())),
-                Placeholder.component("message", Component.text(event.getMessage()))))));
+                Placeholder.component("message", Component.text(event.getMessage())))));
     }
 }

@@ -99,13 +99,13 @@ public class GroupManager {
         for (String group : this.groups) {
             Team team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
             if (this.groupPrefix.get(group) != null) {
-                team.setPrefix(ChatColor.translateAlternateColorCodes('&', new TextUtil(this.groupTabformat.get(group)
+                team.setPrefix(ChatColor.translateAlternateColorCodes('&', new Text(this.groupTabformat.get(group)
                         .replace("<prefix>", this.groupPrefix.get(group))
                         .replace("<player>", "")
                         .replace("<suffix>", "")).legacyMiniMessage()));
             }
             if (this.groupSuffix.get(group) != null) {
-                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&', new TextUtil(this.groupSuffix.get(group)).legacyMiniMessage()));
+                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&', new Text(this.groupSuffix.get(group)).legacyMiniMessage()));
             }
             if (this.groupColor.get(group) != null) {
                 team.setColor(this.groupColor.get(group));

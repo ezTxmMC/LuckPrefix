@@ -3,7 +3,7 @@ package de.eztxm.luckprefix.listener;
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
-import de.eztxm.luckprefix.util.TextUtil;
+import de.eztxm.luckprefix.util.Text;
 import de.eztxm.luckprefix.util.UpdateChecker;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -35,7 +35,7 @@ public class JoinListener implements Listener {
         playerManager.addUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion()) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', new TextUtil(LuckPrefix.getInstance().getPrefix() +
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', new Text(LuckPrefix.getInstance().getPrefix() +
                     "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).legacyMiniMessage()));
         }
     }

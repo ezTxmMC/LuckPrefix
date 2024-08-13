@@ -1,27 +1,20 @@
 package de.eztxm.luckprefix.command;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.ConfigManager;
-import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.GroupType;
-import de.eztxm.luckprefix.util.TextUtil;
-import lombok.SneakyThrows;
+import de.eztxm.luckprefix.command.subcommand.GroupSubCommand;
+import de.eztxm.luckprefix.command.subcommand.ReloadConfigs;
+import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +22,6 @@ import java.util.Set;
 
 public class LuckPrefixCommand implements TabExecutor {
 
-    @SneakyThrows
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -38,11 +30,11 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
         if (!player.hasPermission("luckprefix.command")) {
-            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>You don't have the permission to use this command.").miniMessage());
+            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>You don't have the permission to use this command.").miniMessage());
             return false;
         }
         if (args.length < 1) {
-            adventurePlayer.sendMessage(new TextUtil("""
+            adventurePlayer.sendMessage(new Text("""
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
                                     <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
                                     <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
@@ -56,161 +48,16 @@ public class LuckPrefixCommand implements TabExecutor {
                                     <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
                                     <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
                                     <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
+                                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
             return false;
         }
         switch (args[0]) {
             case "group" -> {
-                if (args.length < 3) {
-                    adventurePlayer.sendMessage(new TextUtil("""
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
-                    return false;
-                }
-                ConfigManager groupsFile = LuckPrefix.getInstance().getGroupsFile();
-                FileConfiguration groupsConfig = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
-                LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
-                Group group = luckPerms.getGroupManager().getGroup(args[1]);
-                if (group == null) {
-                    adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This group doesn't exist.").miniMessage());
-                    return false;
-                }
-                try {
-                    GroupType groupType = GroupType.valueOf(args[2].toUpperCase());
-                    switch (groupType) {
-                        case PREFIX -> {
-                            if (args.length > 4) {
-                                StringBuilder builder = new StringBuilder(args[4]);
-                                for (int i = 5; i < args.length - 1; i++) {
-                                    builder.append(" ").append(args[i]);
-                                }
-                                groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
-                                groupsFile.reloadConfig();
-                                return true;
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
-                            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix()
-                                    + "The prefix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
-                            return true;
-                        }
-                        case SUFFIX -> {
-                            if (args.length > 4) {
-                                StringBuilder builder = new StringBuilder(args[4]);
-                                for (int i = 5; i < args.length - 1; i++) {
-                                    builder.append(" ").append(args[i]);
-                                }
-                                groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
-                                groupsFile.reloadConfig();
-                                return true;
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-                            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix()
-                                    + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
-                            return true;
-                        }
-                        case CHATFORMAT -> {
-                            if (args.length > 4) {
-                                StringBuilder builder = new StringBuilder(args[4]);
-                                for (int i = 5; i < args.length - 1; i++) {
-                                    builder.append(" ").append(args[i]);
-                                }
-                                groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
-                                groupsFile.reloadConfig();
-                                return true;
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
-                            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix()
-                                    + "The chatformat of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
-                            return true;
-                        }
-                        case TABFORMAT -> {
-                            if (args.length > 4) {
-                                StringBuilder builder = new StringBuilder(args[4]);
-                                for (int i = 5; i < args.length - 1; i++) {
-                                    builder.append(" ").append(args[i]);
-                                }
-                                groupsConfig.set(group.getName().toLowerCase() + ".Tabformat", builder.toString());
-                                groupsFile.reloadConfig();
-                                return true;
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Tabformat");
-                            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix()
-                                    + "The tabformat of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
-                            return true;
-                        }
-                        case SORTID -> {
-                            if (args.length == 5) {
-                                try {
-                                    int sortID = Integer.parseInt(args[4]);
-                                    groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
-                                    groupsFile.reloadConfig();
-                                    return true;
-                                } catch (NumberFormatException e) {
-                                    adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
-                                }
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
-                            adventurePlayer.sendMessage(
-                                    MiniMessage.miniMessage().deserialize(LuckPrefix.getInstance().getPrefix()
-                                            + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix));
-                            return true;
-                        }
-                        case NAMECOLOR -> {
-                            if (args.length == 5) {
-                                try {
-                                    ChatColor color = ChatColor.valueOf(args[4].toUpperCase());
-                                    if (!color.isColor() || color.isFormat()) {
-                                        adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a color.").miniMessage());
-                                        return false;
-                                    }
-                                    groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
-                                    groupsFile.reloadConfig();
-                                    return true;
-                                } catch (EnumConstantNotPresentException e) {
-                                    adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
-                                }
-                            }
-                            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
-                            adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix()
-                                    + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
-                            return true;
-                        }
-                    }
-                } catch (EnumConstantNotPresentException e) {
-                    adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This group type doesn't exist.").miniMessage());
-                }
+                return GroupSubCommand.execute(player, adventurePlayer, args);
             }
             case "reloadconfig" -> {
-                adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "Reloading configurations...").miniMessage());
-                LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
-                LuckPrefix.getInstance().getDatabaseFile().reloadConfig();
-                LuckPrefix.getInstance().getGroupsFile().reloadConfig();
-                GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.getScoreboard().getTeams().forEach(Team::unregister);
-                    if (!groupManager.getGroups().isEmpty()) {
-                        List<String> groups = new ArrayList<>(groupManager.getGroups());
-                        for (String group : groups) {
-                            groupManager.deleteGroup(group);
-                        }
-                    }
-                    onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-                    groupManager.setupGroups(onlinePlayer);
-                }
-                adventurePlayer.sendMessage(new TextUtil(LuckPrefix.getInstance().getPrefix() + "Reloaded configurations.").miniMessage());
-                return true;
+                return ReloadConfigs.execute(adventurePlayer);
             }
         }
         return false;
