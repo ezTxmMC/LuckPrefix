@@ -6,18 +6,18 @@ import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public class ChatformatSubCommand {
 
-    public static void execute(Player player, Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
+    public static void execute(Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
         if (args.length > 4) {
             StringBuilder builder = new StringBuilder(args[4]);
-            for (int i = 5; i < args.length - 1; i++) {
+            for (int i = 5; i < args.length; i++) {
                 builder.append(" ").append(args[i]);
             }
             groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
             groupsFile.reloadConfig();
+            LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String chatformat = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
             adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
                     + "The chatformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + chatformat).miniMessage());

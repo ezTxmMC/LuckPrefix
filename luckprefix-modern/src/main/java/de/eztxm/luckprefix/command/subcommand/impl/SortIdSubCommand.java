@@ -7,16 +7,16 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public class SortIdSubCommand {
 
-    public static void execute(Player player, Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
+    public static void execute(Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
         if (args.length == 5) {
             try {
                 int sortID = Integer.parseInt(args[4]);
                 groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
                 groupsFile.reloadConfig();
+                LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 sortID = groupsConfig.getInt(group.getName().toLowerCase() + ".SortID");
                 adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
                         + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is now: " + sortID).miniMessage());

@@ -7,13 +7,13 @@ import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public class NameColorSubCommand {
 
-    public static boolean execute(Player player, Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
+    public static boolean execute(Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
         if (args.length == 5) {
             try {
+                try {
                 ChatColor color = ChatColor.valueOf(args[4].toUpperCase());
                 if (!color.isColor() || color.isFormat()) {
                     adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a color.").miniMessage());
@@ -21,10 +21,14 @@ public class NameColorSubCommand {
                 }
                 groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
                 groupsFile.reloadConfig();
+                LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
                 adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
                         + "The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).miniMessage());
                 return true;
+                } catch (IllegalArgumentException e) {
+                    adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a valid color option.").miniMessage());
+                }
             } catch (EnumConstantNotPresentException e) {
                 adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
             }
