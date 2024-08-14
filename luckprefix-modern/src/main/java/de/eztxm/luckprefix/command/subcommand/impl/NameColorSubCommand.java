@@ -21,14 +21,17 @@ public class NameColorSubCommand {
                 }
                 groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
                 groupsFile.reloadConfig();
+                String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
+                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
+                        + "The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).miniMessage());
                 return true;
             } catch (EnumConstantNotPresentException e) {
                 adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
             }
         }
-        String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
+        String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
         adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
+                + "The name-color of the group <#33ffff>" + group.getName() + " <gray>is: " + nameColor).miniMessage());
         return true;
     }
 }

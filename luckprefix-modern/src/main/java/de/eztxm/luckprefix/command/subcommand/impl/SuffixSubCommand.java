@@ -18,10 +18,13 @@ public class SuffixSubCommand {
             }
             groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
             groupsFile.reloadConfig();
+            String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
+            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
+                    + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).miniMessage());
             return;
         }
-        String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
+        String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
         adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
+                + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).miniMessage());
     }
 }

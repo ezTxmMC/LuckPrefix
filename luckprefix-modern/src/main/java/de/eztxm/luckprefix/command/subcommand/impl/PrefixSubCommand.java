@@ -18,6 +18,9 @@ public class PrefixSubCommand {
             }
             groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
             groupsFile.reloadConfig();
+            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
+            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
+                    + "The prefix of the group <#33ffff>" + group.getName() + " <gray>is now: " + prefix).miniMessage());
             return;
         }
         String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");

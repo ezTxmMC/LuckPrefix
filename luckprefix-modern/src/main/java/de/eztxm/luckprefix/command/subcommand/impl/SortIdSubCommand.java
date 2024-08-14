@@ -17,14 +17,17 @@ public class SortIdSubCommand {
                 int sortID = Integer.parseInt(args[4]);
                 groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
                 groupsFile.reloadConfig();
+                sortID = groupsConfig.getInt(group.getName().toLowerCase() + ".SortID");
+                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
+                        + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is now: " + sortID).miniMessage());
                 return;
             } catch (NumberFormatException e) {
                 adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
             }
         }
-        String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
+        String sortID = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
         adventurePlayer.sendMessage(
                 MiniMessage.miniMessage().deserialize(LuckPrefix.getInstance().getPrefix()
-                        + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix));
+                        + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + sortID));
     }
 }
