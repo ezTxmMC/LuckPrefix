@@ -61,7 +61,7 @@ public final class LuckPrefix extends JavaPlugin {
         groupManager.loadGroups();
         updateChecker = new UpdateChecker(getDescription().getVersion());
         if (!updateChecker.latestVersion()) {
-            getLogger().warning("Newer version " + updateChecker.getLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
+            getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
         }
     }
 

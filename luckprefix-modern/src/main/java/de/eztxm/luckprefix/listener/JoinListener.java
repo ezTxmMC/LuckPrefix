@@ -9,7 +9,6 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,13 +29,13 @@ public class JoinListener implements Listener {
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> groupManager.setGroups(player), 1, config.getLong("UpdateTime") * 20);
+        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(players -> groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.addUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion()) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', new Text(LuckPrefix.getInstance().getPrefix() +
-                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).legacyMiniMessage() + "</click>"));
+            player.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() +
+                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").legacyMiniMessage());
         }
     }
 }
