@@ -27,17 +27,17 @@ public class ChatListener implements Listener {
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
         if (player.hasPermission(config.getString("ColoredPermission"))) {
-            event.setFormat(ChatColor.translateAlternateColorCodes('&', new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
+            event.setFormat(new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
                     Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
                     Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
                     Placeholder.component("player", Component.text(player.getName())),
-                    Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage()))))));
+                    Placeholder.component("message", Component.text(ChatColor.translateAlternateColorCodes('&', event.getMessage())))));
             return;
         }
-        event.setFormat(ChatColor.translateAlternateColorCodes('&', new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
+        event.setFormat(new Text(groupsConfig.getString(group + ".Chatformat")).legacyMiniMessage(
                 Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
                 Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
                 Placeholder.component("player", Component.text(player.getName())),
-                Placeholder.component("message", Component.text(event.getMessage())))));
+                Placeholder.component("message", Component.text(event.getMessage()))));
     }
 }
