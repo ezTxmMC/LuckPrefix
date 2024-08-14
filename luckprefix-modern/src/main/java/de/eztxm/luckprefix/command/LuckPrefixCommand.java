@@ -149,7 +149,7 @@ public class LuckPrefixCommand implements TabExecutor {
                     arguments.removeIf(argument -> !argument.startsWith(args[4]));
                     return arguments;
                 }
-                if (args[2].equalsIgnoreCase("color")) {
+                if (args[2].equalsIgnoreCase("namecolor")) {
                     List<String> colors = new ArrayList<>();
                     for (ChatColor color : ChatColor.values()) {
                         if (color.isColor() && !color.isFormat()) {
