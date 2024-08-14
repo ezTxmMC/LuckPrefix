@@ -35,8 +35,8 @@ public class GroupManager {
         this.groupColor = new HashMap<>();
     }
 
-    public void setGroups(Player player) {
-        Scoreboard scoreboard = player.getScoreboard();
+    public void setGroups(Player player, Scoreboard scoreboard) {
+        setupGroups(player);
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
             Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
@@ -48,28 +48,28 @@ public class GroupManager {
                     for (Group loadedGroup : LuckPrefix.getInstance().getLuckPerms().getGroupManager().getLoadedGroups()) {
                         createGroup(loadedGroup.getName());
                     }
-                    setupGroups(player);
+                    setupGroups(onlinePlayer);
                     defaultRole = scoreboard.getTeam(this.groupID.get("default") + "default");
                     if (defaultRole == null) {
                         continue;
                     }
                     defaultRole.addEntry(onlinePlayer.getName());
-                    LuckPrefix.getInstance().getPlayerManager().setPlayerListName(player.getUniqueId());
-                    return;
+                    LuckPrefix.getInstance().getPlayerManager().setPlayerListName(onlinePlayer.getUniqueId());
+                    continue;
                 }
                 defaultRole.addEntry(onlinePlayer.getName());
-                return;
+                continue;
             }
             Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
             if (currentTeam == null) {
                 team.addEntry(onlinePlayer.getName());
-                return;
+                continue;
             }
             if (currentTeam != team) {
                 currentTeam.removeEntry(onlinePlayer.getName());
             }
             if (team.getEntries().contains(onlinePlayer.getName())) {
-                return;
+                continue;
             }
             team.addEntry(onlinePlayer.getName());
         }
@@ -97,20 +97,29 @@ public class GroupManager {
     public void setupGroups(Player player) {
         Scoreboard scoreboard = player.getScoreboard();
         for (String group : this.groups) {
-            Team team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
-            if (this.groupPrefix.get(group) != null) {
-                team.setPrefix(ChatColor.translateAlternateColorCodes('&', new Text(this.groupTabformat.get(group)
+            Team team = scoreboard.getTeam(this.groupID.get(group) + group);
+            if (team != null) {
+                team.unregister();
+            }
+            team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
+            if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
+                team.setPrefix(new Text(this.groupTabformat.get(group)
                         .replace("<prefix>", this.groupPrefix.get(group))
                         .replace("<player>", "")
-                        .replace("<suffix>", "")).legacyMiniMessage()));
+                        .replace("<suffix>", "")).legacyMiniMessage());
             }
-            if (this.groupSuffix.get(group) != null) {
-                team.setSuffix(" " + ChatColor.translateAlternateColorCodes('&', new Text(this.groupSuffix.get(group)).legacyMiniMessage()));
+            if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
+                team.setSuffix(" " + new Text(this.groupSuffix.get(group)).legacyMiniMessage());
             }
             if (this.groupColor.get(group) != null) {
                 team.setColor(this.groupColor.get(group));
             }
         }
+    }
+
+    public void reloadGroup(String group) {
+        deleteGroup(group);
+        createGroup(group);
     }
 
     public void deleteGroup(String group) {
