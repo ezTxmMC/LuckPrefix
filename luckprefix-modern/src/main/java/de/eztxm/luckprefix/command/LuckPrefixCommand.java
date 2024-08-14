@@ -83,7 +83,7 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("group")) {
-                List<String> arguments = new ArrayList<>(List.of("prefix", "suffix", "tabformat", "chatformat", "sortID", "color"));
+                List<String> arguments = new ArrayList<>(List.of("prefix", "suffix", "tabformat", "chatformat", "sortID", "namecolor"));
                 arguments.removeIf(argument -> !argument.startsWith(args[2]));
                 return arguments;
             }
@@ -115,7 +115,7 @@ public class LuckPrefixCommand implements TabExecutor {
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
                 }
-                if (args[2].equalsIgnoreCase("color")) {
+                if (args[2].equalsIgnoreCase("namecolor")) {
                     List<String> arguments = new ArrayList<>(List.of("set"));
                     arguments.removeIf(argument -> !argument.startsWith(args[3]));
                     return arguments;
