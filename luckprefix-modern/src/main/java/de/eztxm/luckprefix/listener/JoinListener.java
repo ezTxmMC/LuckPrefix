@@ -36,7 +36,7 @@ public class JoinListener implements Listener {
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion()) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', new Text(LuckPrefix.getInstance().getPrefix() +
-                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).legacyMiniMessage()));
+                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getLatestVersion()).legacyMiniMessage() + "</click>"));
         }
     }
 }
