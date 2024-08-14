@@ -9,11 +9,10 @@ import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public class GroupSubCommand {
 
-    public static boolean execute(Player player, Audience adventurePlayer, String[] args) {
+    public static boolean execute(Audience adventurePlayer, String[] args) {
         if (args.length < 3) {
             adventurePlayer.sendMessage(new Text("""
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
@@ -45,27 +44,27 @@ public class GroupSubCommand {
             GroupType groupType = GroupType.valueOf(args[2].toUpperCase());
             switch (groupType) {
                 case PREFIX -> {
-                    PrefixSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    PrefixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case SUFFIX -> {
-                    SuffixSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SuffixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case CHATFORMAT -> {
-                    ChatformatSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    ChatformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case TABFORMAT -> {
-                    TabformatSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    TabformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case SORTID -> {
-                    SortIdSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SortIdSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case NAMECOLOR -> {
-                    return NameColorSubCommand.execute(player, adventurePlayer, group, args, groupsConfig, groupsFile);
+                    return NameColorSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
                 }
                 default -> {
                     return false;
