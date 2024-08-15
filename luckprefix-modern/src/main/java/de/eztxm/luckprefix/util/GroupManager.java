@@ -10,10 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class GroupManager {
@@ -37,41 +34,27 @@ public class GroupManager {
 
     public void setGroups(Player player, Scoreboard scoreboard) {
         setupGroups(player);
+        PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
-            Team team = scoreboard.getTeam(this.groupID.get(playerManager.getUserGroups().get(onlinePlayer.getUniqueId()))
-                    + playerManager.getUserGroups().get(onlinePlayer.getUniqueId()));
+            UUID playerId = onlinePlayer.getUniqueId();
+            String group = playerManager.getUserGroups().get(playerId);
+            String teamName = this.groupID.getOrDefault(group, "default") + group;
+            Team team = scoreboard.getTeam(teamName);
             if (team == null) {
-                Team defaultRole = scoreboard.getTeam(this.groupID.get("default") + "default");
-                if (defaultRole == null) {
-                    scoreboard.getTeams().forEach(Team::unregister);
-                    for (Group loadedGroup : LuckPrefix.getInstance().getLuckPerms().getGroupManager().getLoadedGroups()) {
-                        createGroup(loadedGroup.getName());
+                resetTeams(scoreboard);
+                setupGroups(onlinePlayer);
+                team = scoreboard.getTeam(this.groupID.get("default") + "default");
+            }
+            if (team != null) {
+                Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
+                if (currentTeam != team) {
+                    if (currentTeam != null) {
+                        currentTeam.removeEntry(onlinePlayer.getName());
                     }
-                    setupGroups(onlinePlayer);
-                    defaultRole = scoreboard.getTeam(this.groupID.get("default") + "default");
-                    if (defaultRole == null) {
-                        continue;
-                    }
-                    defaultRole.addEntry(onlinePlayer.getName());
-                    LuckPrefix.getInstance().getPlayerManager().setPlayerListName(onlinePlayer.getUniqueId());
-                    continue;
+                    team.addEntry(onlinePlayer.getName());
                 }
-                defaultRole.addEntry(onlinePlayer.getName());
-                continue;
+                LuckPrefix.getInstance().getPlayerManager().setPlayerListName(playerId);
             }
-            Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
-            if (currentTeam == null) {
-                team.addEntry(onlinePlayer.getName());
-                continue;
-            }
-            if (currentTeam != team) {
-                currentTeam.removeEntry(onlinePlayer.getName());
-            }
-            if (team.getEntries().contains(onlinePlayer.getName())) {
-                continue;
-            }
-            team.addEntry(onlinePlayer.getName());
         }
     }
 
@@ -149,5 +132,12 @@ public class GroupManager {
                 instance.getPlayerManager().setPlayerListName(player.getUniqueId());
             }
         }, 1, instance.getConfig().getLong("UpdateTime") * 20);
+    }
+
+    private void resetTeams(Scoreboard scoreboard) {
+        scoreboard.getTeams().forEach(Team::unregister);
+        for (Group loadedGroup : LuckPrefix.getInstance().getLuckPerms().getGroupManager().getLoadedGroups()) {
+            createGroup(loadedGroup.getName());
+        }
     }
 }
