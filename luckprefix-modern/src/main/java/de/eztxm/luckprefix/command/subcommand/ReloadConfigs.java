@@ -17,7 +17,7 @@ public class ReloadConfigs {
 
     @SneakyThrows
     public static boolean execute(Audience adventurePlayer) {
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "Reloading configurations...").miniMessage());
+        adventurePlayer.sendMessage(new Text("Reloading configurations...").prefixMiniMessage());
         LuckPrefix.getInstance().getConfig().load(new File("plugins/LuckPrefix/config.yml"));
         LuckPrefix.getInstance().getDatabaseFile().reloadConfig();
         LuckPrefix.getInstance().getGroupsFile().reloadConfig();
@@ -33,7 +33,7 @@ public class ReloadConfigs {
             onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
             groupManager.setupGroups(onlinePlayer);
         }
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "Reloaded configurations.").miniMessage());
+        adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
         return true;
     }
 }

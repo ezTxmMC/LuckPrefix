@@ -19,12 +19,10 @@ public class ChatformatSubCommand {
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String chatformat = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The chatformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + chatformat).miniMessage());
+            adventurePlayer.sendMessage(new Text("The chatformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + chatformat).prefixMiniMessage());
             return;
         }
         String chatformat = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The chatformat of the group <#33ffff>" + group.getName() + " <gray>is: " + chatformat).miniMessage());
+        adventurePlayer.sendMessage(new Text("The chatformat of the group <#33ffff>" + group.getName() + " <gray>is: " + chatformat).prefixMiniMessage());
     }
 }

@@ -37,7 +37,7 @@ public class GroupSubCommand {
         LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
         Group group = luckPerms.getGroupManager().getGroup(args[1]);
         if (group == null) {
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This group doesn't exist.").miniMessage());
+            adventurePlayer.sendMessage(new Text("<#ff3333>This group doesn't exist.").prefixMiniMessage());
             return false;
         }
         try {
@@ -71,7 +71,7 @@ public class GroupSubCommand {
                 }
             }
         } catch (EnumConstantNotPresentException e) {
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This group type doesn't exist.").miniMessage());
+            adventurePlayer.sendMessage(new Text("<#ff3333>This group type doesn't exist.").prefixMiniMessage());
             return false;
         }
     }

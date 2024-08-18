@@ -4,7 +4,6 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.ConfigManager;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -18,16 +17,13 @@ public class SortIdSubCommand {
                 groupsFile.reloadConfig();
                 LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 sortID = groupsConfig.getInt(group.getName().toLowerCase() + ".SortID");
-                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                        + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is now: " + sortID).miniMessage());
+                adventurePlayer.sendMessage(new Text("The sort-id of the group <#33ffff>" + group.getName() + " <gray>is now: " + sortID).prefixMiniMessage());
                 return;
             } catch (NumberFormatException e) {
-                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
+                adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a number.").prefixMiniMessage());
             }
         }
         String sortID = groupsConfig.getString(group.getName().toLowerCase() + ".SortID");
-        adventurePlayer.sendMessage(
-                MiniMessage.miniMessage().deserialize(LuckPrefix.getInstance().getPrefix()
-                        + "The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + sortID));
+        adventurePlayer.sendMessage(new Text("The sort-id of the group <#33ffff>" + group.getName() + " <gray>is: " + sortID).prefixMiniMessage());
     }
 }

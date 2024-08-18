@@ -19,12 +19,10 @@ public class TabformatSubCommand {
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String tabformat = groupsConfig.getString(group.getName().toLowerCase() + ".Tabformat");
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The tabformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + tabformat).miniMessage());
+            adventurePlayer.sendMessage(new Text("The tabformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + tabformat).prefixMiniMessage());
             return;
         }
         String tabformat = groupsConfig.getString(group.getName().toLowerCase() + ".Tabformat");
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The tabformat of the group <#33ffff>" + group.getName() + " <gray>is: " + tabformat).miniMessage());
+        adventurePlayer.sendMessage(new Text("The tabformat of the group <#33ffff>" + group.getName() + " <gray>is: " + tabformat).prefixMiniMessage());
     }
 }

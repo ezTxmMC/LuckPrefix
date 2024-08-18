@@ -30,7 +30,7 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
         if (!player.hasPermission("luckprefix.command")) {
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>You don't have the permission to use this command.").miniMessage());
+            adventurePlayer.sendMessage(new Text("<#ff3333>You don't have the permission to use this command.").prefixMiniMessage());
             return false;
         }
         if (args.length < 1) {

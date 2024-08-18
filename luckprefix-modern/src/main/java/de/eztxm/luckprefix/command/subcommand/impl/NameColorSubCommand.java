@@ -16,26 +16,24 @@ public class NameColorSubCommand {
                 try {
                 ChatColor color = ChatColor.valueOf(args[4].toUpperCase());
                 if (!color.isColor() || color.isFormat()) {
-                    adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a color.").miniMessage());
+                    adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a color.").prefixMiniMessage());
                     return false;
                 }
                 groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
                 groupsFile.reloadConfig();
                 LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
-                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                        + "The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).miniMessage());
+                adventurePlayer.sendMessage(new Text("The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).prefixMiniMessage());
                 return true;
                 } catch (IllegalArgumentException e) {
-                    adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a valid color option.").miniMessage());
+                    adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a valid color option.").prefixMiniMessage());
                 }
             } catch (EnumConstantNotPresentException e) {
-                adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() + "<#ff3333>This isn't a number.").miniMessage());
+                adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a number.").prefixMiniMessage());
             }
         }
         String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The name-color of the group <#33ffff>" + group.getName() + " <gray>is: " + nameColor).miniMessage());
+        adventurePlayer.sendMessage(new Text("The name-color of the group <#33ffff>" + group.getName() + " <gray>is: " + nameColor).prefixMiniMessage());
         return true;
     }
 }

@@ -6,7 +6,6 @@ import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 public class SuffixSubCommand {
 
@@ -20,20 +19,17 @@ public class SuffixSubCommand {
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).miniMessage());
+            adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).prefixMiniMessage());
             return;
         }
         if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
             groupsConfig.set(group.getName().toLowerCase() + ".Suffix", "");
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The suffix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").miniMessage());
+            adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
             return;
         }
         String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).miniMessage());
+        adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).prefixMiniMessage());
     }
 }

@@ -19,20 +19,17 @@ public class PrefixSubCommand {
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The prefix of the group <#33ffff>" + group.getName() + " <gray>is now: " + prefix).miniMessage());
+            adventurePlayer.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>is now: " + prefix).prefixMiniMessage());
             return;
         }
         if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
             groupsConfig.set(group.getName().toLowerCase() + ".Prefix", "");
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
-            adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                    + "The prefix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").miniMessage());
+            adventurePlayer.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
             return;
         }
         String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
-        adventurePlayer.sendMessage(new Text(LuckPrefix.getInstance().getPrefix()
-                + "The prefix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).miniMessage());
+        adventurePlayer.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).prefixMiniMessage());
     }
 }
