@@ -2,7 +2,7 @@ package de.eztxm.luckprefix.command;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.command.subcommand.GroupSubCommand;
-import de.eztxm.luckprefix.command.subcommand.ReloadConfigs;
+import de.eztxm.luckprefix.command.subcommand.ReloadConfigsSubCommand;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
@@ -57,7 +57,7 @@ public class LuckPrefixCommand implements TabExecutor {
                 return GroupSubCommand.execute(adventurePlayer, args);
             }
             case "reloadconfig" -> {
-                return ReloadConfigs.execute(adventurePlayer);
+                return ReloadConfigsSubCommand.execute(adventurePlayer);
             }
         }
         return false;

@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReloadConfigs {
+public class ReloadConfigsSubCommand {
 
     @SneakyThrows
     public static boolean execute(Audience adventurePlayer) {
