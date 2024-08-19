@@ -1,12 +1,12 @@
 package de.eztxm.luckprefix.util.database;
 
 import de.eztxm.api.database.SQLConnection;
-import de.eztxm.luckprefix.database.Table;
+import de.eztxm.luckprefix.database.sql.Table;
 
-public class DatabaseProcessor {
+public class SQLDatabaseProcessor {
     private final SQLConnection connection;
 
-    public DatabaseProcessor(SQLConnection connection) {
+    public SQLDatabaseProcessor(SQLConnection connection) {
         this.connection = connection;
     }
 

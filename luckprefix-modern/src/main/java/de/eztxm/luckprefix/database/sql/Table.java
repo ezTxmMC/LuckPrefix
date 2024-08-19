@@ -1,4 +1,4 @@
-package de.eztxm.luckprefix.database;
+package de.eztxm.luckprefix.database.sql;
 
 import lombok.Getter;
 

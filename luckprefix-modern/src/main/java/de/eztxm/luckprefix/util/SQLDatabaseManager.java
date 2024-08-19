@@ -4,19 +4,19 @@ import de.eztxm.api.database.SQLConnection;
 import de.eztxm.database.MariaDBConnection;
 import de.eztxm.database.SQLiteConnection;
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.database.DatabaseProcessor;
+import de.eztxm.luckprefix.util.database.SQLDatabaseProcessor;
 import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 
 @Getter
-public class DatabaseManager {
-    private final DatabaseProcessor processor;
+public class SQLDatabaseManager {
+    private final SQLDatabaseProcessor processor;
 
-    public DatabaseManager(SQLConnection connection) {
-        this.processor = new DatabaseProcessor(connection);
+    public SQLDatabaseManager(SQLConnection connection) {
+        this.processor = new SQLDatabaseProcessor(connection);
     }
 
-    public static SQLConnection createDatabaseConnection() {
+    public static SQLConnection createSQLDatabaseConnection() {
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
         String type = config.getString("Database.Type");
         return switch (type.toUpperCase()) {

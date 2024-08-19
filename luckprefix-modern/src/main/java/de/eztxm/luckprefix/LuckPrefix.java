@@ -1,8 +1,9 @@
 package de.eztxm.luckprefix;
 
 import de.eztxm.api.database.SQLConnection;
+import de.eztxm.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
-import de.eztxm.luckprefix.database.Table;
+import de.eztxm.luckprefix.database.sql.Table;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
@@ -22,11 +23,12 @@ public final class LuckPrefix extends JavaPlugin {
     private String prefix;
     private ConfigManager databaseFile;
     private ConfigManager groupsFile;
-    private SQLConnection connection;
+    private MongoDBConnection mongoDBConnection;
+    private SQLConnection sqlConnection;
     private BukkitAudiences adventure;
     private LuckPerms luckPerms;
     private Registry registry;
-    private DatabaseManager databaseManager;
+    private SQLDatabaseManager sqlDatabaseManager;
     private PlayerManager playerManager;
     private GroupManager groupManager;
     private GroupListener groupListener;
@@ -39,11 +41,15 @@ public final class LuckPrefix extends JavaPlugin {
         prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
-        if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            connection = DatabaseManager.createDatabaseConnection();
-            databaseManager = new DatabaseManager(connection);
-            databaseManager.getProcessor().createTable(Table.CREATE_GROUPS_TABLE);
-            databaseManager.getProcessor().createTable(Table.CREATE_MESSAGES_TABLE);
+        if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+            if (getDatabaseFile().getValue("Database.Type").asString().equalsIgnoreCase("mongodb")) {
+                mongoDBConnection = MongoDBManager.createMongoDBConnection();
+            } else {
+                sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection();
+                sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
+                sqlDatabaseManager.getProcessor().createTable(Table.CREATE_GROUPS_TABLE);
+                sqlDatabaseManager.getProcessor().createTable(Table.CREATE_MESSAGES_TABLE);
+            }
         }
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
