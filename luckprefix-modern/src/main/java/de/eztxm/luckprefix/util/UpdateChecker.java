@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 
 @Getter
@@ -21,22 +22,18 @@ public class UpdateChecker {
     public boolean latestVersion() {
         String latestVersion = getLatestVersion();
         if (latestVersion == null) return true;
+        if (this.cachedLatestVersion.equalsIgnoreCase("N/A")) return true;
         return latestVersion.equalsIgnoreCase(currentVersion);
     }
 
     private String getLatestVersion() {
-        try {
-            String urlString = "https://cdn.eztxm.de/plugin/luckprefix/manifest.json";
-            URL url = new URL(urlString);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        String urlString = "https://cdn.eztxm.de/plugin/luckprefix/manifest.json";
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(URI.create(urlString).toURL().openStream()))) {
+            if (reader.lines().toList().isEmpty()) return this.cachedLatestVersion;
             String line = reader.readLine();
             JSONObject jsonObject = new JSONObject(line);
-            String latestVersion = jsonObject.getString("Latest-Version");
-            this.cachedLatestVersion = latestVersion;
-            return latestVersion;
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
-        return "N/A";
+            this.cachedLatestVersion = jsonObject.getString("Latest-Version");
+        } catch (IOException ignored) {}
+        return this.cachedLatestVersion;
     }
 }
