@@ -16,6 +16,11 @@ public class ConfigUtil {
         configManager.addDefault("Database.MariaDB.Database", "luckprefix");
         configManager.addDefault("Database.MariaDB.User", "luckprefix");
         configManager.addDefault("Database.MariaDB.Password", "");
+        configManager.addDefault("Database.MongoDB.Host", "localhost");
+        configManager.addDefault("Database.MongoDB.Port", 3306);
+        configManager.addDefault("Database.MongoDB.Database", "luckprefix");
+        configManager.addDefault("Database.MongoDB.User", "luckprefix");
+        configManager.addDefault("Database.MongoDB.Password", "");
         configManager.saveDefaults();
         configManager.setComments("Database", new ArrayList<>(List.of("The both supported types are sqlite and mariadb, otherwise you can still disable it for file-save")));
         configManager.saveComments();

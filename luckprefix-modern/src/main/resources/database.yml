@@ -11,3 +11,9 @@ Database:
     Database: "luckprefix"
     User: "luckprefix"
     Password: "< insert >"
+  MongoDB:
+    Host: "localhost"
+    Port: 3306
+    Database: "luckprefix"
+    User: "luckprefix"
+    Password: "< insert >"
