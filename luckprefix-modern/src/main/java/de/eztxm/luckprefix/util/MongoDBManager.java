@@ -3,8 +3,10 @@ package de.eztxm.luckprefix.util;
 import de.eztxm.database.MongoDBConnection;
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.database.MongoDBProcessor;
+import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 
+@Getter
 public class MongoDBManager {
     private final MongoDBProcessor processor;
 
