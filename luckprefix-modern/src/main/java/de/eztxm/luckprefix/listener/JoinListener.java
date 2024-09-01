@@ -5,6 +5,7 @@ import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import de.eztxm.luckprefix.util.UpdateChecker;
+import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -21,6 +22,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
         PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
@@ -34,8 +36,7 @@ public class JoinListener implements Listener {
         playerManager.addUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion() && player.hasPermission("luckprefix.update")) {
-            player.sendMessage(new Text(LuckPrefix.getInstance().getPrefix() +
-                    "There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").legacyMiniMessage());
+            adventurePlayer.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
         }
     }
 }
