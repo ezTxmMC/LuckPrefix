@@ -7,5 +7,10 @@ public class MongoDBProcessor {
 
     public MongoDBProcessor(MongoDBConnection connection) {
         this.connection = connection;
+        this.createCollections();
+    }
+
+    public void createCollections() {
+        this.connection.createCollection("luckprefix_groups");
     }
 }
