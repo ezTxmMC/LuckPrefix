@@ -17,7 +17,7 @@ public class ConfigUtil {
         configManager.addDefault("Database.MariaDB.User", "luckprefix");
         configManager.addDefault("Database.MariaDB.Password", "");
         configManager.addDefault("Database.MongoDB.Host", "localhost");
-        configManager.addDefault("Database.MongoDB.Port", 3306);
+        configManager.addDefault("Database.MongoDB.Port", 27017);
         configManager.addDefault("Database.MongoDB.Database", "luckprefix");
         configManager.addDefault("Database.MongoDB.User", "luckprefix");
         configManager.addDefault("Database.MongoDB.Password", "");

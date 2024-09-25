@@ -19,8 +19,12 @@ public class NameColorSubCommand {
                     adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a color.").prefixMiniMessage());
                     return false;
                 }
-                groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
-                groupsFile.reloadConfig();
+                if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+                    LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor().updateGroup(group.getName().toLowerCase(), "namecolor", color.name().toLowerCase());
+                } else {
+                    groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
+                    groupsFile.reloadConfig();
+                }
                 LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
                 adventurePlayer.sendMessage(new Text("The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).prefixMiniMessage());

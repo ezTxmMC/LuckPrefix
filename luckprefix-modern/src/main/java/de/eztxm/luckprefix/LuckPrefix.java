@@ -3,7 +3,6 @@ package de.eztxm.luckprefix;
 import de.eztxm.api.database.SQLConnection;
 import de.eztxm.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
-import de.eztxm.luckprefix.database.sql.Table;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
@@ -47,8 +46,6 @@ public final class LuckPrefix extends JavaPlugin {
             } else {
                 sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection();
                 sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
-                sqlDatabaseManager.getProcessor().createTable(Table.CREATE_GROUPS_TABLE);
-                sqlDatabaseManager.getProcessor().createTable(Table.CREATE_MESSAGES_TABLE);
             }
         }
         adventure = BukkitAudiences.create(instance);

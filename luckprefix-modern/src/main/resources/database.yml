@@ -13,7 +13,7 @@ Database:
     Password: "< insert >"
   MongoDB:
     Host: "localhost"
-    Port: 3306
+    Port: 27017
     Database: "luckprefix"
     User: "luckprefix"
     Password: "< insert >"

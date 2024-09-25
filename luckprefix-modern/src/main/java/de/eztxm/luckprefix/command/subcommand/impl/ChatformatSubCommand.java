@@ -15,8 +15,12 @@ public class ChatformatSubCommand {
             for (int i = 5; i < args.length; i++) {
                 builder.append(" ").append(args[i]);
             }
-            groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
-            groupsFile.reloadConfig();
+            if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+                LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor().updateGroup(group.getName().toLowerCase(), "chatformat", builder.toString());
+            } else {
+                groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
+                groupsFile.reloadConfig();
+            }
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String chatformat = groupsConfig.getString(group.getName().toLowerCase() + ".Chatformat");
             adventurePlayer.sendMessage(new Text("The chatformat of the group <#33ffff>" + group.getName() + " <gray>is now: " + chatformat).prefixMiniMessage());

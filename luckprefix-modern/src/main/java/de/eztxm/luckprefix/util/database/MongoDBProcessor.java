@@ -21,6 +21,7 @@ public class MongoDBProcessor {
     }
 
     public Document getGroup(String group) {
+        if (!isGroupExists(group)) return null;
         return this.connection.find("luckprefix_groups", Filters.eq("name", group));
     }
 

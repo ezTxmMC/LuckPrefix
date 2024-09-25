@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.util.database.SQLDatabaseProcessor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
@@ -59,6 +60,25 @@ public class GroupManager {
     }
 
     public void createGroup(String group) {
+        if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+            SQLDatabaseProcessor processor = LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor();
+            this.groups.add(group);
+            if (!processor.isGroupExists(group)) {
+                LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database table!");
+                return;
+            }
+            this.groupPrefix.put(group, processor.getGroupValue(group, "prefix").asString());
+            this.groupSuffix.put(group, processor.getGroupValue(group, "suffix").asString());
+            this.groupTabformat.put(group, processor.getGroupValue(group, "tabformat").asString());
+            this.groupChatformat.put(group, processor.getGroupValue(group, "chatformat").asString());
+            String sortIDraw = String.valueOf(processor.getGroupValue(group, "sortId").asInteger());
+            int maxLength = 4;
+            int currentLength = sortIDraw.length();
+            String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
+            this.groupID.put(group, sortIDBuilt);
+            this.groupColor.put(group, ChatColor.valueOf(processor.getGroupValue(group, "namecolor").asString().toUpperCase()));
+            return;
+        }
         FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
         this.groups.add(group);
         if (config.get(group) == null) {
