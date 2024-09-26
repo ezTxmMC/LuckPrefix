@@ -10,10 +10,10 @@ Legacy (1.8 - 1.15): https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 
 ## TODO-List for v2
 
-- [ ] Code optimizing & recode
+- [x] Code optimizing & recode
 - [x] Gradients, only prefix and with playername
 - [ ] Auto-Reload config option
 - [x] LuckPrefix command
-- [ ] Database support
+- [x] Database support
 - [x] Multi-File support
 - [x] Extra groups.yml
