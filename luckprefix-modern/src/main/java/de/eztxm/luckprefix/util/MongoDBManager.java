@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix.util;
 
-import de.eztxm.database.MongoDBConnection;
-import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.util.database.MongoDBProcessor;
 import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,14 +13,13 @@ public class MongoDBManager {
         this.processor = new MongoDBProcessor(connection);
     }
 
-    public static MongoDBConnection createMongoDBConnection() {
-        FileConfiguration config = LuckPrefix.getInstance().getConfig();
+    public static MongoDBConnection createMongoDBConnection(FileConfiguration configuration) {
         return new MongoDBConnection(
-                config.getString("Database.MariaDB.Host"),
-                config.getInt("Database.MariaDB.Port"),
-                config.getString("Database.MariaDB.User"),
-                config.getString("Database.MariaDB.Password"),
-                config.getString("Database.MariaDB.Database")
+                configuration.getString("Database.MongoDB.Host"),
+                configuration.getInt("Database.MongoDB.Port"),
+                configuration.getString("Database.MongoDB.User"),
+                configuration.getString("Database.MongoDB.Password"),
+                configuration.getString("Database.MongoDB.Database")
         );
     }
 }

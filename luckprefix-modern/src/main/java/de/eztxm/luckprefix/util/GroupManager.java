@@ -1,6 +1,8 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.util.database.MongoDBProcessor;
+import de.eztxm.luckprefix.util.database.Processor;
 import de.eztxm.luckprefix.util.database.SQLDatabaseProcessor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
@@ -61,7 +63,11 @@ public class GroupManager {
 
     public void createGroup(String group) {
         if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            SQLDatabaseProcessor processor = LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor();
+            Processor processor = DatabaseHandler.selectProcessor();
+            if (processor == null) {
+                LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
+                return;
+            }
             this.groups.add(group);
             if (!processor.isGroupExists(group)) {
                 LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database table!");

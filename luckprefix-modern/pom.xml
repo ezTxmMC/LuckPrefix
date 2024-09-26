@@ -6,7 +6,7 @@
 
     <groupId>de.eztxm</groupId>
     <artifactId>luckprefix-modern</artifactId>
-    <version>2.0.0-SNAPSHOT+6</version>
+    <version>2.0.0-BETA+6</version>
 
     <name>LuckPrefix</name>
 
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>de.eztxm</groupId>
             <artifactId>ezlib-database-mongodb</artifactId>
-            <version>1.0-ALPHA10</version>
+            <version>1.0-ALPHA11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>

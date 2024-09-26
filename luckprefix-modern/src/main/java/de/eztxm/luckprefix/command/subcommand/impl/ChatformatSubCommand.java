@@ -2,7 +2,9 @@ package de.eztxm.luckprefix.command.subcommand.impl;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.ConfigManager;
+import de.eztxm.luckprefix.util.DatabaseHandler;
 import de.eztxm.luckprefix.util.Text;
+import de.eztxm.luckprefix.util.database.Processor;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +18,12 @@ public class ChatformatSubCommand {
                 builder.append(" ").append(args[i]);
             }
             if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor().updateGroup(group.getName().toLowerCase(), "chatformat", builder.toString());
+                Processor processor = DatabaseHandler.selectProcessor();
+                if (processor == null) {
+                    LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
+                    return;
+                }
+                processor.updateGroup(group.getName().toLowerCase(), "chatformat", builder.toString());
             } else {
                 groupsConfig.set(group.getName().toLowerCase() + ".Chatformat", builder.toString());
                 groupsFile.reloadConfig();

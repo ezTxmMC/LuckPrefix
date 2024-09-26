@@ -1,7 +1,7 @@
 package de.eztxm.luckprefix;
 
 import de.eztxm.api.database.SQLConnection;
-import de.eztxm.database.MongoDBConnection;
+import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
@@ -28,6 +28,7 @@ public final class LuckPrefix extends JavaPlugin {
     private LuckPerms luckPerms;
     private Registry registry;
     private SQLDatabaseManager sqlDatabaseManager;
+    private MongoDBManager mongoDBManager;
     private PlayerManager playerManager;
     private GroupManager groupManager;
     private GroupListener groupListener;
@@ -41,11 +42,15 @@ public final class LuckPrefix extends JavaPlugin {
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            if (getDatabaseFile().getValue("Database.Type").asString().equalsIgnoreCase("mongodb")) {
-                mongoDBConnection = MongoDBManager.createMongoDBConnection();
-            } else {
-                sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection();
-                sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
+            switch (getDatabaseFile().getValue("Database.Type").asString().toUpperCase()) {
+                case "MARIADB", "SQLITE" -> {
+                    sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
+                    sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
+                }
+                case "MONGODB" -> {
+                    mongoDBConnection = MongoDBManager.createMongoDBConnection(getDatabaseFile().getConfiguration());
+                    mongoDBManager = new MongoDBManager(mongoDBConnection);
+                }
             }
         }
         adventure = BukkitAudiences.create(instance);

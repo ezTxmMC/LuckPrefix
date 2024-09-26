@@ -2,7 +2,9 @@ package de.eztxm.luckprefix.command.subcommand.impl;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.ConfigManager;
+import de.eztxm.luckprefix.util.DatabaseHandler;
 import de.eztxm.luckprefix.util.Text;
+import de.eztxm.luckprefix.util.database.Processor;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.ChatColor;
@@ -20,7 +22,12 @@ public class NameColorSubCommand {
                     return false;
                 }
                 if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                    LuckPrefix.getInstance().getSqlDatabaseManager().getProcessor().updateGroup(group.getName().toLowerCase(), "namecolor", color.name().toLowerCase());
+                    Processor processor = DatabaseHandler.selectProcessor();
+                    if (processor == null) {
+                        LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
+                        return false;
+                    }
+                    processor.updateGroup(group.getName().toLowerCase(), "namecolor", color.name().toLowerCase());
                 } else {
                     groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
                     groupsFile.reloadConfig();
