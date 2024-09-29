@@ -75,7 +75,7 @@ public class GroupManager {
                             "<gray>Player",
                             "",
                             "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>",
-                            "<prefix> <player> <dark_gray>| ",
+                            "<prefix> <dark_gray>| <gray><player>",
                             999,
                             "GRAY"
                     );
@@ -103,7 +103,7 @@ public class GroupManager {
             if (LuckPrefix.getInstance().getConfig().getBoolean("Auto-Add-Group")) {
                 config.set(group + ".Prefix", "<gray>Player");
                 config.set(group + ".Suffix", "");
-                config.set(group + ".Tabformat", "<prefix> <player> <dark_gray>| ");
+                config.set(group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
                 config.set(group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
                 config.set(group + ".SortID", 999);
                 config.set(group + ".NameColor", "GRAY");
