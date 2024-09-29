@@ -1,9 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.database.MongoDBProcessor;
 import de.eztxm.luckprefix.util.database.Processor;
-import de.eztxm.luckprefix.util.database.SQLDatabaseProcessor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
@@ -70,7 +68,21 @@ public class GroupManager {
             }
             this.groups.add(group);
             if (!processor.isGroupExists(group)) {
-                LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database table!");
+                if (LuckPrefix.getInstance().getConfig().getBoolean("Auto-Add-Group")) {
+                    LuckPrefix.getInstance().getLogger().warning("Values of group `" + group + "` has been added to your database!");
+                    processor.addGroup(
+                            group,
+                            "<gray>Player",
+                            "",
+                            "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>",
+                            "<prefix> <player> <dark_gray>| ",
+                            999,
+                            "GRAY"
+                    );
+                    createGroup(group);
+                    return;
+                }
+                LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database entries!");
                 return;
             }
             this.groupPrefix.put(group, processor.getGroupValue(group, "prefix").asString());
@@ -88,6 +100,16 @@ public class GroupManager {
         FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
         this.groups.add(group);
         if (config.get(group) == null) {
+            if (LuckPrefix.getInstance().getConfig().getBoolean("Auto-Add-Group")) {
+                config.set(group + ".Prefix", "<gray>Player");
+                config.set(group + ".Suffix", "");
+                config.set(group + ".Tabformat", "<prefix> <player> <dark_gray>| ");
+                config.set(group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
+                config.set(group + ".SortID", 999);
+                config.set(group + ".NameColor", "GRAY");
+                createGroup(group);
+                return;
+            }
             LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             return;
         }

@@ -22,3 +22,6 @@ UpdateAvailableMessage: true
 
 # If true it send a warning for each group that not be in groups.yml
 Warning-If-Group-Can-Not-Loaded: true
+
+# If true it will automatically insert not existing groups into the groups.yml or as entry in the database
+Auto-Add-Group: false
