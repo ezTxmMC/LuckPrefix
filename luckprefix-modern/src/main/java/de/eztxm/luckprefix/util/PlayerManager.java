@@ -32,7 +32,7 @@ public class PlayerManager {
         userGroups.put(uuid, group);
     }
 
-    public void setPlayerListName(UUID uuid) {
+    public void setPlayerListName(UUID uuid, String luckPermsGroup) {
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
@@ -40,6 +40,9 @@ public class PlayerManager {
         }
         if (!userGroups.containsKey(uuid)) return;
         String group = userGroups.get(uuid);
+        if (group.equalsIgnoreCase(luckPermsGroup)) return;
+        group = luckPermsGroup;
+        userGroups.put(uuid, group);
         if (groupManager.getGroupPrefix().get(group) == null) {
             if (groupManager.getGroupSuffix().get(group) == null) {
                 return;
