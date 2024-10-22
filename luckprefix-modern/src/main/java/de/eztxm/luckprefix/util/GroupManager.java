@@ -1,9 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.database.MongoDBProcessor;
 import de.eztxm.luckprefix.util.database.Processor;
-import de.eztxm.luckprefix.util.database.SQLDatabaseProcessor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
@@ -17,6 +15,7 @@ import java.util.*;
 
 @Getter
 public class GroupManager {
+    private final LuckPrefix instance;
     private final List<String> groups;
     private final Map<String, String> groupPrefix;
     private final Map<String, String> groupSuffix;
@@ -25,7 +24,8 @@ public class GroupManager {
     private final Map<String, String> groupID;
     private final Map<String, ChatColor> groupColor;
 
-    public GroupManager() {
+    public GroupManager(LuckPrefix instance) {
+        this.instance = instance;
         this.groups = new ArrayList<>();
         this.groupPrefix = new HashMap<>();
         this.groupSuffix = new HashMap<>();
@@ -37,7 +37,7 @@ public class GroupManager {
 
     public void setGroups(Player player, Scoreboard scoreboard) {
         setupGroups(player);
-        PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
+        PlayerManager playerManager = this.instance.getPlayerManager();
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             UUID playerId = onlinePlayer.getUniqueId();
             String group = playerManager.getUserGroups().get(playerId);
@@ -56,21 +56,24 @@ public class GroupManager {
                     }
                     team.addEntry(onlinePlayer.getName());
                 }
-                LuckPrefix.getInstance().getPlayerManager().setPlayerListName(playerId);
+                this.instance.getPlayerManager().setPlayerListName(
+                        playerId,
+                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup()
+                        );
             }
         }
     }
 
     public void createGroup(String group) {
-        if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+        if (this.instance.getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
             Processor processor = DatabaseHandler.selectProcessor();
             if (processor == null) {
-                LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
+                this.instance.getLogger().warning("No database processor selected.");
                 return;
             }
             this.groups.add(group);
             if (!processor.isGroupExists(group)) {
-                LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database table!");
+                this.instance.getLogger().warning("Group values of `" + group + "` can't be loaded. Please check your database table!");
                 return;
             }
             this.groupPrefix.put(group, processor.getGroupValue(group, "prefix").asString());
@@ -85,10 +88,10 @@ public class GroupManager {
             this.groupColor.put(group, ChatColor.valueOf(processor.getGroupValue(group, "namecolor").asString().toUpperCase()));
             return;
         }
-        FileConfiguration config = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
+        FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
         this.groups.add(group);
         if (config.get(group) == null) {
-            LuckPrefix.getInstance().getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
+            this.instance.getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             return;
         }
         this.groupPrefix.put(group, config.getString(group + ".Prefix"));
@@ -142,27 +145,29 @@ public class GroupManager {
     }
     
     public void loadGroups() {
-        LuckPrefix instance = LuckPrefix.getInstance();
-        for (Group group : instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
-            if (instance.getGroupsFile().contains(group.getName())) {
-                instance.getGroupManager().createGroup(group.getName());
+        for (Group group : this.instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
+            if (this.instance.getGroupsFile().contains(group.getName())) {
+                this.instance.getGroupManager().createGroup(group.getName());
                 continue;
             }
-            if (instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
-                instance.getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
+            if (this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
+                this.instance.getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
             }
         }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty()) return;
             for (Player player : Bukkit.getOnlinePlayers()) {
-                instance.getPlayerManager().setPlayerListName(player.getUniqueId());
+                this.instance.getPlayerManager().setPlayerListName(
+                        player.getUniqueId(),
+                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup()
+                );
             }
-        }, 1, instance.getConfig().getLong("UpdateTime") * 20);
+        }, 1, this.instance.getConfig().getLong("UpdateTime") * 20);
     }
 
     private void resetTeams(Scoreboard scoreboard) {
         scoreboard.getTeams().forEach(Team::unregister);
-        for (Group loadedGroup : LuckPrefix.getInstance().getLuckPerms().getGroupManager().getLoadedGroups()) {
+        for (Group loadedGroup : this.instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
             createGroup(loadedGroup.getName());
         }
     }
