@@ -67,7 +67,7 @@ public class PlayerManager {
         this.joinSchedulers.put(uuid, bukkitTask);
     }
 
-    public void addUserGroup(UUID uuid, String group) {
+    public void setUserGroup(UUID uuid, String group) {
         this.userGroups.put(uuid, group);
     }
 
