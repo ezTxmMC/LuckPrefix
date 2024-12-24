@@ -62,9 +62,11 @@ public final class LuckPrefix extends JavaPlugin {
         registry.registerListener(new ChatListener());
         playerManager = new PlayerManager();
         groupManager = new GroupManager(instance);
-        groupListener = new GroupListener();
+        groupListener = new GroupListener(this.luckPerms, this.groupManager, this.playerManager);
         groupListener.onCreateGroup();
         groupListener.onDeleteGroup();
+        groupListener.onUpdateGroup();
+        groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
         updateChecker = new UpdateChecker(getDescription().getVersion());
         if (!updateChecker.latestVersion()) {
