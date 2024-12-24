@@ -14,6 +14,6 @@ Legacy (1.8 - 1.15): https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 - [x] Gradients, only prefix and with playername
 - [ ] Auto-Reload config option
 - [x] LuckPrefix command
-- [x] Database support
-- [ ] Multi-File support
+- [ ] Database support
+- [x] Multi-File support
 - [x] Extra groups.yml
