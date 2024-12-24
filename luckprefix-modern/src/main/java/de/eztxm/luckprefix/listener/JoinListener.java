@@ -33,7 +33,7 @@ public class JoinListener implements Listener {
         groupManager.setupGroups(player);
         BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(players -> groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
-        playerManager.addUserGroup(player.getUniqueId(), group);
+        playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.latestVersion() && player.hasPermission("luckprefix.update")) {
             adventurePlayer.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
