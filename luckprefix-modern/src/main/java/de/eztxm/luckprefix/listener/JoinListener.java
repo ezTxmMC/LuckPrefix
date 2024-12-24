@@ -23,20 +23,22 @@ public class JoinListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
+        FileConfiguration config = LuckPrefix.getInstance().getConfig();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
         PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
-        FileConfiguration config = LuckPrefix.getInstance().getConfig();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
         BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(players -> groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
-        if (!checker.latestVersion() && player.hasPermission("luckprefix.update")) {
-            adventurePlayer.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
+        if (!LuckPrefix.isDevelopment()) {
+            if (!checker.latestVersion() && player.hasPermission("luckprefix.update")) {
+                adventurePlayer.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ public class GroupManager {
     private final Map<String, String> groupChatformat;
     private final Map<String, String> groupID;
     private final Map<String, ChatColor> groupColor;
+    private final Map<String, Boolean> tried;
 
     public GroupManager(LuckPrefix instance) {
         this.instance = instance;
@@ -33,6 +34,7 @@ public class GroupManager {
         this.groupChatformat = new HashMap<>();
         this.groupID = new HashMap<>();
         this.groupColor = new HashMap<>();
+        this.tried = new HashMap<>();
     }
 
     public void setGroups(Player player, Scoreboard scoreboard) {

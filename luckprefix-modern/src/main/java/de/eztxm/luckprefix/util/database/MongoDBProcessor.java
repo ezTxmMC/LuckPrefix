@@ -37,6 +37,7 @@ public class MongoDBProcessor implements Processor {
     public void addGroup(String group, String prefix, String suffix, String chatformat, String tabformat, int sortId, String color) {
         if (isGroupExists(group)) return;
         Document document = new Document();
+        document.put("name", group);
         document.put("prefix", prefix);
         document.put("suffix", suffix);
         document.put("chatformat", chatformat);

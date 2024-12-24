@@ -18,6 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
+    @Getter
+    private static boolean development = true;
 
     private String prefix;
     private ConfigManager databaseFile;
@@ -69,8 +71,10 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
         updateChecker = new UpdateChecker(getDescription().getVersion());
-        if (!updateChecker.latestVersion()) {
-            getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
+        if (!development) {
+            if (!updateChecker.latestVersion()) {
+                getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
+            }
         }
     }
 
