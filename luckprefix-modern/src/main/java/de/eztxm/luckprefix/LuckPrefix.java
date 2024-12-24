@@ -20,7 +20,7 @@ public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
     @Getter
-    private static boolean development = false;
+    private static boolean development = true;
 
     private String prefix;
     private ConfigManager databaseFile;
