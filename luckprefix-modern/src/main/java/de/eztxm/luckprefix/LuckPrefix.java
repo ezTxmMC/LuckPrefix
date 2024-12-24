@@ -12,6 +12,7 @@ import lombok.Getter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -44,6 +45,11 @@ public final class LuckPrefix extends JavaPlugin {
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+            if (!development) {
+                this.getLogger().warning("Database connections currently not work correctly. Please use groups.yml configuration and disable database.");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
             switch (getDatabaseFile().getValue("Database.Type").asString().toUpperCase()) {
                 case "MARIADB", "SQLITE" -> {
                     sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
