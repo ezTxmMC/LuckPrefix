@@ -31,7 +31,9 @@ public class JoinListener implements Listener {
         String group = user.getPrimaryGroup();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () -> Bukkit.getOnlinePlayers().forEach(players -> groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
+        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () ->
+                Bukkit.getOnlinePlayers().forEach(players ->
+                        groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();

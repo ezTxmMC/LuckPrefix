@@ -12,6 +12,7 @@ import lombok.Getter;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -19,7 +20,7 @@ public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
     @Getter
-    private static boolean development = true;
+    private static boolean development = false;
 
     private String prefix;
     private ConfigManager databaseFile;
@@ -44,6 +45,11 @@ public final class LuckPrefix extends JavaPlugin {
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
+            if (!development) {
+                this.getLogger().warning("Database connections currently not work correctly. Please use groups.yml configuration and disable database.");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
             switch (getDatabaseFile().getValue("Database.Type").asString().toUpperCase()) {
                 case "MARIADB", "SQLITE" -> {
                     sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
@@ -64,9 +70,11 @@ public final class LuckPrefix extends JavaPlugin {
         registry.registerListener(new ChatListener());
         playerManager = new PlayerManager();
         groupManager = new GroupManager(instance);
-        groupListener = new GroupListener();
+        groupListener = new GroupListener(this.luckPerms, this.groupManager, this.playerManager);
         groupListener.onCreateGroup();
         groupListener.onDeleteGroup();
+        groupListener.onUpdateGroup();
+        groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
         updateChecker = new UpdateChecker(getDescription().getVersion());
         if (!development) {
