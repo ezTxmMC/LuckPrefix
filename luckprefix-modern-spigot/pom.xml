@@ -130,8 +130,8 @@
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-core</artifactId>
-            <version>1.0-ALPHA10</version>
+            <artifactId>ezlib-common</artifactId>
+            <version>1.0-ALPHA11</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

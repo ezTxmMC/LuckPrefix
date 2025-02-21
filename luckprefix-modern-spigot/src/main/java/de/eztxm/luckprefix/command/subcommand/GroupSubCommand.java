@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.command.subcommand;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.command.subcommand.impl.*;
 import de.eztxm.luckprefix.common.util.GroupType;
 import de.eztxm.luckprefix.util.ConfigManager;
 import de.eztxm.luckprefix.util.Text;
