@@ -1,8 +1,8 @@
-package de.eztxm.luckprefix.util.database;
+package de.eztxm.luckprefix.common.util.database;
 
-import de.eztxm.api.database.SQLConnection;
-import de.eztxm.luckprefix.database.sql.*;
-import de.eztxm.object.ObjectConverter;
+import de.eztxm.ezlib.api.database.SQLConnection;
+import de.eztxm.ezlib.object.ObjectConverter;
+import de.eztxm.luckprefix.common.sql.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +36,8 @@ public class SQLDatabaseProcessor implements Processor {
                 System.out.println("TRUE");
                 return resultSet.getString("group") != null;
             }
-        } catch (SQLException ignored) {}
+        } catch (SQLException ignored) {
+        }
         System.out.println("FALSE");
         return false;
     }

@@ -1,6 +1,6 @@
-package de.eztxm.luckprefix.util.database;
+package de.eztxm.luckprefix.common.util.database;
 
-import de.eztxm.object.ObjectConverter;
+import de.eztxm.ezlib.object.ObjectConverter;
 
 public interface Processor {
 

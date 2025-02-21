@@ -1,4 +1,4 @@
-package de.eztxm.luckprefix.util;
+package de.eztxm.luckprefix.common.util;
 
 public enum GroupType {
 

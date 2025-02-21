@@ -1,0 +1,27 @@
+#  _               _    ____            __ _
+# | |   _   _  ___| | _|  _ \ _ __ ___ / _(_)_  __
+# | |  | | | |/ __| |/ / |_) | '__/ _ \ |_| \ \/ /
+# | |__| |_| | (__|   <|  __/| | |  __/  _| |>  <
+# |_____\__,_|\___|_|\_\_|   |_|  \___|_| |_/_/\_\
+# Modern ${project.version} | by ezTxmMC
+
+# The permission to write with color-codes in the chat
+ColoredPermission: "luckprefix.coloredmessages"
+
+# Automatically reload of the config
+AutoReloadConfig: false
+
+# The time of updating the prefix in seconds
+UpdateTime: 5
+
+# Shows the nametag above the players
+ShowNameTags: true
+
+# The message that shows the information that a new update is available
+UpdateAvailableMessage: true
+
+# If true it send a warning for each group that not be in groups.yml
+Warning-If-Group-Can-Not-Loaded: true
+
+# If true it will automatically insert not existing groups into the groups.yml or as entry in the database
+Auto-Add-Group: false

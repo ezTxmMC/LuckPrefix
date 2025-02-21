@@ -4,7 +4,7 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
-import de.eztxm.luckprefix.util.UpdateChecker;
+import de.eztxm.luckprefix.common.util.UpdateChecker;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;

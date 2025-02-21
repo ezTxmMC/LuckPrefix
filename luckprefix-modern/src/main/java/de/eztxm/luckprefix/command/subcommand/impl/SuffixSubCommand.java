@@ -4,7 +4,7 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.ConfigManager;
 import de.eztxm.luckprefix.util.DatabaseHandler;
 import de.eztxm.luckprefix.util.Text;
-import de.eztxm.luckprefix.util.database.Processor;
+import de.eztxm.luckprefix.common.util.database.Processor;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -4,9 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.eztxm</groupId>
+    <parent>
+        <groupId>de.eztxm</groupId>
+        <artifactId>luckprefix-parent</artifactId>
+        <version>2.0.0-BETA+8-SNAPSHOT</version>
+    </parent>
+
     <artifactId>luckprefix-modern</artifactId>
-    <version>2.0.0-BETA+8-SNAPSHOT</version>
 
     <name>LuckPrefix</name>
 
@@ -73,9 +77,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>luckprefix-common</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.36</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -87,7 +96,7 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.17.0</version>
+            <version>4.18.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
@@ -97,37 +106,37 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.17.0</version>
+            <version>4.18.0</version>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-serializer-legacy</artifactId>
-            <version>4.17.0</version>
+            <version>4.18.0</version>
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>
             <artifactId>ezlib-database-mariadb</artifactId>
-            <version>1.0-ALPHA10</version>
+            <version>1.0-ALPHA11</version>
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>
             <artifactId>ezlib-database-sqlite</artifactId>
-            <version>1.0-ALPHA10</version>
+            <version>1.0-ALPHA11</version>
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>
             <artifactId>ezlib-database-mongodb</artifactId>
-            <version>1.0-ALPHA11-SNAPSHOT</version>
+            <version>1.0-ALPHA11</version>
         </dependency>
         <dependency>
             <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-core</artifactId>
-            <version>1.0-ALPHA10</version>
+            <artifactId>ezlib-common</artifactId>
+            <version>1.0-ALPHA11</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20240303</version>
+            <version>20250107</version>
         </dependency>
     </dependencies>
 

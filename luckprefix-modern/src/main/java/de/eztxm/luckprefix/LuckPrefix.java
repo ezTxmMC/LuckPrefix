@@ -1,8 +1,9 @@
 package de.eztxm.luckprefix;
 
-import de.eztxm.api.database.SQLConnection;
+import de.eztxm.ezlib.api.database.SQLConnection;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
+import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;

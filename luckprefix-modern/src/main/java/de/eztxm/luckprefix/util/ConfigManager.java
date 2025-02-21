@@ -1,10 +1,9 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.object.ObjectConverter;
+import de.eztxm.ezlib.object.ObjectConverter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

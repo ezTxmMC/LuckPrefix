@@ -1,8 +1,8 @@
-package de.eztxm.luckprefix.util.database;
+package de.eztxm.luckprefix.common.util.database;
 
 import com.mongodb.client.model.Filters;
 import de.eztxm.ezlib.database.MongoDBConnection;
-import de.eztxm.object.ObjectConverter;
+import de.eztxm.ezlib.object.ObjectConverter;
 import org.bson.Document;
 
 public class MongoDBProcessor implements Processor {
