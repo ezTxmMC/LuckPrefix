@@ -1,7 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.database.Processor;
+import de.eztxm.luckprefix.common.util.database.Processor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
