@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        java: [ '23', '21', '17' ]
+        java: [ '24', '23', '21', '17' ]
 
     steps:
       - uses: actions/checkout@v4
