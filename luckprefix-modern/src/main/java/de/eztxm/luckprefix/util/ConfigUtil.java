@@ -22,7 +22,7 @@ public class ConfigUtil {
         configManager.addDefault("Database.MongoDB.User", "luckprefix");
         configManager.addDefault("Database.MongoDB.Password", "");
         configManager.saveDefaults();
-        configManager.setComments("Database", new ArrayList<>(List.of("The both supported types are sqlite and mariadb, otherwise you can still disable it for file-save")));
+        configManager.setComments("Database", new ArrayList<>(List.of("The supported types are sqlite, mariadb and mongodb, otherwise you can still disable it for file-save")));
         configManager.saveComments();
         return configManager;
     }

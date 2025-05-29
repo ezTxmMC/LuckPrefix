@@ -21,6 +21,7 @@ public class SQLDatabaseManager {
         String type = configuration.getString("Database.Type");
         switch (type.toUpperCase()) {
             case "SQLITE" -> {
+                Class.forName("org.sqlite.JDBC");
                 return new SQLiteConnection(
                         configuration.getString("Database.SQLite.Path"),
                         configuration.getString("Database.SQLite.FileName")
