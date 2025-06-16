@@ -23,9 +23,10 @@
 hs_err_pid*
 replay_pid*
 
-
 *.iml
 .idea/
 target/
 out/
 dependency-reduced-pom.xml
+server-*/
+.vscode/
