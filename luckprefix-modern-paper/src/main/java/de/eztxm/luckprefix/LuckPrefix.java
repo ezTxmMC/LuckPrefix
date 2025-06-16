@@ -47,13 +47,15 @@ public final class LuckPrefix extends JavaPlugin {
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
             if (!development) {
-                this.getLogger().warning("Database connections currently not work correctly. Please use groups.yml configuration and disable database.");
+                this.getLogger().warning(
+                        "Database connections currently not work correctly. Please use groups.yml configuration and disable database.");
                 Bukkit.getPluginManager().disablePlugin(this);
                 return;
             }
             switch (getDatabaseFile().getValue("Database.Type").asString().toUpperCase()) {
                 case "MARIADB", "SQLITE" -> {
-                    sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
+                    sqlConnection = SQLDatabaseManager
+                            .createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
                     sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
                 }
                 case "MONGODB" -> {
@@ -77,10 +79,11 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
-        updateChecker = new UpdateChecker(getDescription().getVersion());
+        updateChecker = new UpdateChecker(Bukkit.getVersion());
         if (!development) {
             if (!updateChecker.latestVersion()) {
-                getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
+                getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion()
+                        + " is available at https://modrinth.com/plugin/luckprefix");
             }
         }
     }

@@ -1,8 +1,6 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -40,27 +38,34 @@ public class PlayerManager {
         if (player == null) {
             return;
         }
-        if (!userGroups.containsKey(uuid)) return;
+        if (!userGroups.containsKey(uuid))
+            return;
         String group = userGroups.get(uuid);
-        if (group.equalsIgnoreCase(luckPermsGroup)) return;
+        if (group.equalsIgnoreCase(luckPermsGroup))
+            return;
         group = luckPermsGroup;
         userGroups.put(uuid, group);
         if (groupManager.getGroupPrefix().get(group) == null) {
             if (groupManager.getGroupSuffix().get(group) == null) {
                 return;
             }
-            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
+            TagResolver.Single suffix = Placeholder.component("suffix",
+                    new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
             player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
-                    Placeholder.component("prefix", Component.text("")), suffix, Placeholder.component("player", Component.text(player.getName()))));
+                    Placeholder.component("prefix", Component.text("")), suffix,
+                    Placeholder.component("player", Component.text(player.getName()))));
             return;
         }
-        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage());
+        TagResolver.Single prefix = Placeholder.component("prefix",
+                new Text(groupManager.getGroupPrefix().get(group)).miniMessage());
         if (groupManager.getGroupSuffix().get(group) == null) {
             player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
-                    prefix, Placeholder.component("suffix", Component.text("")), Placeholder.component("player", Component.text(player.getName()))));
+                    prefix, Placeholder.component("suffix", Component.text("")),
+                    Placeholder.component("player", Component.text(player.getName()))));
             return;
         }
-        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
+        TagResolver.Single suffix = Placeholder.component("suffix",
+                new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
         player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
                 prefix, suffix, Placeholder.component("player", Component.text(player.getName()))));
     }

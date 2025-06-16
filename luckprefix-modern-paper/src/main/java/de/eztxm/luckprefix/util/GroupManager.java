@@ -3,9 +3,10 @@ package de.eztxm.luckprefix.util;
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.common.util.database.Processor;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -22,7 +23,7 @@ public class GroupManager {
     private final Map<String, String> groupTabformat;
     private final Map<String, String> groupChatformat;
     private final Map<String, String> groupID;
-    private final Map<String, ChatColor> groupColor;
+    private final Map<String, NamedTextColor> groupColor;
     private final Map<String, Boolean> tried;
 
     public GroupManager(LuckPrefix instance) {
@@ -102,7 +103,7 @@ public class GroupManager {
             String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
             this.groupID.put(group, sortIDBuilt);
             this.groupColor.put(group,
-                    ChatColor.valueOf(processor.getGroupValue(group, "namecolor").asString().toUpperCase()));
+                    Text.fromString(processor.getGroupValue(group, "namecolor").asString().toUpperCase()));
             return;
         }
         FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
@@ -131,7 +132,7 @@ public class GroupManager {
         int currentLength = sortIDraw.length();
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, ChatColor.valueOf(config.getString(group + ".NameColor").toUpperCase()));
+        this.groupColor.put(group, Text.fromString(config.getString(group + ".NameColor").toUpperCase()));
     }
 
     public void setupGroups(Player player) {
@@ -143,16 +144,16 @@ public class GroupManager {
             }
             team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
             if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
-                team.setPrefix(new Text(this.groupTabformat.get(group)
+                team.prefix(new Text(this.groupTabformat.get(group)
                         .replace("<prefix>", this.groupPrefix.get(group))
                         .replace("<player>", "")
-                        .replace("<suffix>", "")).legacyMiniMessage());
+                        .replace("<suffix>", "")).miniMessage());
             }
             if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
-                team.setSuffix(" " + new Text(this.groupSuffix.get(group)).legacyMiniMessage());
+                team.suffix(Component.text(" ").append(new Text(this.groupSuffix.get(group)).miniMessage()));
             }
             if (this.groupColor.get(group) != null) {
-                team.setColor(this.groupColor.get(group));
+                team.color(this.groupColor.get(group));
             }
         }
     }
