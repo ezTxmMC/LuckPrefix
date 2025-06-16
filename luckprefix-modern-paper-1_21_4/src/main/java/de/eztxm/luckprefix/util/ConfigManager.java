@@ -1,17 +1,15 @@
 package de.eztxm.luckprefix.util;
 
-import java.io.File;
-import java.util.List;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import de.eztxm.ezlib.object.ObjectConverter;
 import de.eztxm.luckprefix.LuckPrefix;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.List;
 
 public class ConfigManager {
-
     private final String fileName;
     private File file;
     @Getter
@@ -20,7 +18,7 @@ public class ConfigManager {
     @SneakyThrows
     public ConfigManager(String fileName) {
         this.fileName = fileName;
-        this.file = new File("plugins/" + LuckPrefix.getInstance().getDescription().getName() + "/" + fileName);
+        this.file = new File("plugins/" + LuckPrefix.getInstance().getName() + "/" + fileName);
         if (!this.file.exists()) {
             this.file.createNewFile();
         }
@@ -29,9 +27,11 @@ public class ConfigManager {
 
     @SneakyThrows
     public void reloadConfig() {
-        this.file = new File("plugins/" + LuckPrefix.getInstance().getDescription().getName() + "/" + this.fileName);
+        this.saveConfiguration();
+        this.file = new File("plugins/" + LuckPrefix.getInstance().getName() + "/" + this.fileName);
         this.configuration = null;
         this.configuration = YamlConfiguration.loadConfiguration(this.file);
+        this.configuration.load(this.file);
     }
 
     public void addDefault(String path, Object value) {
