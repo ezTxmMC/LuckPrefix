@@ -19,9 +19,9 @@ The luckperms addon for tab- and chat-prefixes on the market.
 
 - [x] Code optimizing & recode
 - [x] Gradients, only prefix and with playername
-- [ ] Auto-Reload config option
+- [x] Auto-Reload config option
 - [x] LuckPrefix command
 - [ ] Database support
 - [x] Multi-File support
 - [x] Extra groups.yml
-- [ ] Spigot/Paper split, causing papers hard-fork
+- [x] Spigot/Paper split, causing papers hard-fork
