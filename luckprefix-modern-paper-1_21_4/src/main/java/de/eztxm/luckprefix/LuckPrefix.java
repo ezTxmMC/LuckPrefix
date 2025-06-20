@@ -114,24 +114,6 @@ public final class LuckPrefix extends JavaPlugin {
                 }
             }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("LuckPrefix has been enabled successfully!\n");
-        sb.append("Version: ").append(getDescription().getVersion()).append("\n");
-        sb.append("Author: ezTxmMC\n");
-        sb.append("Website: https://modrinth.com/plugin/luckprefix\n");
-        sb.append("Discord: https://eztxm.de/dc\n");
-        sb.append("GitHub: https://github.com/ezTxmMC/LuckPrefix\n");
-        sb.append("LuckPrefix is running in ").append(development ? "development" : "production")
-                .append(" mode.\n");
-        if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            sb.append("Database connection established successfully.\n");
-        } else {
-            sb.append("Database connection is disabled, using groups.yml configuration.\n");
-        }
-        sb.append("Groups are loaded from ")
-                .append(getDatabaseFile().getValue("Database.Enabled").asBoolean() ? "database." : "groups.yml file.\n");
-        sb.append("You can use /luckprefix command to manage groups and prefixes.");
-        getLogger().info(sb.toString());
     }
 
     @Override
@@ -141,5 +123,16 @@ public final class LuckPrefix extends JavaPlugin {
         playerManager = null;
         groupManager = null;
         groupListener = null;
+        updateChecker = null;
+        groupsFile = null;
+        mongoDBConnection = null;
+        sqlConnection = null;
+        sqlDatabaseManager = null;
+        mongoDBManager = null;
+        adventure = null;
+        luckPerms = null;
+        databaseFile = null;
+        autoReloadConfigTask.cancel();
+        autoReloadConfigTask = null;
     }
 }

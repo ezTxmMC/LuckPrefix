@@ -56,7 +56,7 @@ public class LuckPrefixCommand implements TabExecutor {
             case "group" -> {
                 return GroupSubCommand.execute(adventurePlayer, args);
             }
-            case "reloadconfig" -> {
+            case "reloadconfigs" -> {
                 return ReloadConfigsSubCommand.execute(adventurePlayer);
             }
         }
@@ -67,7 +67,7 @@ public class LuckPrefixCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (args.length == 1) {
-            List<String> arguments = new ArrayList<>(List.of("group", "reloadconfig"));
+            List<String> arguments = new ArrayList<>(List.of("group", "reloadconfigs"));
             arguments.removeIf(argument -> !argument.startsWith(args[0]));
             return arguments;
         }

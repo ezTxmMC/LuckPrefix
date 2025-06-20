@@ -15,13 +15,14 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 @Getter
 public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
     @Getter
-    private static boolean development = true;
+    private static final boolean development = true;
 
     private String prefix;
     private ConfigManager databaseFile;
@@ -37,6 +38,7 @@ public final class LuckPrefix extends JavaPlugin {
     private GroupManager groupManager;
     private GroupListener groupListener;
     private UpdateChecker updateChecker;
+    private BukkitTask autoReloadConfigTask;
 
     @Override
     public void onEnable() {
@@ -65,7 +67,7 @@ public final class LuckPrefix extends JavaPlugin {
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
-        registry.registerCommand("de/eztxm/luckprefix", new LuckPrefixCommand());
+        registry.registerCommand("luckprefix", new LuckPrefixCommand());
         registry.registerListener(new JoinListener());
         registry.registerListener(new QuitListener());
         registry.registerListener(new ChatListener());
@@ -83,6 +85,24 @@ public final class LuckPrefix extends JavaPlugin {
                 getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
             }
         }
+        if (getConfig().getBoolean("Auto-Reload-Config.Enabled")) {
+            autoReloadConfigTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+                try {
+                    if (getConfig().getBoolean("Auto-Reload-Config.Enabled")) {
+                        getLogger().info("Reloading configuration files...");
+                        databaseFile.reloadConfig();
+                        groupsFile.reloadConfig();
+                        getConfig().options().copyDefaults(true);
+                        saveDefaultConfig();
+                        groupManager.loadGroups();
+                        getLogger().info("Configuration files reloaded successfully.");
+                    }
+                } catch (Exception e) {
+                    String message = "Error while reloading configuration files: " + e.getMessage();
+                    getLogger().severe(message);
+                }
+            }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
+        }
     }
 
     @Override
@@ -92,5 +112,16 @@ public final class LuckPrefix extends JavaPlugin {
         playerManager = null;
         groupManager = null;
         groupListener = null;
+        updateChecker = null;
+        groupsFile = null;
+        mongoDBConnection = null;
+        sqlConnection = null;
+        sqlDatabaseManager = null;
+        mongoDBManager = null;
+        adventure = null;
+        luckPerms = null;
+        databaseFile = null;
+        autoReloadConfigTask.cancel();
+        autoReloadConfigTask = null;
     }
 }
