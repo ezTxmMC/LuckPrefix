@@ -12,6 +12,8 @@
 
     <artifactId>luckprefix-modern-paper-1_21_4</artifactId>
 
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
