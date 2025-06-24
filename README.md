@@ -4,6 +4,8 @@ The luckperms addon for tab- and chat-prefixes on the market.
 
 ### Modern v2
 
+- Development: https://ci.eztxm.de/job/LuckPrefix/lastSuccessfulBuild
+
 - 1.21.4+: Soon...
 - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+7
 
