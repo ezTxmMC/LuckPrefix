@@ -12,6 +12,8 @@
 
     <artifactId>luckprefix-modern-paper-1_21_4</artifactId>
 
+    <name>LuckPrefix</name>
+
     <packaging>jar</packaging>
 
     <properties>

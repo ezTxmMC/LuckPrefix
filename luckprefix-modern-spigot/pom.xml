@@ -12,6 +12,8 @@
 
     <artifactId>luckprefix-modern-spigot</artifactId>
 
+    <name>LuckPrefix</name>
+
     <packaging>jar</packaging>
 
     <properties>
