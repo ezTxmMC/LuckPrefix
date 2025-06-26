@@ -22,7 +22,6 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
         FileConfiguration config = LuckPrefix.getInstance().getConfig();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
@@ -39,7 +38,7 @@ public class JoinListener implements Listener {
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!LuckPrefix.isDevelopment()) {
             if (!checker.latestVersion() && player.hasPermission("luckprefix.update")) {
-                adventurePlayer.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
+                player.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
             }
         }
     }
