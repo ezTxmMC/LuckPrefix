@@ -9,12 +9,13 @@ import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class GroupSubCommand {
 
-    public static boolean execute(Audience adventurePlayer, String[] args) {
+    public static boolean execute(Player player, String[] args) {
         if (args.length < 3) {
-            adventurePlayer.sendMessage(new Text("""
+            player.sendMessage(new Text("""
                                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
                                     <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
                                     <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
@@ -37,41 +38,41 @@ public class GroupSubCommand {
         LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
         Group group = luckPerms.getGroupManager().getGroup(args[1]);
         if (group == null) {
-            adventurePlayer.sendMessage(new Text("<#ff3333>This group doesn't exist.").prefixMiniMessage());
+            player.sendMessage(new Text("<#ff3333>This group doesn't exist.").prefixMiniMessage());
             return false;
         }
         try {
             GroupType groupType = GroupType.valueOf(args[2].toUpperCase());
             switch (groupType) {
                 case PREFIX -> {
-                    PrefixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    PrefixSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case SUFFIX -> {
-                    SuffixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SuffixSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case CHATFORMAT -> {
-                    ChatformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    ChatformatSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case TABFORMAT -> {
-                    TabformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    TabformatSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case SORTID -> {
-                    SortIdSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SortIdSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                     return true;
                 }
                 case NAMECOLOR -> {
-                    return NameColorSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    return NameColorSubCommand.execute(player, group, args, groupsConfig, groupsFile);
                 }
                 default -> {
                     return false;
                 }
             }
         } catch (EnumConstantNotPresentException e) {
-            adventurePlayer.sendMessage(new Text("<#ff3333>This group type doesn't exist.").prefixMiniMessage());
+            player.sendMessage(new Text("<#ff3333>This group type doesn't exist.").prefixMiniMessage());
             return false;
         }
     }

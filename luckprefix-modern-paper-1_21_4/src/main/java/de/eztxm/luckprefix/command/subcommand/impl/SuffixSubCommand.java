@@ -8,10 +8,11 @@ import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class SuffixSubCommand {
 
-    public static void execute(Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
+    public static void execute(Player player, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
         if (args.length > 4) {
             StringBuilder builder = new StringBuilder(args[4]);
             for (int i = 5; i < args.length - 1; i++) {
@@ -30,17 +31,17 @@ public class SuffixSubCommand {
             }
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-            adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).prefixMiniMessage());
+            player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).prefixMiniMessage());
             return;
         }
         if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
             groupsConfig.set(group.getName().toLowerCase() + ".Suffix", "");
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
-            adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
+            player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
             return;
         }
         String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-        adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).prefixMiniMessage());
+        player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).prefixMiniMessage());
     }
 }

@@ -19,7 +19,6 @@ import de.eztxm.luckprefix.util.MongoDBManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.SQLDatabaseManager;
 import lombok.Getter;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 
@@ -36,7 +35,6 @@ public final class LuckPrefix extends JavaPlugin {
     private ConfigManager groupsFile;
     private MongoDBConnection mongoDBConnection;
     private SQLConnection sqlConnection;
-    private BukkitAudiences adventure;
     private LuckPerms luckPerms;
     private Registry registry;
     private SQLDatabaseManager sqlDatabaseManager;
@@ -73,7 +71,6 @@ public final class LuckPrefix extends JavaPlugin {
                 }
             }
         }
-        adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
@@ -129,7 +126,6 @@ public final class LuckPrefix extends JavaPlugin {
         sqlConnection = null;
         sqlDatabaseManager = null;
         mongoDBManager = null;
-        adventure = null;
         luckPerms = null;
         databaseFile = null;
         autoReloadConfigTask.cancel();

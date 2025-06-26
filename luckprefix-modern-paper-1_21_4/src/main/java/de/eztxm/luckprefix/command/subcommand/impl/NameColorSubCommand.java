@@ -9,11 +9,12 @@ import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class NameColorSubCommand {
 
-    public static boolean execute(Audience adventurePlayer, Group group, String[] args, FileConfiguration groupsConfig,
-            ConfigManager groupsFile) {
+    public static boolean execute(Player player, Group group, String[] args, FileConfiguration groupsConfig,
+                                  ConfigManager groupsFile) {
         if (args.length == 5) {
             try {
                 try {
@@ -21,12 +22,12 @@ public class NameColorSubCommand {
                     try {
                         color = NamedTextColor.NAMES.value(args[4].toLowerCase());
                     } catch (IllegalArgumentException ex) {
-                        adventurePlayer
+                        player
                                 .sendMessage(new Text("<#ff3333>This isn't a valid color option.").prefixMiniMessage());
                         return false;
                     }
                     if (color == null) {
-                        adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a color.").prefixMiniMessage());
+                        player.sendMessage(new Text("<#ff3333>This isn't a color.").prefixMiniMessage());
                         return false;
                     }
                     if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
@@ -43,20 +44,20 @@ public class NameColorSubCommand {
                     }
                     LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                     String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
-                    adventurePlayer.sendMessage(new Text(
+                    player.sendMessage(new Text(
                             "The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor)
                             .prefixMiniMessage());
                     return true;
                 } catch (IllegalArgumentException e) {
-                    adventurePlayer
+                    player
                             .sendMessage(new Text("<#ff3333>This isn't a valid color option.").prefixMiniMessage());
                 }
             } catch (EnumConstantNotPresentException e) {
-                adventurePlayer.sendMessage(new Text("<#ff3333>This isn't a number.").prefixMiniMessage());
+                player.sendMessage(new Text("<#ff3333>This isn't a number.").prefixMiniMessage());
             }
         }
         String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
-        adventurePlayer.sendMessage(
+        player.sendMessage(
                 new Text("The name-color of the group <#33ffff>" + group.getName() + " <gray>is: " + nameColor)
                         .prefixMiniMessage());
         return true;

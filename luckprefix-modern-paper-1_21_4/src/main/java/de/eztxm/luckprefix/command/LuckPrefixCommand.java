@@ -30,14 +30,13 @@ public class LuckPrefixCommand implements TabExecutor {
             LuckPrefix.getInstance().getLogger().warning("You must be a player to use this command.");
             return false;
         }
-        Audience adventurePlayer = LuckPrefix.getInstance().getAdventure().player(player);
         if (!player.hasPermission("luckprefix.command")) {
-            adventurePlayer.sendMessage(
+            player.sendMessage(
                     new Text("<#ff3333>You don't have the permission to use this command.").prefixMiniMessage());
             return false;
         }
         if (args.length < 1) {
-            adventurePlayer.sendMessage(new Text("""
+            player.sendMessage(new Text("""
                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
                     <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
                     <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
@@ -58,10 +57,10 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         switch (args[0]) {
             case "group" -> {
-                return GroupSubCommand.execute(adventurePlayer, args);
+                return GroupSubCommand.execute(player, args);
             }
             case "reloadconfigs" -> {
-                return ReloadConfigsSubCommand.execute(adventurePlayer);
+                return ReloadConfigsSubCommand.execute(player);
             }
         }
         return false;
