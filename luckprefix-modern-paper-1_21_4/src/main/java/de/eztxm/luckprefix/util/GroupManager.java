@@ -1,10 +1,6 @@
 package de.eztxm.luckprefix.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -67,7 +63,8 @@ public class GroupManager {
                 }
                 this.instance.getPlayerManager().setPlayerListName(
                         playerId,
-                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup());
+                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(playerId)).getPrimaryGroup()
+                );
             }
         }
     }
