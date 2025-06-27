@@ -60,7 +60,8 @@ public class GroupManager {
                 }
                 this.instance.getPlayerManager().setPlayerListName(
                         playerId,
-                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup());
+                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(playerId)).getPrimaryGroup()
+                );
             }
         }
     }
@@ -122,6 +123,24 @@ public class GroupManager {
                     .warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             return;
         }
+        if (config.get(group + ".Prefix") == null) {
+            config.set(group + ".Prefix", "<gray>Player");
+        }
+        if (config.get(group + ".Suffix") == null) {
+            config.set(group + ".Suffix", "");
+        }
+        if (config.get(group + ".Tabformat") == null) {
+            config.set(group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
+        }
+        if (config.get(group + ".Chatformat") == null) {
+            config.set(group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
+        }
+        if (config.get(group + ".SortID") == null) {
+            config.set(group + ".SortID", 999);
+        }
+        if (config.get(group + ".NameColor") == null) {
+            config.set(group + ".NameColor", "GRAY");
+        }
         this.groupPrefix.put(group, config.getString(group + ".Prefix"));
         this.groupSuffix.put(group, config.getString(group + ".Suffix"));
         this.groupTabformat.put(group, config.getString(group + ".Tabformat"));
@@ -131,7 +150,7 @@ public class GroupManager {
         int currentLength = sortIDraw.length();
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, ChatColor.valueOf(config.getString(group + ".NameColor").toUpperCase()));
+        this.groupColor.put(group, ChatColor.valueOf(Objects.requireNonNull(config.getString(group + ".NameColor")).toUpperCase()));
     }
 
     public void setupGroups(Player player) {
@@ -188,7 +207,8 @@ public class GroupManager {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.instance.getPlayerManager().setPlayerListName(
                         player.getUniqueId(),
-                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup());
+                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId())).getPrimaryGroup()
+                );
             }
         }, 1, this.instance.getConfig().getLong("UpdateTime") * 20);
     }

@@ -157,7 +157,7 @@ public class GroupManager {
         int currentLength = sortIDraw.length();
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, Text.fromString(config.getString(group + ".NameColor").toUpperCase()));
+        this.groupColor.put(group, Text.fromString(Objects.requireNonNull(config.getString(group + ".NameColor")).toUpperCase()));
     }
 
     public void setupGroups(Player player) {
@@ -216,7 +216,7 @@ public class GroupManager {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.instance.getPlayerManager().setPlayerListName(
                         player.getUniqueId(),
-                        this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId()).getPrimaryGroup());
+                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId())).getPrimaryGroup());
             }
         }, 1, this.instance.getConfig().getLong("UpdateTime") * 20);
     }
