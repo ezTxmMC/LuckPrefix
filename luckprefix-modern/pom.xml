@@ -17,6 +17,8 @@
     <packaging>jar</packaging>
 
     <properties>
+        <id>luckprefix</id>
+        <loader>spigot-paper</loader>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -49,6 +51,12 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"/>
+                            </transformers>
+                            <finalName>${id}-${project.version}-${loader}</finalName>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
