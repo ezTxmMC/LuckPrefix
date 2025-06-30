@@ -22,7 +22,7 @@ public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
     @Getter
-    private static final boolean development = false;
+    private static final boolean development = true;
 
     private String prefix;
     private ConfigManager databaseFile;
@@ -121,7 +121,6 @@ public final class LuckPrefix extends JavaPlugin {
         adventure = null;
         luckPerms = null;
         databaseFile = null;
-        autoReloadConfigTask.cancel();
         autoReloadConfigTask = null;
     }
 }
