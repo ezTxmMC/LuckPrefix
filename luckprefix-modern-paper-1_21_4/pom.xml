@@ -7,7 +7,7 @@
     <parent>
         <groupId>de.eztxm</groupId>
         <artifactId>luckprefix-parent</artifactId>
-        <version>2.0.0-BETA+8</version>
+        <version>2.0.0-BETA+9</version>
     </parent>
 
     <artifactId>luckprefix-modern-paper-1_21_4</artifactId>
@@ -52,9 +52,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"/>
-                            </transformers>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
                             <finalName>${id}-${project.version}-${loader}</finalName>
                         </configuration>
                     </execution>
