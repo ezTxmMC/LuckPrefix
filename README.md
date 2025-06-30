@@ -7,9 +7,9 @@ The luckperms addon for tab- and chat-prefixes on the market.
 - Development: https://ci.eztxm.de/job/LuckPrefix/lastSuccessfulBuild
 
 - 1.21.4+:
-  - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+8-paper
-  - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+8-spigot
-- 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+8
+  - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9-paper
+  - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9-spigot
+- 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9
 
 ### Modern v1
 
