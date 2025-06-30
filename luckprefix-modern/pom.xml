@@ -52,7 +52,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
                             <finalName>${id}-${project.version}-${loader}</finalName>
                         </configuration>
                     </execution>
