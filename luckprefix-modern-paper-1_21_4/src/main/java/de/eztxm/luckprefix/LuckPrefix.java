@@ -28,7 +28,7 @@ public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static LuckPrefix instance;
     @Getter
-    private static final boolean development = false;
+    private static final boolean development = true;
 
     private String prefix;
     private ConfigManager databaseFile;
@@ -85,7 +85,8 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
-        updateChecker = new UpdateChecker(Bukkit.getVersion());
+        //noinspection UnstableApiUsage
+        updateChecker = new UpdateChecker(this.getPluginMeta().getVersion());
         if (!development) {
             if (!updateChecker.latestVersion()) {
                 String message = "Newer version " + updateChecker.getCachedLatestVersion()
@@ -128,7 +129,6 @@ public final class LuckPrefix extends JavaPlugin {
         mongoDBManager = null;
         luckPerms = null;
         databaseFile = null;
-        autoReloadConfigTask.cancel();
         autoReloadConfigTask = null;
     }
 }
