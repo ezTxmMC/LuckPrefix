@@ -1,5 +1,7 @@
 package de.eztxm.luckprefix;
 
+import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
+import de.eztxm.luckprefix.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -12,12 +14,6 @@ import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
-import de.eztxm.luckprefix.util.ConfigManager;
-import de.eztxm.luckprefix.util.ConfigUtil;
-import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.MongoDBManager;
-import de.eztxm.luckprefix.util.PlayerManager;
-import de.eztxm.luckprefix.util.SQLDatabaseManager;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -31,6 +27,7 @@ public final class LuckPrefix extends JavaPlugin {
     private static final boolean development = true;
 
     private String prefix;
+    private DependUtil dependUtil;
     private ConfigManager databaseFile;
     private ConfigManager groupsFile;
     private MongoDBConnection mongoDBConnection;
@@ -45,11 +42,18 @@ public final class LuckPrefix extends JavaPlugin {
     private UpdateChecker updateChecker;
     private BukkitTask autoReloadConfigTask;
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
         saveDefaultConfig();
         instance = this;
         prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
+        dependUtil = new DependUtil(this);
+        if (!dependUtil.isLuckPermsEnabled()) {
+            this.getServer().sendMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").prefixMiniMessage());
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
@@ -85,7 +89,10 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
-        //noinspection UnstableApiUsage
+        if (dependUtil.isPlaceholderAPIEnabled()) {
+            new LuckPrefixPlaceholderExtension(this.getPluginMeta()).register();
+            this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
+        }
         updateChecker = new UpdateChecker(this.getPluginMeta().getVersion());
         if (!development) {
             if (!updateChecker.latestVersion()) {
