@@ -4,6 +4,7 @@ import de.eztxm.ezlib.api.database.SQLConnection;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
+import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
@@ -25,6 +26,7 @@ public final class LuckPrefix extends JavaPlugin {
     private static final boolean development = true;
 
     private String prefix;
+    private DependUtil dependUtil;
     private ConfigManager databaseFile;
     private ConfigManager groupsFile;
     private MongoDBConnection mongoDBConnection;
@@ -45,6 +47,12 @@ public final class LuckPrefix extends JavaPlugin {
         saveDefaultConfig();
         instance = this;
         prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
+        dependUtil = new DependUtil(this);
+        if (!dependUtil.isLuckPermsEnabled()) {
+            this.getServer().broadcastMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").legacyMiniMessage());
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
@@ -79,6 +87,10 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
+        if (dependUtil.isPlaceholderAPIEnabled()) {
+            new LuckPrefixPlaceholderExtension(this).register();
+            this.getServer().broadcastMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").legacyMiniMessage());
+        }
         updateChecker = new UpdateChecker(getDescription().getVersion());
         if (!development) {
             if (!updateChecker.latestVersion()) {
