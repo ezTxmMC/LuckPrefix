@@ -5,8 +5,8 @@ The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designe
 > [!CAUTION]
 > These are **unstable builds**. Use at your own risk! They may contain bugs or incomplete features.
 > 
-> - Experimental: https://ci.eztxm.de/job/LuckPrefix-Experimental/lastSuccessfulBuild
-> - Development: https://ci.eztxm.de/job/LuckPrefix/lastSuccessfulBuild
+> - Features: https://ci.eztxm.de/job/LuckPrefix-Experimental/lastSuccessfulBuild
+> - Main Branch: https://ci.eztxm.de/job/LuckPrefix/lastSuccessfulBuild
 
 > [!NOTE]
 > For most users, the **stable builds** are recommended. They have been thoroughly tested and are suitable for production use.
