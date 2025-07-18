@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.util.database.Processor;
 import lombok.Getter;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
@@ -23,7 +22,6 @@ public class GroupManager {
     private final Map<String, String> groupChatformat;
     private final Map<String, String> groupID;
     private final Map<String, ChatColor> groupColor;
-    private final Map<String, Boolean> tried;
 
     public GroupManager(LuckPrefix instance) {
         this.instance = instance;
@@ -34,7 +32,6 @@ public class GroupManager {
         this.groupChatformat = new HashMap<>();
         this.groupID = new HashMap<>();
         this.groupColor = new HashMap<>();
-        this.tried = new HashMap<>();
     }
 
     public void setGroups(Player player, Scoreboard scoreboard) {
@@ -43,132 +40,93 @@ public class GroupManager {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             UUID playerId = onlinePlayer.getUniqueId();
             String group = playerManager.getUserGroups().get(playerId);
-            String teamName = this.groupID.getOrDefault(group, "default") + group;
-            Team team = scoreboard.getTeam(teamName);
-            if (team == null) {
+            String sortId = this.groupID.get(group);
+            if (sortId == null) {
+                sortId = this.groupID.get("default");
+                group = "default";
+            }
+            Team team = scoreboard.getTeam(sortId + group);
+            while (team == null) {
                 resetTeams(scoreboard);
                 setupGroups(onlinePlayer);
                 team = scoreboard.getTeam(this.groupID.get("default") + "default");
             }
-            if (team != null) {
-                Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
-                if (currentTeam != team) {
-                    if (currentTeam != null) {
-                        currentTeam.removeEntry(onlinePlayer.getName());
-                    }
-                    team.addEntry(onlinePlayer.getName());
+            Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
+            if (currentTeam != team) {
+                if (currentTeam != null) {
+                    currentTeam.removeEntry(onlinePlayer.getName());
                 }
-                this.instance.getPlayerManager().setPlayerListName(
-                        playerId,
-                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(playerId)).getPrimaryGroup()
-                );
+                team.addEntry(onlinePlayer.getName());
             }
+            this.instance.getPlayerManager().setPlayerListName(
+                    playerId,
+                    Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(playerId)).getPrimaryGroup()
+            );
         }
     }
 
     public void createGroup(String group) {
         if (this.instance.getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            Processor processor = DatabaseHandler.selectProcessor();
-            if (processor == null) {
-                this.instance.getLogger().warning("No database processor selected.");
-                return;
-            }
-            this.groups.add(group);
-            if (!processor.isGroupExists(group)) {
-                if (this.instance.getConfig().getBoolean("Auto-Add-Group")) {
-                    this.instance.getLogger()
-                            .warning("Values of group `" + group + "` has been added to your database!");
-                    processor.addGroup(
-                            group,
-                            "<gray>Player",
-                            "",
-                            "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>",
-                            "<prefix> <dark_gray>| <gray><player>",
-                            999,
-                            "GRAY");
-                    createGroup(group);
-                    return;
-                }
-                this.instance.getLogger().warning(
-                        "Group values of `" + group + "` can't be loaded. Please check your database entries!");
-                return;
-            }
-            this.groupPrefix.put(group, processor.getGroupValue(group, "prefix").asString());
-            this.groupSuffix.put(group, processor.getGroupValue(group, "suffix").asString());
-            this.groupTabformat.put(group, processor.getGroupValue(group, "tabformat").asString());
-            this.groupChatformat.put(group, processor.getGroupValue(group, "chatformat").asString());
-            String sortIDraw = String.valueOf(processor.getGroupValue(group, "sortId").asInteger());
-            int maxLength = 4;
-            int currentLength = sortIDraw.length();
-            String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
-            this.groupID.put(group, sortIDBuilt);
-            this.groupColor.put(group,
-                    ChatColor.valueOf(processor.getGroupValue(group, "namecolor").asString().toUpperCase()));
+            /* TODO: Database Integration
+            *
+            *  - Remove return ?
+            *  - Switch Case if database or config.
+            *
+            * */
             return;
         }
         FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
-        this.groups.add(group);
+        if (this.instance.getConfig().getBoolean("Auto-Add-Group")) {
+            this.setIfNull(config, group + ".Prefix", "<gray>" + group);
+            this.setIfNull(config, group + ".Suffix", "");
+            this.setIfNull(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
+            this.setIfNull(config, group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
+            this.setIfNull(config, group + ".SortID", 90);
+            this.setIfNull(config, group + ".NameColor", "gray");
+        }
         if (config.get(group) == null) {
-            if (this.instance.getConfig().getBoolean("Auto-Add-Group")) {
-                config.set(group + ".Prefix", "<gray>Player");
-                config.set(group + ".Suffix", "");
-                config.set(group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
-                config.set(group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
-                config.set(group + ".SortID", 999);
-                config.set(group + ".NameColor", "GRAY");
-                createGroup(group);
-                return;
+            if (this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
+                this.instance.getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             }
-            this.instance.getLogger()
-                    .warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
             return;
         }
-        if (config.get(group + ".Prefix") == null) {
-            config.set(group + ".Prefix", "<gray>Player");
-        }
-        if (config.get(group + ".Suffix") == null) {
-            config.set(group + ".Suffix", "");
-        }
-        if (config.get(group + ".Tabformat") == null) {
-            config.set(group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
-        }
-        if (config.get(group + ".Chatformat") == null) {
-            config.set(group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
-        }
-        if (config.get(group + ".SortID") == null) {
-            config.set(group + ".SortID", 999);
-        }
-        if (config.get(group + ".NameColor") == null) {
-            config.set(group + ".NameColor", "GRAY");
-        }
+        this.groups.add(group);
         this.groupPrefix.put(group, config.getString(group + ".Prefix"));
         this.groupSuffix.put(group, config.getString(group + ".Suffix"));
         this.groupTabformat.put(group, config.getString(group + ".Tabformat"));
         this.groupChatformat.put(group, config.getString(group + ".Chatformat"));
-        String sortIDraw = String.valueOf(config.getInt(group + ".SortID"));
+        String sortIDraw = String.valueOf(config.getInt(group + ".SortID")); // ex: 99
         int maxLength = 4;
         int currentLength = sortIDraw.length();
-        String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw;
+        String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw; // ex: 0099 = 4 digit
         this.groupID.put(group, sortIDBuilt);
-        this.groupColor.put(group, ChatColor.valueOf(Objects.requireNonNull(config.getString(group + ".NameColor")).toUpperCase()));
+        try {
+            ChatColor nameColor = ChatColor.valueOf(Objects.requireNonNull(config.getString(group + ".NameColor")).toUpperCase());
+            this.groupColor.put(group, nameColor);
+        } catch (IllegalArgumentException e) {
+            this.groupColor.put(group, ChatColor.GRAY);
+            this.instance.getLogger().warning("Can't find name color. Set to default GRAY.");
+        }
     }
 
     public void setupGroups(Player player) {
         Scoreboard scoreboard = player.getScoreboard();
         for (String group : this.groups) {
-            Team team = scoreboard.getTeam(this.groupID.get(group) + group);
+            Team team = scoreboard.getTeam(this.groupID.get(group) + group); // ex: 0099default
             if (team != null) {
                 team.unregister();
             }
-            team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
-            if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
-                team.setPrefix(new Text(this.groupTabformat.get(group)
-                        .replace("<prefix>", this.groupPrefix.get(group))
-                        .replace("<player>", "")
-                        .replace("<suffix>", "")).legacyMiniMessage());
-            }
-            if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
-                team.setSuffix(" " + new Text(this.groupSuffix.get(group)).legacyMiniMessage());
+            team = scoreboard.registerNewTeam(this.groupID.get(group) + group); // ex: 0099default
+            if (this.getGroupTabformat().get(group) != null) {
+                if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
+                    team.setPrefix(new Text(this.groupTabformat.get(group)
+                            .replace("<prefix>", this.groupPrefix.get(group))
+                            .replace("<player>", "")
+                            .replace("<suffix>", "")).legacyMiniMessage());
+                }
+                if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
+                    team.setSuffix(new Text(this.groupSuffix.get(group)).legacyMiniMessage());
+                }
             }
             if (this.groupColor.get(group) != null) {
                 team.setColor(this.groupColor.get(group));
@@ -202,8 +160,9 @@ public class GroupManager {
             }
         }
         Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> {
-            if (Bukkit.getOnlinePlayers().isEmpty())
+            if (Bukkit.getOnlinePlayers().isEmpty()) {
                 return;
+            }
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.instance.getPlayerManager().setPlayerListName(
                         player.getUniqueId(),
@@ -218,5 +177,12 @@ public class GroupManager {
         for (Group loadedGroup : this.instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
             createGroup(loadedGroup.getName());
         }
+    }
+
+    private void setIfNull(FileConfiguration configuration, String key, Object value) {
+        if (configuration.get(key) != null) {
+            return;
+        }
+        configuration.set(key, value);
     }
 }
