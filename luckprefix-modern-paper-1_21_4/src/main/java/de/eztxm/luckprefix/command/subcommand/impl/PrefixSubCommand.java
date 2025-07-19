@@ -19,16 +19,11 @@ public class PrefixSubCommand {
                 builder.append(" ").append(args[i]);
             }
             if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                Processor processor = DatabaseHandler.selectProcessor();
-                if (processor == null) {
-                    LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                    return;
-                }
-                processor.updateGroup(group.getName().toLowerCase(), "prefix", builder.toString());
-            } else {
-                groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
-                groupsFile.reloadConfig();
+                // TODO: Database integration
+                return;
             }
+            groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
+            groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
             player.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>is now: " + prefix).prefixMiniMessage());

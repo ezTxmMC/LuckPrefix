@@ -31,17 +31,11 @@ public class NameColorSubCommand {
                         return false;
                     }
                     if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                        Processor processor = DatabaseHandler.selectProcessor();
-                        if (processor == null) {
-                            LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                            return false;
-                        }
-                        processor.updateGroup(group.getName().toLowerCase(), "namecolor",
-                                NamedTextColor.NAMES.key(color));
-                    } else {
-                        groupsConfig.set(group.getName().toLowerCase() + ".NameColor", NamedTextColor.NAMES.key(color));
-                        groupsFile.reloadConfig();
+                        // TODO: Database integration
+                        return false;
                     }
+                    groupsConfig.set(group.getName().toLowerCase() + ".NameColor", NamedTextColor.NAMES.key(color));
+                    groupsFile.reloadConfig();
                     LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                     String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
                     player.sendMessage(new Text(
