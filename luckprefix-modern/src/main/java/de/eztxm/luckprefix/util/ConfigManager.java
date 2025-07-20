@@ -27,7 +27,6 @@ public class ConfigManager {
 
     @SneakyThrows
     public void reloadConfig() {
-        this.saveConfiguration();
         this.file = new File("plugins/" + LuckPrefix.getInstance().getDescription().getName() + "/" + this.fileName);
         this.configuration = null;
         this.configuration = YamlConfiguration.loadConfiguration(this.file);

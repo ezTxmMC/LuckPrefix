@@ -8,7 +8,7 @@ Groups:
     Prefix: "<gray>Player"
     Suffix: ""
     Tabformat: "<prefix> <dark_gray>- <gray><player>"
-    Chatformat: "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>"
+    Chatformat: "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>"
     # The sort-id is important for the ordner on the tablist
     # The lowest value is on top and the highest at the bottom.
     # You only can set the sort-id between 1 and 999. More can execute issues.

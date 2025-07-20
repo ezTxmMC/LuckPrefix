@@ -10,7 +10,7 @@
         <version>2.0.0-BETA+10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>luckprefix-modern-paper-1_21_4</artifactId>
+    <artifactId>luckprefix-modern-paper</artifactId>
 
     <name>LuckPrefix</name>
 

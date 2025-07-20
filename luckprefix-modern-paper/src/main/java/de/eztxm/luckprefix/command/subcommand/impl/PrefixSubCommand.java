@@ -10,7 +10,7 @@ import net.luckperms.api.model.group.Group;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public class SuffixSubCommand {
+public class PrefixSubCommand {
 
     public static void execute(Player player, Group group, String[] args, FileConfiguration groupsConfig, ConfigManager groupsFile) {
         if (args.length > 4) {
@@ -19,29 +19,24 @@ public class SuffixSubCommand {
                 builder.append(" ").append(args[i]);
             }
             if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                Processor processor = DatabaseHandler.selectProcessor();
-                if (processor == null) {
-                    LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                    return;
-                }
-                processor.updateGroup(group.getName().toLowerCase(), "suffix", builder.toString());
-            } else {
-                groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
-                groupsFile.reloadConfig();
+                // TODO: Database integration
+                return;
             }
+            groupsConfig.set(group.getName().toLowerCase() + ".Prefix", builder.toString());
+            groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
-            String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-            player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).prefixMiniMessage());
+            String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
+            player.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>is now: " + prefix).prefixMiniMessage());
             return;
         }
         if (args.length == 4 && args[3].equalsIgnoreCase("clear")) {
-            groupsConfig.set(group.getName().toLowerCase() + ".Suffix", "");
+            groupsConfig.set(group.getName().toLowerCase() + ".Prefix", "");
             groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
-            player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
+            player.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>has been cleared.").prefixMiniMessage());
             return;
         }
-        String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
-        player.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is: " + suffix).prefixMiniMessage());
+        String prefix = groupsConfig.getString(group.getName().toLowerCase() + ".Prefix");
+        player.sendMessage(new Text("The prefix of the group <#33ffff>" + group.getName() + " <gray>is: " + prefix).prefixMiniMessage());
     }
 }
