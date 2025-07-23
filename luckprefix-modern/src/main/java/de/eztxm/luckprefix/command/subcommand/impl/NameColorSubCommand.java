@@ -22,16 +22,11 @@ public class NameColorSubCommand {
                     return false;
                 }
                 if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                    Processor processor = DatabaseHandler.selectProcessor();
-                    if (processor == null) {
-                        LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                        return false;
-                    }
-                    processor.updateGroup(group.getName().toLowerCase(), "namecolor", color.name().toLowerCase());
-                } else {
-                    groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
-                    groupsFile.reloadConfig();
+                    // TODO: Database integration
+                    return false;
                 }
+                groupsConfig.set(group.getName().toLowerCase() + ".NameColor", color.name().toLowerCase());
+                groupsFile.reloadConfig();
                 LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 String nameColor = groupsConfig.getString(group.getName().toLowerCase() + ".NameColor");
                 adventurePlayer.sendMessage(new Text("The name-color of the group <#33ffff>" + group.getName() + " <gray>is now: " + nameColor).prefixMiniMessage());
