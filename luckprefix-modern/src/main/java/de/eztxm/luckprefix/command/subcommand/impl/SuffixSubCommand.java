@@ -18,16 +18,11 @@ public class SuffixSubCommand {
                 builder.append(" ").append(args[i]);
             }
             if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                Processor processor = DatabaseHandler.selectProcessor();
-                if (processor == null) {
-                    LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                    return;
-                }
-                processor.updateGroup(group.getName().toLowerCase(), "suffix", builder.toString());
-            } else {
-                groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
-                groupsFile.reloadConfig();
+                // TODO: Database integration
+                return;
             }
+            groupsConfig.set(group.getName().toLowerCase() + ".Suffix", builder.toString());
+            groupsFile.reloadConfig();
             LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
             String suffix = groupsConfig.getString(group.getName().toLowerCase() + ".Suffix");
             adventurePlayer.sendMessage(new Text("The suffix of the group <#33ffff>" + group.getName() + " <gray>is now: " + suffix).prefixMiniMessage());

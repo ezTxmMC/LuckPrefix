@@ -17,16 +17,11 @@ public class SortIdSubCommand {
             try {
                 int sortID = Integer.parseInt(args[4]);
                 if (LuckPrefix.getInstance().getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-                    Processor processor = DatabaseHandler.selectProcessor();
-                    if (processor == null) {
-                        LuckPrefix.getInstance().getLogger().warning("No database processor selected.");
-                        return;
-                    }
-                    processor.updateGroup(group.getName().toLowerCase(), "sortId", sortID);
-                } else {
-                    groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
-                    groupsFile.reloadConfig();
+                    // TODO: Database integration
+                    return;
                 }
+                groupsConfig.set(group.getName().toLowerCase() + ".SortID", sortID);
+                groupsFile.reloadConfig();
                 LuckPrefix.getInstance().getGroupManager().reloadGroup(group.getName());
                 sortID = groupsConfig.getInt(group.getName().toLowerCase() + ".SortID");
                 player.sendMessage(new Text("The sort-id of the group <#33ffff>" + group.getName() + " <gray>is now: " + sortID).prefixMiniMessage());

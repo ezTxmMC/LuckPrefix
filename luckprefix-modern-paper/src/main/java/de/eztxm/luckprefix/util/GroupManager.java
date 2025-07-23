@@ -1,8 +1,7 @@
 package de.eztxm.luckprefix.util;
 
-import de.eztxm.luckprefix.LuckPrefix;
-import lombok.Getter;
-import net.luckperms.api.model.group.Group;
+import java.util.*;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,10 +9,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.*;
+import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.common.util.database.Processor;
+import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.luckperms.api.model.group.Group;
 
 @Getter
 public class GroupManager {
+
     private final LuckPrefix instance;
     private final List<String> groups;
     private final Map<String, String> groupPrefix;
@@ -21,7 +26,7 @@ public class GroupManager {
     private final Map<String, String> groupTabformat;
     private final Map<String, String> groupChatformat;
     private final Map<String, String> groupID;
-    private final Map<String, ChatColor> groupColor;
+    private final Map<String, NamedTextColor> groupColor;
 
     public GroupManager(LuckPrefix instance) {
         this.instance = instance;
@@ -68,11 +73,11 @@ public class GroupManager {
     public void createGroup(String group) {
         if (this.instance.getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
             /* TODO: Database Integration
-            *
-            *  - Remove return ?
-            *  - Switch Case if database or config.
-            *
-            * */
+             *
+             *  - Remove return ?
+             *  - Switch Case if database or config.
+             *
+             * */
             return;
         }
         FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
@@ -101,10 +106,9 @@ public class GroupManager {
         String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw; // ex: 0099 = 4 digit
         this.groupID.put(group, sortIDBuilt);
         try {
-            ChatColor nameColor = ChatColor.valueOf(Objects.requireNonNull(config.getString(group + ".NameColor")).toUpperCase());
-            this.groupColor.put(group, nameColor);
+            this.groupColor.put(group, Text.fromString(config.getString(group + ".NameColor").toUpperCase()));
         } catch (IllegalArgumentException e) {
-            this.groupColor.put(group, ChatColor.GRAY);
+            this.groupColor.put(group, NamedTextColor.GRAY);
             this.instance.getLogger().warning("Can't find name color. Set to default GRAY.");
         }
     }
@@ -119,17 +123,17 @@ public class GroupManager {
             team = scoreboard.registerNewTeam(this.groupID.get(group) + group); // ex: 0099default
             if (this.getGroupTabformat().get(group) != null) {
                 if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
-                    team.setPrefix(new Text(this.groupTabformat.get(group)
+                    team.prefix(new Text(this.groupTabformat.get(group)
                             .replace("<prefix>", this.groupPrefix.get(group))
                             .replace("<player>", "")
-                            .replace("<suffix>", "")).legacyMiniMessage());
+                            .replace("<suffix>", "")).miniMessage());
                 }
                 if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
-                    team.setSuffix(new Text(this.groupSuffix.get(group)).legacyMiniMessage());
+                    team.suffix(new Text(this.groupSuffix.get(group)).miniMessage());
                 }
             }
             if (this.groupColor.get(group) != null) {
-                team.setColor(this.groupColor.get(group));
+                team.color(this.groupColor.get(group));
             }
         }
     }
