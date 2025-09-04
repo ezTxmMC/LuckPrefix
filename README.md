@@ -1,6 +1,6 @@
 # LuckPrefix
 
-The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designed to enhance the display of prefixes—such as ranks or group tags—in both the chat and tablist of a Minecraft server. While LuckPerms itself is a powerful permissions and group management plugin, it does not natively support the visual display of prefixes in chat or the player list. This is where dedicated addons come into play.
+The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designed to enhance the display of prefixes - such as ranks or group tags - in both the chat and tablist of a Minecraft server. While LuckPerms itself is a powerful permissions and group management plugin, it does not natively support the visual display of prefixes in chat or the player list. This is where dedicated addons come into play.
 
 > [!CAUTION]
 > These are **unstable builds**. Use at your own risk! They may contain bugs or incomplete features.
