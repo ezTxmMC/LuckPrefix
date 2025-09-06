@@ -117,10 +117,9 @@ public class GroupManager {
         Scoreboard scoreboard = player.getScoreboard();
         for (String group : this.groups) {
             Team team = scoreboard.getTeam(this.groupID.get(group) + group); // ex: 0099default
-            if (team != null) {
-                team.unregister();
-            }
-            team = scoreboard.registerNewTeam(this.groupID.get(group) + group); // ex: 0099default
+            if (team == null) {
+                team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
+            } // ex: 0099default
             if (this.getGroupTabformat().get(group) != null) {
                 if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
                     team.prefix(new Text(this.groupTabformat.get(group)
