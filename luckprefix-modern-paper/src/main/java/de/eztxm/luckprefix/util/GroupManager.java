@@ -52,7 +52,6 @@ public class GroupManager {
             }
             Team team = scoreboard.getTeam(sortId + group);
             while (team == null) {
-                resetTeams(scoreboard);
                 setupGroups(onlinePlayer);
                 team = scoreboard.getTeam(this.groupID.get("default") + "default");
             }
@@ -116,10 +115,10 @@ public class GroupManager {
     public void setupGroups(Player player) {
         Scoreboard scoreboard = player.getScoreboard();
         for (String group : this.groups) {
-            Team team = scoreboard.getTeam(this.groupID.get(group) + group); // ex: 0099default
+            Team team = scoreboard.getTeam(this.groupID.get(group) + group);
             if (team == null) {
                 team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
-            } // ex: 0099default
+            }
             if (this.getGroupTabformat().get(group) != null) {
                 if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
                     team.prefix(new Text(this.groupTabformat.get(group)
@@ -173,13 +172,6 @@ public class GroupManager {
                 );
             }
         }, 1, this.instance.getConfig().getLong("UpdateTime") * 20);
-    }
-
-    private void resetTeams(Scoreboard scoreboard) {
-        scoreboard.getTeams().forEach(Team::unregister);
-        for (Group loadedGroup : this.instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
-            createGroup(loadedGroup.getName());
-        }
     }
 
     private void setIfNull(FileConfiguration configuration, String key, Object value) {
