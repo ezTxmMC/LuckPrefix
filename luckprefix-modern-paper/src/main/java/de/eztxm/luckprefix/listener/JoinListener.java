@@ -30,9 +30,7 @@ public class JoinListener implements Listener {
         String group = user.getPrimaryGroup();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () ->
-                Bukkit.getOnlinePlayers().forEach(players ->
-                        groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
+        BukkitTask bukkitTask = createScheduler(groupManager, config);
         playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
@@ -41,5 +39,16 @@ public class JoinListener implements Listener {
                 player.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
             }
         }
+    }
+
+    private BukkitTask createScheduler(GroupManager groupManager, FileConfiguration config) {
+        if(!LuckPrefix.isLeafCompatibility()) {
+            return Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () ->
+                    Bukkit.getOnlinePlayers().forEach(players ->
+                            groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
+        }
+        return Bukkit.getScheduler().runTaskTimer(LuckPrefix.getInstance(), () ->
+                Bukkit.getOnlinePlayers().forEach(players ->
+                        groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
     }
 }
