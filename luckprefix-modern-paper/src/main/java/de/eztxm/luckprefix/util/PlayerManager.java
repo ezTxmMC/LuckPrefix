@@ -28,7 +28,6 @@ public class PlayerManager {
         if (player == null) {
             return;
         }
-        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         userGroups.put(uuid, group);
     }
 

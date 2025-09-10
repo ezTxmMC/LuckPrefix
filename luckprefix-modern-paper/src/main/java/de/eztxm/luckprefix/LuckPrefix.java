@@ -25,6 +25,8 @@ public final class LuckPrefix extends JavaPlugin {
     private static LuckPrefix instance;
     @Getter
     private static final boolean development = true;
+    @Getter
+    private static boolean leafCompatibility = false;
 
     private String prefix;
     private DependUtil dependUtil;
@@ -45,6 +47,8 @@ public final class LuckPrefix extends JavaPlugin {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
+        checkCompatibility();
+
         saveDefaultConfig();
         instance = this;
         prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
@@ -119,6 +123,15 @@ public final class LuckPrefix extends JavaPlugin {
                 }
             }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
         }
+        if(isLeafCompatibility()) {
+            getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
+        }
+    }
+
+    private void checkCompatibility() {
+        String bukkitVersion = Bukkit.getServer().getBukkitVersion();
+        String brand = (Bukkit.getName() + " " + bukkitVersion).toLowerCase();
+        leafCompatibility = brand.contains("leaf");
     }
 
     @Override

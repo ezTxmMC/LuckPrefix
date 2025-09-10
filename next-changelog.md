@@ -4,7 +4,7 @@
 
 ### Added
 
-- **PlaceholderAPI** Integration
+- **PlaceholderAPI** integration by [@ezTxmMC](https://github.com/ezTxmMC) 
   - Placeholders:
     - %luckprefix_prefix%
     - %luckprefix_suffix%
@@ -12,7 +12,9 @@
     - %luckprefix_tabformat%
     - %luckprefix_sortid%
     - %luckprefix_namecolor%
+- Leaf support by [@SyntaxJason](https://github.com/SyntaxJason)
 
 ### Fixes
 
-- Fixed null error of bukkit task
+- Fixed null error of bukkit task by [@ezTxmMC](https://github.com/ezTxmMC)
+- Fixed tablist flickering by [@SyntaxJason](https://github.com/SyntaxJason)
