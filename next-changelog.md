@@ -4,7 +4,8 @@
 
 ### New
 
-- Added Leaf Support by [@SyntaxJason](https://github.com/SyntaxJason)
+- Added Leaf support by [@SyntaxJason](https://github.com/SyntaxJason)
+- Added PlaceholderAPI support by [@ezTxmMC](https://github.com/ezTxmMC) 
 
 ### Fixes
 
