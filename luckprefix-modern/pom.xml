@@ -87,10 +87,6 @@
                                     <pattern>org.json</pattern>
                                     <shadedPattern>de.eztxm.luckprefix.libs.json</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>de.eztxm.luckprefix.libs.bstats</shadedPattern>
-                                </relocation>
                             </relocations>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
