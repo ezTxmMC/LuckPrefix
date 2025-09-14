@@ -1,5 +1,6 @@
 package de.eztxm.luckprefix;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -46,6 +47,7 @@ public final class LuckPrefix extends JavaPlugin {
     private GroupListener groupListener;
     private UpdateChecker updateChecker;
     private BukkitTask autoReloadConfigTask;
+    private Metrics metrics;
 
     @Override
     public void onEnable() {
@@ -118,6 +120,7 @@ public final class LuckPrefix extends JavaPlugin {
         if(isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
+        metrics = new Metrics(instance, 27277);
     }
 
     private void checkCompatibility() {
@@ -142,5 +145,7 @@ public final class LuckPrefix extends JavaPlugin {
         luckPerms = null;
         databaseFile = null;
         autoReloadConfigTask = null;
+        metrics.shutdown();
+        metrics = null;
     }
 }
