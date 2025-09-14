@@ -61,6 +61,7 @@
                                     <include>de.eztxm:luckprefix-common</include>
                                     <include>de.eztxm:ezlib-*</include>
                                     <include>org.json:json</include>
+                                    <include>org.bstats:bstats-bukkit</include>
                                 </includes>
                             </artifactSet>
                             <filters>
