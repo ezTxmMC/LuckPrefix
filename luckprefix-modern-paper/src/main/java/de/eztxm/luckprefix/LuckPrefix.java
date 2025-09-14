@@ -50,10 +50,9 @@ public final class LuckPrefix extends JavaPlugin {
     @Override
     public void onEnable() {
         checkCompatibility();
-
         saveDefaultConfig();
         instance = this;
-        prefix = "<#77ef77>LuckPrefix <dark_gray>| <gray>";
+        prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
