@@ -37,8 +37,6 @@ public final class LuckPrefix extends JavaPlugin {
     private BukkitAudiences adventure;
     private LuckPerms luckPerms;
     private Registry registry;
-    private SQLDatabaseManager sqlDatabaseManager;
-    private MongoDBManager mongoDBManager;
     private PlayerManager playerManager;
     private GroupManager groupManager;
     private GroupListener groupListener;
@@ -60,23 +58,6 @@ public final class LuckPrefix extends JavaPlugin {
         }
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
-        if (getDatabaseFile().getValue("Database.Enabled").asBoolean()) {
-            if (!development) {
-                this.getLogger().warning("Database connections currently not work correctly. Please use groups.yml configuration and disable database.");
-                Bukkit.getPluginManager().disablePlugin(this);
-                return;
-            }
-            switch (getDatabaseFile().getValue("Database.Type").asString().toUpperCase()) {
-                case "MARIADB", "SQLITE" -> {
-                    sqlConnection = SQLDatabaseManager.createSQLDatabaseConnection(getDatabaseFile().getConfiguration());
-                    sqlDatabaseManager = new SQLDatabaseManager(sqlConnection);
-                }
-                case "MONGODB" -> {
-                    mongoDBConnection = MongoDBManager.createMongoDBConnection(getDatabaseFile().getConfiguration());
-                    mongoDBManager = new MongoDBManager(mongoDBConnection);
-                }
-            }
-        }
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
@@ -143,8 +124,6 @@ public final class LuckPrefix extends JavaPlugin {
         groupsFile = null;
         mongoDBConnection = null;
         sqlConnection = null;
-        sqlDatabaseManager = null;
-        mongoDBManager = null;
         adventure = null;
         luckPerms = null;
         databaseFile = null;

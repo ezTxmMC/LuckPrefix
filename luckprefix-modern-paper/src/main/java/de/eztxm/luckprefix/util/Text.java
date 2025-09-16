@@ -16,12 +16,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-public class Text {
-    private final String input;
-
-    public Text(String input) {
-        this.input = input;
-    }
+public record Text(String input) {
 
     public Component prefixMiniMessage() {
         return this.miniMessage(LuckPrefix.getInstance().getPrefix() + this.input);

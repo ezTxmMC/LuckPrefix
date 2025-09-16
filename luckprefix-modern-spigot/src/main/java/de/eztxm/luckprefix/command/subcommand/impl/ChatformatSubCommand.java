@@ -1,9 +1,7 @@
 package de.eztxm.luckprefix.command.subcommand.impl;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.util.database.Processor;
 import de.eztxm.luckprefix.util.ConfigManager;
-import de.eztxm.luckprefix.util.DatabaseHandler;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;

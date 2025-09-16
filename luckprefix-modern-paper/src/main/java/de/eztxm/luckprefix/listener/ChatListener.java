@@ -14,12 +14,13 @@ import net.luckperms.api.model.user.User;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 public class ChatListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
