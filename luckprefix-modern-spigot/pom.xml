@@ -52,6 +52,7 @@
                         <phase>package</phase>
                         <goals><goal>shade</goal></goals>
                         <configuration>
+                            <finalName>${build.name}</finalName>
                             <artifactSet>
                                 <includes>
                                     <include>de.eztxm:luckprefix-common</include>
