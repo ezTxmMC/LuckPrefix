@@ -3,14 +3,12 @@ package de.eztxm.luckprefix;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
+import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
-import de.eztxm.luckprefix.util.ConfigManager;
-import de.eztxm.luckprefix.util.ConfigUtil;
-import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.PlayerManager;
+import de.eztxm.luckprefix.util.*;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -30,6 +28,7 @@ public final class LuckPrefix extends JavaPlugin {
     private static boolean leafCompatibility = false;
 
     private String prefix;
+    private DependUtil dependUtil;
     private ConfigManager databaseFile;
     private ConfigManager groupsFile;
     private MongoDBConnection mongoDBConnection;
@@ -42,12 +41,19 @@ public final class LuckPrefix extends JavaPlugin {
     private BukkitTask autoReloadConfigTask;
     private Metrics metrics;
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
         checkCompatibility();
         saveDefaultConfig();
         instance = this;
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
+        dependUtil = new DependUtil(this);
+        if (!dependUtil.isLuckPermsEnabled()) {
+            this.getServer().sendMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").prefixMiniMessage());
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
         groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
         luckPerms = LuckPermsProvider.get();
@@ -64,7 +70,10 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
-        //noinspection UnstableApiUsage
+        if (dependUtil.isPlaceholderAPIEnabled()) {
+            new LuckPrefixPlaceholderExtension(this.getPluginMeta()).register();
+            this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
+        }
         updateChecker = new UpdateChecker(this.getPluginMeta().getVersion());
         if (!development) {
             if (!updateChecker.latestVersion()) {
@@ -91,7 +100,7 @@ public final class LuckPrefix extends JavaPlugin {
                 }
             }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
         }
-        if(isLeafCompatibility()) {
+        if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
         metrics = new Metrics(instance, 27277);
