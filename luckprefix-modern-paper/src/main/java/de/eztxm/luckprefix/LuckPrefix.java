@@ -1,22 +1,14 @@
 package de.eztxm.luckprefix;
 
-import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
-import de.eztxm.ezlib.api.database.SQLConnection;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
+import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
-import de.eztxm.luckprefix.util.ConfigManager;
-import de.eztxm.luckprefix.util.ConfigUtil;
-import de.eztxm.luckprefix.util.GroupManager;
-import de.eztxm.luckprefix.util.PlayerManager;
+import de.eztxm.luckprefix.util.*;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -108,7 +100,7 @@ public final class LuckPrefix extends JavaPlugin {
                 }
             }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
         }
-        if(isLeafCompatibility()) {
+        if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
         metrics = new Metrics(instance, 27277);
