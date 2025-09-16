@@ -1,18 +1,16 @@
 package de.eztxm.luckprefix.util;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.util.database.Processor;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.model.group.Group;
 
@@ -30,38 +28,59 @@ public class GroupManager {
 
     public GroupManager(LuckPrefix instance) {
         this.instance = instance;
-        this.groups = new ArrayList<>();
-        this.groupPrefix = new HashMap<>();
-        this.groupSuffix = new HashMap<>();
-        this.groupTabformat = new HashMap<>();
-        this.groupChatformat = new HashMap<>();
-        this.groupID = new HashMap<>();
-        this.groupColor = new HashMap<>();
+        this.groups = Collections.synchronizedList(new ArrayList<>());
+        this.groupPrefix = new ConcurrentHashMap<>();
+        this.groupSuffix = new ConcurrentHashMap<>();
+        this.groupTabformat = new ConcurrentHashMap<>();
+        this.groupChatformat = new ConcurrentHashMap<>();
+        this.groupID = new ConcurrentHashMap<>();
+        this.groupColor = new ConcurrentHashMap<>();
     }
 
     public void setGroups(Player player, Scoreboard scoreboard) {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(this.instance, () -> setGroups(player, scoreboard));
+            return;
+        }
+
         setupGroups(player);
         PlayerManager playerManager = this.instance.getPlayerManager();
+
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             UUID playerId = onlinePlayer.getUniqueId();
             String group = playerManager.getUserGroups().get(playerId);
             String sortId = this.groupID.get(group);
+
             if (sortId == null) {
                 sortId = this.groupID.get("default");
                 group = "default";
             }
-            Team team = scoreboard.getTeam(sortId + group);
-            while (team == null) {
+
+            String teamName = sortId + group;
+            Team team = scoreboard.getTeam(teamName);
+
+            if (team == null) {
                 setupGroups(onlinePlayer);
                 team = scoreboard.getTeam(this.groupID.get("default") + "default");
             }
-            Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
-            if (currentTeam != team) {
-                if (currentTeam != null) {
-                    currentTeam.removeEntry(onlinePlayer.getName());
+
+            if (team != null) {
+                Team currentTeam = scoreboard.getEntryTeam(onlinePlayer.getName());
+                if (currentTeam != team) {
+                    if (currentTeam != null) {
+                        try {
+                            currentTeam.removeEntry(onlinePlayer.getName());
+                        } catch (IllegalStateException e) {}
+                    }
+
+                    try {
+                        team.addEntry(onlinePlayer.getName());
+                    } catch (IllegalStateException e) {
+                        this.instance.getLogger().warning("Failed to add player to team: " + e.getMessage());
+                    }
                 }
-                team.addEntry(onlinePlayer.getName());
             }
+
             this.instance.getPlayerManager().setPlayerListName(
                     playerId,
                     Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(playerId)).getPrimaryGroup()
@@ -113,25 +132,49 @@ public class GroupManager {
     }
 
     public void setupGroups(Player player) {
-        Scoreboard scoreboard = player.getScoreboard();
-        for (String group : this.groups) {
-            Team team = scoreboard.getTeam(this.groupID.get(group) + group);
-            if (team == null) {
-                team = scoreboard.registerNewTeam(this.groupID.get(group) + group);
-            }
-            if (this.getGroupTabformat().get(group) != null) {
-                if (this.groupPrefix.get(group) != null && this.getGroupTabformat().get(group).contains("<prefix>")) {
-                    team.prefix(new Text(this.groupTabformat.get(group)
-                            .replace("<prefix>", this.groupPrefix.get(group))
-                            .replace("<player>", "")
-                            .replace("<suffix>", "")).miniMessage());
+        synchronized (this) {
+            Scoreboard scoreboard = player.getScoreboard();
+
+            for (String group : new ArrayList<>(this.groups)) {
+                String teamName = this.groupID.get(group) + group;
+                Team team = scoreboard.getTeam(teamName);
+
+                if (team == null) {
+                    team = scoreboard.registerNewTeam(teamName);
                 }
-                if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
-                    team.suffix(new Text(this.groupSuffix.get(group)).miniMessage());
+
+                String tabFormat = this.getGroupTabformat().get(group);
+                if (tabFormat != null) {
+                    String prefix = this.groupPrefix.get(group);
+                    if (prefix != null && tabFormat.contains("<prefix>")) {
+                        try {
+                            team.prefix(new Text(tabFormat
+                                    .replace("<prefix>", prefix)
+                                    .replace("<suffix>", "")
+                                    .replace("<player>", "")).miniMessage());
+                        } catch (Exception e) {
+                            this.instance.getLogger().warning("Error setting team prefix for group " + group + ": " + e.getMessage());
+                        }
+                    }
+
+                    String suffix = this.groupSuffix.get(group);
+                    if (suffix != null && tabFormat.contains("<suffix>")) {
+                        try {
+                            team.suffix(new Text(suffix).miniMessage());
+                        } catch (Exception e) {
+                            this.instance.getLogger().warning("Error setting team suffix for group " + group + ": " + e.getMessage());
+                        }
+                    }
                 }
-            }
-            if (this.groupColor.get(group) != null) {
-                team.color(this.groupColor.get(group));
+
+                NamedTextColor color = this.groupColor.get(group);
+                if (color != null) {
+                    try {
+                        team.color(color);
+                    } catch (Exception e) {
+                        this.instance.getLogger().warning("Error setting team color for group " + group + ": " + e.getMessage());
+                    }
+                }
             }
         }
     }
@@ -161,10 +204,11 @@ public class GroupManager {
                 this.instance.getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
             }
         }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this.instance, () -> {
+        Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 return;
             }
+
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.instance.getPlayerManager().setPlayerListName(
                         player.getUniqueId(),

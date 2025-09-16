@@ -46,15 +46,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
+                        <goals><goal>shade</goal></goals>
                         <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
                             <finalName>${build.name}</finalName>
                             <artifactSet>
                                 <includes>
@@ -62,6 +59,7 @@
                                     <include>de.eztxm:ezlib-*</include>
                                     <include>org.json:json</include>
                                     <include>org.bstats:bstats-bukkit</include>
+                                    <include>org.bstats:bstats-base</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -73,24 +71,19 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.bstats:bstats-base</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
-                                    <pattern>de.eztxm.ezlib</pattern>
-                                    <shadedPattern>de.eztxm.luckprefix.libs.ezlib</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>de.eztxm.common</pattern>
-                                    <shadedPattern>de.eztxm.luckprefix.libs.common</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.json</pattern>
-                                    <shadedPattern>de.eztxm.luckprefix.libs.json</shadedPattern>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>de.eztxm.luckprefix.libs.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <minimizeJar>true</minimizeJar>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                         </configuration>
                     </execution>
                 </executions>
@@ -205,7 +198,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.2</version>
+            <version>3.1.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
