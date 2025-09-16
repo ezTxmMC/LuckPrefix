@@ -17,7 +17,9 @@ public class Text {
     }
 
     public Text placeholders(Player player) {
-        this.input = PlaceholderAPI.setPlaceholders(player, this.input);
+        if (LuckPrefix.getInstance().getDependUtil().isPlaceholderAPIEnabled()) {
+            this.input = PlaceholderAPI.setPlaceholders(player, this.input);
+        }
         return this;
     }
 
