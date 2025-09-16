@@ -33,16 +33,16 @@ public class ChatListener implements Listener {
             @Override
             public @NotNull Component render(@NotNull Player player, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
                 if (player.hasPermission(config.getString("ColoredPermission"))) {
-                    return new Text(groupsConfig.getString(group + ".Chatformat")).miniMessage(
-                            Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
-                            Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
-                            Placeholder.component("player", Component.text(player.getName())),
+                    return new Text(groupsConfig.getString(group + ".Chatformat")).placeholders(player).miniMessage(
+                            Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).placeholders(player).miniMessage()),
+                            Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage()),
+                            Placeholder.component("player", new Text(player.getName()).placeholders(player).component()),
                             Placeholder.component("message", Text.parseLegacy(event.message())));
                 }
                 return new Text(groupsConfig.getString(group + ".Chatformat")).miniMessage(
-                        Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage()),
-                        Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage()),
-                        Placeholder.component("player", Component.text(player.getName())),
+                        Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).placeholders(player).miniMessage()),
+                        Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage()),
+                        Placeholder.component("player", new Text(player.getName()).placeholders(player).component()),
                         Placeholder.component("message", event.message()));
             }
         });

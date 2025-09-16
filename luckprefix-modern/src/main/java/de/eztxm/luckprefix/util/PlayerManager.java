@@ -46,20 +46,20 @@ public class PlayerManager {
             if (groupManager.getGroupSuffix().get(group) == null) {
                 return;
             }
-            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
-            player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
-                    Placeholder.component("prefix", Component.text("")), suffix, Placeholder.component("player", Component.text(player.getName()))));
+            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
+            player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).legacyMiniMessage(
+                    Placeholder.component("prefix", Component.text("")), suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).miniMessage());
+        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getGroupPrefix().get(group)).placeholders(player).miniMessage());
         if (groupManager.getGroupSuffix().get(group) == null) {
-            player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
-                    prefix, Placeholder.component("suffix", Component.text("")), Placeholder.component("player", Component.text(player.getName()))));
+            player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).legacyMiniMessage(
+                    prefix, Placeholder.component("suffix", Component.text("")), Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
-        player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).legacyMiniMessage(
-                prefix, suffix, Placeholder.component("player", Component.text(player.getName()))));
+        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
+        player.setPlayerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).legacyMiniMessage(
+                prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 
     public void addJoinScheduler(UUID uuid, BukkitTask bukkitTask) {

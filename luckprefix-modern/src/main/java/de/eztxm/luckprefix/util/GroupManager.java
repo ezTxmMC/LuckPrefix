@@ -120,10 +120,10 @@ public class GroupManager {
                     team.setPrefix(new Text(this.groupTabformat.get(group)
                             .replace("<prefix>", this.groupPrefix.get(group))
                             .replace("<player>", "")
-                            .replace("<suffix>", "")).legacyMiniMessage());
+                            .replace("<suffix>", "")).placeholders(player).legacyMiniMessage());
                 }
                 if (this.groupSuffix.get(group) != null && this.getGroupTabformat().get(group).contains("<suffix>")) {
-                    team.setSuffix(new Text(this.groupSuffix.get(group)).legacyMiniMessage());
+                    team.setSuffix(new Text(this.groupSuffix.get(group)).placeholders(player).legacyMiniMessage());
                 }
             }
             if (this.groupColor.get(group) != null) {

@@ -49,24 +49,24 @@ public class PlayerManager {
                 return;
             }
             TagResolver.Single suffix = Placeholder.component("suffix",
-                    new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
-            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).miniMessage(
+                    new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
+            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
                     Placeholder.component("prefix", Component.text("")), suffix,
-                    Placeholder.component("player", Component.text(player.getName()))));
+                    Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single prefix = Placeholder.component("prefix",
-                new Text(groupManager.getGroupPrefix().get(group)).miniMessage());
+                new Text(groupManager.getGroupPrefix().get(group)).placeholders(player).miniMessage());
         if (groupManager.getGroupSuffix().get(group) == null) {
-            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).miniMessage(
+            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
                     prefix, Placeholder.component("suffix", Component.text("")),
-                    Placeholder.component("player", Component.text(player.getName()))));
+                    Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single suffix = Placeholder.component("suffix",
-                new Text(groupManager.getGroupSuffix().get(group)).miniMessage());
-        player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).miniMessage(
-                prefix, suffix, Placeholder.component("player", Component.text(player.getName()))));
+                new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
+        player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
+                prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 
     public void addJoinScheduler(UUID uuid, BukkitTask bukkitTask) {
