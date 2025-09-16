@@ -73,6 +73,12 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.bstats:bstats-bukkit</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
@@ -87,6 +93,10 @@
                                     <pattern>org.json</pattern>
                                     <shadedPattern>de.eztxm.luckprefix.libs.json</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>de.eztxm.luckprefix.libs.bstats</shadedPattern>
+                                </relocation>
                             </relocations>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
@@ -94,7 +104,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>s
         </plugins>
         <resources>
             <resource>
