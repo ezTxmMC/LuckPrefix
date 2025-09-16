@@ -1,16 +1,33 @@
 # Security Policy
 
-## Supported Versions
+## 📬 Reporting a Vulnerability
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 2.0.x   | :white_check_mark: |
-| < 1.x   | :x:                |
+If you discover a security vulnerability in **LuckPrefix**, please report it **privately and responsibly**.
 
-## Reporting a Vulnerability
+**Do not** open public issues or pull requests for security-related matters.
 
-Use this section to tell people how to report a vulnerability.
+Instead, please contact us directly via:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+- 🔐 GitHub Security Advisories: [Create a private advisory](https://github.com/ezTxmMC/LuckPrefix/security/advisories/new)
+
+Please include as much detail as possible, including:
+
+- A clear description of the issue
+- Steps to reproduce (proof of concept if possible)
+- Potential impact
+- Suggested fix or mitigation (if known)
+
+We aim to respond within **7 business days** and resolve verified issues as quickly as possible.
+
+## 🔒 Supported Versions
+
+| Version    | Supported |
+| ---------- | --------- |
+| `2.0.0`    | ✅        |
+| < `1.x`    | ❌        |
+
+## 🙏 Responsible Disclosure
+
+We strongly encourage responsible disclosure practices. By reporting security issues privately, you help us protect users and deploy safe fixes quickly.
+
+Thank you for helping make Nexonet more secure!
