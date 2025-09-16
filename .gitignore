@@ -30,3 +30,4 @@ out/
 dependency-reduced-pom.xml
 server-*/
 .vscode/
+*.versionsBackup

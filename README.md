@@ -12,9 +12,9 @@ The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designe
 > For most users, the **stable builds** are recommended. They have been thoroughly tested and are suitable for production use.
 >
 > - 1.21.4+:
->   - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9-paper
->   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9-spigot
-> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+9
+>   - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10-paper
+>   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10-spigot
+> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10
 > - 1.16 - 1.20.6: https://modrinth.com/plugin/luckprefix/version/1.2.3
 > - 1.8 - 1.15: https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 
