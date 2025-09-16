@@ -25,7 +25,7 @@ The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designe
 - [ ] Auto-Reload config option
 - [x] LuckPrefix command
 - [ ] Database support
-- [ ] PlaceholderAPI integration
+- [x] PlaceholderAPI integration
 - [x] Multi-File support
 - [x] Extra groups.yml
 - [x] Spigot/Paper split, causing papers hard-fork
