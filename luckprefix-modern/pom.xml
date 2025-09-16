@@ -104,7 +104,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>s
+            </plugin>
         </plugins>
         <resources>
             <resource>
