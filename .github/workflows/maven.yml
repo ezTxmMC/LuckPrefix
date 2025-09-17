@@ -32,7 +32,7 @@ jobs:
         id: modules
         run: |
           # Find all pom.xml, exclude any in "legacy" dirs, get dir names
-          MODULES=$(find . -name pom.xml -not -path "*/legacy/*" -exec dirname {} \; | grep -v '^\.$' | tr '\n' ',' | sed 's/,$//')
+          MODULES=$(find . -name pom.xml -not -path "*/luckprefix-legacy/*" -exec dirname {} \; | grep -v '^\.$' | tr '\n' ',' | sed 's/,$//')
           echo "MODULES=$MODULES" >> $GITHUB_ENV
 
       - name: Build with Maven (skip legacy)
