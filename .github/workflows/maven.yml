@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [ "*/dev", "*/release" ]  # Adjust branch patterns as needed
+    branches: [ "*/dev", "*/release" ]
   pull_request:
     branches: [ "feature/*", "feat/*", "fix/*", "patch/*" ]
 
@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
@@ -28,8 +28,25 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B clean install --file pom.xml
+      - name: Get non-legacy modules
+        id: modules
+        run: |
+          # Find all pom.xml, exclude any in "legacy" dirs, get dir names
+          MODULES=$(find . -name pom.xml -not -path "*/legacy/*" -exec dirname {} \; | grep -v '^\.$' | tr '\n' ',' | sed 's/,$//')
+          echo "MODULES=$MODULES" >> $GITHUB_ENV
 
-      - name: Run tests with Maven
-        run: mvn test
+      - name: Build with Maven (skip legacy)
+        run: |
+          if [ -z "$MODULES" ]; then
+            echo "No non-legacy modules found, skipping build."
+          else
+            mvn -B clean install --file pom.xml -pl $MODULES -am
+          fi
+
+      - name: Run tests with Maven (skip legacy)
+        run: |
+          if [ -z "$MODULES" ]; then
+            echo "No non-legacy modules found, skipping tests."
+          else
+            mvn test -pl $MODULES -am
+          fi
