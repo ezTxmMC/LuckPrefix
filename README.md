@@ -25,6 +25,9 @@ The LuckPerms Addon for Tab and Chat Prefixes is a specialized extension designe
 - [ ] Auto-Reload config option
 - [x] LuckPrefix command
 - [ ] Database support
+- [ ] Component-System
+- [ ] Option to show all prefixes and suffixes in order of sort-id asc and desc
+- [ ] LuckPerms metadata integration
 - [x] PlaceholderAPI integration
 - [x] Multi-File support
 - [x] Extra groups.yml
