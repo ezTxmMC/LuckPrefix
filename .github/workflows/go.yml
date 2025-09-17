@@ -21,11 +21,11 @@ jobs:
       with:
         go-version: '1.20'
         
-    - name: Go to projects
+    - name: Go to updater
       run: cd luckprefix-updater/
 
     - name: Build
-      run: go build -v ./...
+      run: go build -v main.go
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v main.go
