@@ -179,11 +179,14 @@ public class GroupManager {
             Scoreboard scoreboard = player.getScoreboard();
 
             for (String group : new ArrayList<>(this.groups)) {
-                String teamName = this.groupID.get(group) + group;
-                Team team = scoreboard.getTeam(teamName);
+                String teamKey = this.groupID.get(group) + Encoder.key(group);
+                teamKey = teamKey.replace(' ', '_');
+                if (teamKey.length() > 16) teamKey = teamKey.substring(0, 16);
+
+                Team team = scoreboard.getTeam(teamKey);
 
                 if (team == null) {
-                    team = scoreboard.registerNewTeam(teamName);
+                    team = scoreboard.registerNewTeam(teamKey);
                 }
 
                 String tabFormat = this.getGroupTabformat().get(group);
