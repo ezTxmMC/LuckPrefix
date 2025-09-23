@@ -91,44 +91,56 @@ public class GroupManager {
             return;
         }
         FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
-        boolean autoAdd = this.instance.getConfig().getBoolean("Auto-Add-Group", true);
+        boolean autoAdd     = this.instance.getConfig().getBoolean("Auto-Add-Group", true);
         boolean warnMissing = this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded", true);
 
-        if (!config.isConfigurationSection(group)) {
+        boolean dirty = false;
+
+        if (group.contains(":") && warnMissing) {
+            this.instance.getLogger().warning("Group name '" + group + "' contains ':' — will be stored as '" +
+                    Encoder.key(group) + "' in groups.yml.");
+        }
+
+        String sectionKey = Encoder.key(group);
+        if (!config.isConfigurationSection(sectionKey)) {
             if (!autoAdd) {
-                if (warnMissing) this.instance.getLogger().warning("Gruppe '" + group + "' existiert nicht in groups.yml – überspringe Laden.");
+                if (warnMissing) this.instance.getLogger().warning("Group '" + group + "' does not exist in groups.yml — skipping load.");
                 return;
             }
-            config.createSection(group);
-            if (warnMissing) this.instance.getLogger().warning("groups.yml: Gruppe '" + group + "' fehlte – lege sie mit Defaults an.");
+            config.createSection(sectionKey);
+            dirty = true;
+            if (warnMissing) this.instance.getLogger().warning("groups.yml: Group '" + group + "' was missing — creating with defaults.");
         }
 
-        setIfBlank(config, group + ".Prefix", "<gray>" + group, "Prefix", group, warnMissing);
-        setIfBlank(config, group + ".Suffix", "", "Suffix", group, warnMissing);
-        setIfBlank(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>", "Tabformat", group, warnMissing);
-        setIfBlank(config, group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>",
-                "Chatformat", group, warnMissing);
-        if (!config.isSet(group + ".SortID")) {
-            config.set(group + ".SortID", 90);
-            if (warnMissing) this.instance.getLogger().warning("groups.yml: '" + group + ".SortID' fehlte – setze Default 90.");
-        }
-        setIfBlank(config, group + ".NameColor", "gray", "NameColor", group, warnMissing);
+        dirty |= setIfMissing(config, Encoder.path(group, "Prefix"), "<gray>" + group, "Prefix", group, warnMissing);
+        dirty |= setIfMissing(config, Encoder.path(group, "Suffix"), "", "Suffix", group, warnMissing);
+        dirty |= setIfMissing(config, Encoder.path(group, "Tabformat"), "<prefix> <dark_gray>| <gray><player>", "Tabformat",  group, warnMissing);
+        dirty |= setIfMissing(config, Encoder.path(group, "Chatformat"), "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>", "Chatformat", group, warnMissing);
 
-        String prefix = safeGetString(config, group + ".Prefix", "");
-        String suffix = safeGetString(config, group + ".Suffix", "");
-        String tabFmt = safeGetString(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
-        String chatFmt = safeGetString(config, group + ".Chatformat",
+        String sortIdPath = Encoder.path(group, "SortID");
+        if (!config.isSet(sortIdPath)) {
+            config.set(sortIdPath, 90);
+            dirty = true;
+            if (warnMissing) this.instance.getLogger().warning("groups.yml: '" + group + ".SortID' was missing — defaulting to 90.");
+        }
+
+        dirty |= setIfMissing(config, Encoder.path(group, "NameColor"), "gray", "NameColor", group, warnMissing);
+
+        String prefix = safeGetString(config, Encoder.path(group, "Prefix"), "");
+        String suffix = safeGetString(config, Encoder.path(group, "Suffix"), "");
+        String tabFmt = safeGetString(config, Encoder.path(group, "Tabformat"), "<prefix> <dark_gray>| <gray><player>");
+        String chatFmt = safeGetString(config, Encoder.path(group, "Chatformat"),
                 "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
-        int sortId = config.getInt(group + ".SortID", 90);
+        int sortId = config.getInt(sortIdPath, 90);
 
         String sortIdPadded = String.format("%04d", Math.max(0, sortId));
 
         NamedTextColor color = NamedTextColor.GRAY;
-        String colorStr = safeGetString(config, group + ".NameColor", "gray");
+        String colorStr = safeGetString(config, Encoder.path(group, "NameColor"), "gray");
         try {
             color = Text.fromString(colorStr.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            this.instance.getLogger().warning("groups.yml: '" + group + ".NameColor' = '" + colorStr + "' ist ungültig – setze GRAY.");
+            this.instance.getLogger().warning("groups.yml: '" + group + ".NameColor' = '" + colorStr + "' is invalid — falling back to GRAY.");
         }
 
         this.groups.add(group);
@@ -139,19 +151,21 @@ public class GroupManager {
         this.groupID.put(group, sortIdPadded);
         this.groupColor.put(group, color);
 
-        try { this.instance.getGroupsFile().saveConfiguration(); } catch (Exception ignored) {}
+        if (dirty) {
+            try { this.instance.getGroupsFile().saveConfiguration(); }
+            catch (Exception e) {
+                this.instance.getLogger().warning("Failed to save groups.yml: " + e.getMessage());
+            }
+        }
     }
 
-    private void setIfBlank(FileConfiguration config, String path, Object defVal, String keyName, String group, boolean warn) {
-        String cur = config.isSet(path) ? String.valueOf(config.get(path)) : null;
-        boolean missing = cur == null;
-        boolean blank = false;
-        if (!missing) blank = cur.trim().isEmpty();
-        if (missing || blank) {
-            config.set(path, defVal);
-            if (warn) this.instance.getLogger().warning("groups.yml: '" + group + "." + keyName +
-                    (missing ? "' fehlte" : "' war leer") + " – setze Default: " + defVal);
+    private boolean setIfMissing(FileConfiguration config, String path, Object defVal, String keyName, String group, boolean warn) {
+        if (config.isSet(path)) return false;
+        config.set(path, defVal);
+        if (warn) {
+            this.instance.getLogger().warning("groups.yml: '" + group + "." + keyName + "' was missing. Setting default: " + defVal);
         }
+        return true;
     }
 
     private String safeGetString(FileConfiguration config, String path, String defVal) {
@@ -224,33 +238,36 @@ public class GroupManager {
     }
 
     public void loadGroups() {
+        FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
+
         for (Group group : this.instance.getLuckPerms().getGroupManager().getLoadedGroups()) {
-            if (this.instance.getGroupsFile().contains(group.getName())) {
-                this.instance.getGroupManager().createGroup(group.getName());
+            String name = group.getName();
+            String sectionKey = Encoder.key(name);
+
+            boolean exists = config.isConfigurationSection(sectionKey)
+                    || config.isSet(Encoder.path(name, "Prefix"))
+                    || config.isSet(Encoder.path(name, "Chatformat"));
+
+            if (exists) {
+                this.instance.getGroupManager().createGroup(name);
                 continue;
             }
+
             if (this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
-                this.instance.getLogger().warning("Group '" + group.getName() + "' can't be loaded.");
+                this.instance.getLogger().warning("Group '" + name + "' can't be loaded (not found in groups.yml).");
             }
         }
+
         Bukkit.getScheduler().runTaskTimer(this.instance, () -> {
-            if (Bukkit.getOnlinePlayers().isEmpty()) {
-                return;
-            }
+            if (Bukkit.getOnlinePlayers().isEmpty()) return;
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.instance.getPlayerManager().setPlayerListName(
                         player.getUniqueId(),
-                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager().getUser(player.getUniqueId())).getPrimaryGroup()
+                        Objects.requireNonNull(this.instance.getLuckPerms().getUserManager()
+                                .getUser(player.getUniqueId())).getPrimaryGroup()
                 );
             }
         }, 1, this.instance.getConfig().getLong("UpdateTime") * 20);
-    }
-
-    private void setIfNull(FileConfiguration configuration, String key, Object value) {
-        if (configuration.get(key) != null) {
-            return;
-        }
-        configuration.set(key, value);
     }
 }
