@@ -91,36 +91,73 @@ public class GroupManager {
             return;
         }
         FileConfiguration config = this.instance.getGroupsFile().getConfiguration();
-        if (this.instance.getConfig().getBoolean("Auto-Add-Group")) {
-            this.setIfNull(config, group + ".Prefix", "<gray>" + group);
-            this.setIfNull(config, group + ".Suffix", "");
-            this.setIfNull(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
-            this.setIfNull(config, group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
-            this.setIfNull(config, group + ".SortID", 90);
-            this.setIfNull(config, group + ".NameColor", "gray");
-        }
-        if (config.get(group) == null) {
-            if (this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded")) {
-                this.instance.getLogger().warning("Group values of `" + group + "` can't be loaded. Please check the groups.yml config!");
+        boolean autoAdd = this.instance.getConfig().getBoolean("Auto-Add-Group", true);
+        boolean warnMissing = this.instance.getConfig().getBoolean("Warning-If-Group-Can-Not-Loaded", true);
+
+        if (!config.isConfigurationSection(group)) {
+            if (!autoAdd) {
+                if (warnMissing) this.instance.getLogger().warning("Gruppe '" + group + "' existiert nicht in groups.yml – überspringe Laden.");
+                return;
             }
-            return;
+            config.createSection(group);
+            if (warnMissing) this.instance.getLogger().warning("groups.yml: Gruppe '" + group + "' fehlte – lege sie mit Defaults an.");
         }
-        this.groups.add(group);
-        this.groupPrefix.put(group, config.getString(group + ".Prefix"));
-        this.groupSuffix.put(group, config.getString(group + ".Suffix"));
-        this.groupTabformat.put(group, config.getString(group + ".Tabformat"));
-        this.groupChatformat.put(group, config.getString(group + ".Chatformat"));
-        String sortIDraw = String.valueOf(config.getInt(group + ".SortID")); // ex: 99
-        int maxLength = 4;
-        int currentLength = sortIDraw.length();
-        String sortIDBuilt = "0".repeat(Math.max(0, maxLength - currentLength)) + sortIDraw; // ex: 0099 = 4 digit
-        this.groupID.put(group, sortIDBuilt);
+
+        setIfBlank(config, group + ".Prefix", "<gray>" + group, "Prefix", group, warnMissing);
+        setIfBlank(config, group + ".Suffix", "", "Suffix", group, warnMissing);
+        setIfBlank(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>", "Tabformat", group, warnMissing);
+        setIfBlank(config, group + ".Chatformat", "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>",
+                "Chatformat", group, warnMissing);
+        if (!config.isSet(group + ".SortID")) {
+            config.set(group + ".SortID", 90);
+            if (warnMissing) this.instance.getLogger().warning("groups.yml: '" + group + ".SortID' fehlte – setze Default 90.");
+        }
+        setIfBlank(config, group + ".NameColor", "gray", "NameColor", group, warnMissing);
+
+        String prefix = safeGetString(config, group + ".Prefix", "");
+        String suffix = safeGetString(config, group + ".Suffix", "");
+        String tabFmt = safeGetString(config, group + ".Tabformat", "<prefix> <dark_gray>| <gray><player>");
+        String chatFmt = safeGetString(config, group + ".Chatformat",
+                "<prefix> <dark_gray>- <gray><player><dark_gray> » <gray><message>");
+        int sortId = config.getInt(group + ".SortID", 90);
+
+        String sortIdPadded = String.format("%04d", Math.max(0, sortId));
+
+        NamedTextColor color = NamedTextColor.GRAY;
+        String colorStr = safeGetString(config, group + ".NameColor", "gray");
         try {
-            this.groupColor.put(group, Text.fromString(config.getString(group + ".NameColor").toUpperCase()));
-        } catch (IllegalArgumentException e) {
-            this.groupColor.put(group, NamedTextColor.GRAY);
-            this.instance.getLogger().warning("Can't find name color. Set to default GRAY.");
+            color = Text.fromString(colorStr.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            this.instance.getLogger().warning("groups.yml: '" + group + ".NameColor' = '" + colorStr + "' ist ungültig – setze GRAY.");
         }
+
+        this.groups.add(group);
+        this.groupPrefix.put(group, prefix);
+        this.groupSuffix.put(group, suffix);
+        this.groupTabformat.put(group, tabFmt);
+        this.groupChatformat.put(group, chatFmt);
+        this.groupID.put(group, sortIdPadded);
+        this.groupColor.put(group, color);
+
+        try { this.instance.getGroupsFile().saveConfiguration(); } catch (Exception ignored) {}
+    }
+
+    private void setIfBlank(FileConfiguration config, String path, Object defVal, String keyName, String group, boolean warn) {
+        String cur = config.isSet(path) ? String.valueOf(config.get(path)) : null;
+        boolean missing = cur == null;
+        boolean blank = false;
+        if (!missing) blank = cur.trim().isEmpty();
+        if (missing || blank) {
+            config.set(path, defVal);
+            if (warn) this.instance.getLogger().warning("groups.yml: '" + group + "." + keyName +
+                    (missing ? "' fehlte" : "' war leer") + " – setze Default: " + defVal);
+        }
+    }
+
+    private String safeGetString(FileConfiguration config, String path, String defVal) {
+        String string = config.getString(path);
+        if (string == null) return defVal;
+        return string;
     }
 
     public void setupGroups(Player player) {

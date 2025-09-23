@@ -37,6 +37,9 @@ public class Text {
     }
 
     public Component miniMessage(TagResolver... tagResolvers) {
+        if (this.input == null) {
+            return Component.empty();
+        }
         return MiniMessage.miniMessage().deserialize(this.input, tagResolvers);
     }
 
