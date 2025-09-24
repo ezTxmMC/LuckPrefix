@@ -88,10 +88,8 @@ public final class LuckPrefix extends JavaPlugin {
             this.getServer().broadcastMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").legacyMiniMessage());
         }
         updateChecker = new UpdateChecker(getDescription().getVersion());
-        if (!development) {
-            if (!updateChecker.latestVersion()) {
-                getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
-            }
+        if (!updateChecker.latestVersion(development)) {
+            getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
         }
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
