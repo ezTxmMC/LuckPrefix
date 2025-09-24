@@ -18,7 +18,7 @@ public final class YamlIO {
     public static Map<String, Object> load(File file) throws IOException {
         if (!file.exists()) return new LinkedHashMap<>();
         try (Reader r = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
-            Yaml yaml = new Yaml(new SafeConstructor());
+            Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions().setProcessComments(false)));
             Object o = yaml.load(r);
             if (o instanceof Map) return deepCopy((Map<?, ?>) o);
             return new LinkedHashMap<>();
