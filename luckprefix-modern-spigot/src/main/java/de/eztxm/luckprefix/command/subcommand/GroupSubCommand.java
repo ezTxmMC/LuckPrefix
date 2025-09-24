@@ -2,8 +2,9 @@ package de.eztxm.luckprefix.command.subcommand;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.command.subcommand.impl.*;
+import de.eztxm.luckprefix.common.config.ConfigService;
+import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.util.GroupType;
-import de.eztxm.luckprefix.util.ConfigManager;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
@@ -15,25 +16,24 @@ public class GroupSubCommand {
     public static boolean execute(Audience adventurePlayer, String[] args) {
         if (args.length < 3) {
             adventurePlayer.sendMessage(new Text("""
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
-                                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
+                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
+                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
+                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
+                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
+                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
+                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
+                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
+                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
+                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
+                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
+                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
+                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
+                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
+                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
+                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
             return false;
         }
-        ConfigManager groupsFile = LuckPrefix.getInstance().getGroupsFile();
-        FileConfiguration groupsConfig = LuckPrefix.getInstance().getGroupsFile().getConfiguration();
+        ConfigService service = LuckPrefix.getInstance().getConfigService();
         LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
         Group group = luckPerms.getGroupManager().getGroup(args[1]);
         if (group == null) {
@@ -44,27 +44,27 @@ public class GroupSubCommand {
             GroupType groupType = GroupType.valueOf(args[2].toUpperCase());
             switch (groupType) {
                 case PREFIX -> {
-                    PrefixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    PrefixSubCommand.execute(adventurePlayer, group, args, service);
                     return true;
                 }
                 case SUFFIX -> {
-                    SuffixSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SuffixSubCommand.execute(adventurePlayer, group, args, service);
                     return true;
                 }
                 case CHATFORMAT -> {
-                    ChatformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    ChatformatSubCommand.execute(adventurePlayer, group, args, service);
                     return true;
                 }
                 case TABFORMAT -> {
-                    TabformatSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    TabformatSubCommand.execute(adventurePlayer, group, args, service);
                     return true;
                 }
                 case SORTID -> {
-                    SortIdSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    SortIdSubCommand.execute(adventurePlayer, group, args, service);
                     return true;
                 }
                 case NAMECOLOR -> {
-                    return NameColorSubCommand.execute(adventurePlayer, group, args, groupsConfig, groupsFile);
+                    return NameColorSubCommand.execute(adventurePlayer, group, args, service);
                 }
                 default -> {
                     return false;

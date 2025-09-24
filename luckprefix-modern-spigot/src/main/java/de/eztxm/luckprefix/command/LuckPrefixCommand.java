@@ -35,21 +35,21 @@ public class LuckPrefixCommand implements TabExecutor {
         }
         if (args.length < 1) {
             adventurePlayer.sendMessage(new Text("""
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
-                                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
-                                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
-                                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
+                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>
+                    <dark_gray>» <gray>/luckprefix group <name> prefix - Shows the current prefix
+                    <dark_gray>» <gray>/luckprefix group <name> prefix set <string> - Set the current prefix
+                    <dark_gray>» <gray>/luckprefix group <name> suffix - Shows the current suffix
+                    <dark_gray>» <gray>/luckprefix group <name> suffix set <string> - Set the current suffix
+                    <dark_gray>» <gray>/luckprefix group <name> tabformat - Shows the current tabformat
+                    <dark_gray>» <gray>/luckprefix group <name> tabformat set <string> - Set the current tabformat
+                    <dark_gray>» <gray>/luckprefix group <name> chatformat - Shows the current chatformat
+                    <dark_gray>» <gray>/luckprefix group <name> chatformat set <string> - Set the current chatformat
+                    <dark_gray>» <gray>/luckprefix group <name> sortid - Shows the current sortid
+                    <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
+                    <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
+                    <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
+                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
+                    <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
             return false;
         }
         switch (args[0]) {

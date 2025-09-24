@@ -5,7 +5,6 @@ import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
-import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -42,7 +41,7 @@ public class JoinListener implements Listener {
     }
 
     private BukkitTask createScheduler(GroupManager groupManager, FileConfiguration config) {
-        if(!LuckPrefix.isLeafCompatibility()) {
+        if (!LuckPrefix.isLeafCompatibility()) {
             return Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () ->
                     Bukkit.getOnlinePlayers().forEach(players ->
                             groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);

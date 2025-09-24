@@ -39,22 +39,22 @@ public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
         String playerGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup().toLowerCase();
         switch (params.toLowerCase()) {
             case "prefix" -> {
-                return groupManager.getGroupPrefix().get(playerGroup);
+                return groupManager.getPrefixByGroup().get(playerGroup);
             }
             case "suffix" -> {
-                return groupManager.getGroupSuffix().get(playerGroup);
+                return groupManager.getSuffixByGroup().get(playerGroup);
             }
             case "tabformat" -> {
-                return groupManager.getGroupTabformat().get(playerGroup);
+                return groupManager.getTabFormatByGroup().get(playerGroup);
             }
             case "chatformat" -> {
-                return groupManager.getGroupChatformat().get(playerGroup);
+                return groupManager.getChatFormatByGroup().get(playerGroup);
             }
             case "sortid" -> {
-                return groupManager.getGroupID().get(playerGroup);
+                return groupManager.getSortIdByGroup().get(playerGroup);
             }
             case "namecolor" -> {
-                return groupManager.getGroupColor().get(playerGroup).asHexString();
+                return groupManager.getNameColorByGroup().get(playerGroup).asHexString();
             }
         }
         return null;

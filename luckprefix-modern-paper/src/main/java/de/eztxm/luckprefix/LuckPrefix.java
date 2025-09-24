@@ -2,13 +2,17 @@ package de.eztxm.luckprefix;
 
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
+import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
-import de.eztxm.luckprefix.util.*;
+import de.eztxm.luckprefix.util.DependUtil;
+import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.util.PlayerManager;
+import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -17,20 +21,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.nio.file.Path;
+
 @Getter
 public final class LuckPrefix extends JavaPlugin {
 
     @Getter
-    private static LuckPrefix instance;
-    @Getter
     private static final boolean development = true;
+    @Getter
+    private static LuckPrefix instance;
     @Getter
     private static boolean leafCompatibility = false;
 
     private String prefix;
     private DependUtil dependUtil;
-    private ConfigManager databaseFile;
-    private ConfigManager groupsFile;
+    private ConfigService configService;
+    private ConfigWatcher configWatcher;
     private MongoDBConnection mongoDBConnection;
     private LuckPerms luckPerms;
     private Registry registry;
@@ -54,8 +60,7 @@ public final class LuckPrefix extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        databaseFile = ConfigUtil.addDatabaseDefault("database.yml");
-        groupsFile = ConfigUtil.addGroupsDefault("groups.yml");
+        setupConfigs();
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
@@ -82,28 +87,52 @@ public final class LuckPrefix extends JavaPlugin {
                 getLogger().warning(message);
             }
         }
-        if (getConfig().getBoolean("Auto-Reload-Config.Enabled")) {
-            autoReloadConfigTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-                try {
-                    if (getConfig().getBoolean("Auto-Reload-Config.Enabled")) {
-                        getLogger().info("Reloading configuration files...");
-                        databaseFile.reloadConfig();
-                        groupsFile.reloadConfig();
-                        getConfig().options().copyDefaults(true);
-                        saveDefaultConfig();
-                        groupManager.loadGroups();
-                        getLogger().info("Configuration files reloaded successfully.");
-                    }
-                } catch (Exception e) {
-                    String message = "Error while reloading configuration files: " + e.getMessage();
-                    getLogger().severe(message);
-                }
-            }, 0L, getConfig().getLong("Auto-Reload-Config.Interval") * 20L);
-        }
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
         metrics = new Metrics(instance, 27277);
+    }
+
+    private void setupConfigs() {
+        this.configService = new ConfigService();
+
+        Path dataFolderPath = getDataFolder().toPath();
+        Path configPath = dataFolderPath.resolve("config.yml");
+        Path databasePath = dataFolderPath.resolve("database.yml");
+        Path groupsPath = dataFolderPath.resolve("groups.yml");
+        String pluginVersion = getDescription().getVersion();
+        String sqliteDefaultPath = dataFolderPath.resolve("storage").toString().replace("\\", "/");
+
+        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, pluginVersion));
+        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, sqliteDefaultPath));
+        configService.register(GroupsConfig.class, groupsPath, GroupsConfig::new);
+
+        MainConfig config = configService.of(MainConfig.class);
+        if (config.isAutoReloadEnabled()) {
+            this.configWatcher = new ConfigWatcher(dataFolderPath.toFile(), path -> {
+                String fileName = path.getFileName().toString().toLowerCase();
+
+                switch (fileName) {
+                    case "config.yml" -> {
+                        configService.reload(MainConfig.class);
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
+                    }
+                    case "database.yml" -> {
+                        configService.reload(DatabaseConfig.class);
+                        // TODO: Reload all Group Caches
+                    }
+                    case "groups.yml" -> {
+                        configService.reload(GroupsConfig.class);
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
+                    }
+                    default -> {
+                        return false;
+                    }
+                }
+                getLogger().info("Reloading %s file".formatted(fileName));
+                return true;
+            });
+        }
     }
 
     private void checkCompatibility() {
@@ -120,10 +149,13 @@ public final class LuckPrefix extends JavaPlugin {
         groupManager = null;
         groupListener = null;
         updateChecker = null;
-        groupsFile = null;
+        configService = null;
+        if (configWatcher != null) {
+            configWatcher.stop();
+        }
+        configWatcher = null;
         mongoDBConnection = null;
         luckPerms = null;
-        databaseFile = null;
         autoReloadConfigTask = null;
         metrics.shutdown();
         metrics = null;

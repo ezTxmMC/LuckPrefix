@@ -4,7 +4,6 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.SneakyThrows;
-import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;

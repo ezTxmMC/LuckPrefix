@@ -25,36 +25,6 @@ public class Text {
         this.input = input;
     }
 
-    public Text placeholders(Player player) {
-        if (LuckPrefix.getInstance().getDependUtil().isPlaceholderAPIEnabled()) {
-            this.input = PlaceholderAPI.setPlaceholders(player, this.input);
-        }
-        return this;
-    }
-
-    public Component prefixMiniMessage() {
-        return this.miniMessage(LuckPrefix.getInstance().getPrefix() + this.input);
-    }
-
-    public Component miniMessage(TagResolver... tagResolvers) {
-        if (this.input == null) {
-            return Component.empty();
-        }
-        return MiniMessage.miniMessage().deserialize(this.input, tagResolvers);
-    }
-
-    public Component miniMessage(String input, TagResolver... tagResolvers) {
-        return MiniMessage.miniMessage().deserialize(input, tagResolvers);
-    }
-
-    public Component component() {
-        return Component.text(this.input);
-    }
-
-    public String legacy(Component component) {
-        return LegacyComponentSerializer.legacySection().serialize(component);
-    }
-
     public static NamedTextColor fromString(String colorName) {
         if (colorName == null)
             return null;
@@ -139,6 +109,36 @@ public class Text {
                     currentColor));
         }
         return result.build();
+    }
+
+    public Text placeholders(Player player) {
+        if (LuckPrefix.getInstance().getDependUtil().isPlaceholderAPIEnabled()) {
+            this.input = PlaceholderAPI.setPlaceholders(player, this.input);
+        }
+        return this;
+    }
+
+    public Component prefixMiniMessage() {
+        return this.miniMessage(LuckPrefix.getInstance().getPrefix() + this.input);
+    }
+
+    public Component miniMessage(TagResolver... tagResolvers) {
+        if (this.input == null) {
+            return Component.empty();
+        }
+        return MiniMessage.miniMessage().deserialize(this.input, tagResolvers);
+    }
+
+    public Component miniMessage(String input, TagResolver... tagResolvers) {
+        return MiniMessage.miniMessage().deserialize(input, tagResolvers);
+    }
+
+    public Component component() {
+        return Component.text(this.input);
+    }
+
+    public String legacy(Component component) {
+        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
 }

@@ -12,8 +12,12 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.HashMap;
 
 public final class LuckPrefix extends JavaPlugin {
-    private static LuckPrefix instance;
     public static final HashMap<Player, BukkitTask> JOIN_SCHEDULERS = new HashMap<>();
+    private static LuckPrefix instance;
+
+    public static LuckPrefix getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -32,9 +36,5 @@ public final class LuckPrefix extends JavaPlugin {
         pluginManager.registerEvents(new JoinListener(), this);
         pluginManager.registerEvents(new QuitListener(), this);
         pluginManager.registerEvents(new ChatListener(), this);
-    }
-
-    public static LuckPrefix getInstance() {
-        return instance;
     }
 }

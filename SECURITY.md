@@ -8,7 +8,8 @@ If you discover a security vulnerability in **LuckPrefix**, please report it **p
 
 Instead, please contact us directly via:
 
-- 🔐 GitHub Security Advisories: [Create a private advisory](https://github.com/ezTxmMC/LuckPrefix/security/advisories/new)
+- 🔐 GitHub Security
+  Advisories: [Create a private advisory](https://github.com/ezTxmMC/LuckPrefix/security/advisories/new)
 
 Please include as much detail as possible, including:
 
@@ -21,13 +22,14 @@ We aim to respond within **7 business days** and resolve verified issues as quic
 
 ## 🔒 Supported Versions
 
-| Version    | Supported |
-| ---------- | --------- |
-| `2.0.0`    | ✅        |
-| < `1.x`    | ❌        |
+| Version | Supported |
+|---------|-----------|
+| `2.0.0` | ✅         |
+| < `1.x` | ❌         |
 
 ## 🙏 Responsible Disclosure
 
-We strongly encourage responsible disclosure practices. By reporting security issues privately, you help us protect users and deploy safe fixes quickly.
+We strongly encourage responsible disclosure practices. By reporting security issues privately, you help us protect
+users and deploy safe fixes quickly.
 
 Thank you for helping make Nexonet more secure!

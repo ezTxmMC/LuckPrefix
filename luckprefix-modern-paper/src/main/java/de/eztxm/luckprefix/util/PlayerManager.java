@@ -44,28 +44,28 @@ public class PlayerManager {
             return;
         group = luckPermsGroup;
         userGroups.put(uuid, group);
-        if (groupManager.getGroupPrefix().get(group) == null) {
-            if (groupManager.getGroupSuffix().get(group) == null) {
+        if (groupManager.getPrefixByGroup().get(group) == null) {
+            if (groupManager.getSuffixByGroup().get(group) == null) {
                 return;
             }
             TagResolver.Single suffix = Placeholder.component("suffix",
-                    new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
-            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
+                    new Text(groupManager.getPrefixByGroup().get(group)).placeholders(player).miniMessage());
+            player.playerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).miniMessage(
                     Placeholder.component("prefix", Component.text("")), suffix,
                     Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single prefix = Placeholder.component("prefix",
-                new Text(groupManager.getGroupPrefix().get(group)).placeholders(player).miniMessage());
-        if (groupManager.getGroupSuffix().get(group) == null) {
-            player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
+                new Text(groupManager.getPrefixByGroup().get(group)).placeholders(player).miniMessage());
+        if (groupManager.getSuffixByGroup().get(group) == null) {
+            player.playerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).miniMessage(
                     prefix, Placeholder.component("suffix", Component.text("")),
                     Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single suffix = Placeholder.component("suffix",
-                new Text(groupManager.getGroupSuffix().get(group)).placeholders(player).miniMessage());
-        player.playerListName(new Text(groupManager.getGroupTabformat().get(group)).placeholders(player).miniMessage(
+                new Text(groupManager.getSuffixByGroup().get(group)).placeholders(player).miniMessage());
+        player.playerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).miniMessage(
                 prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 

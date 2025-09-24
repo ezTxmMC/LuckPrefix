@@ -1,10 +1,12 @@
 package de.eztxm.luckprefix.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
+import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.command.subcommand.GroupSubCommand;
+import de.eztxm.luckprefix.command.subcommand.ReloadConfigsSubCommand;
+import de.eztxm.luckprefix.util.Text;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.group.Group;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -12,20 +14,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.command.subcommand.GroupSubCommand;
-import de.eztxm.luckprefix.command.subcommand.ReloadConfigsSubCommand;
-import de.eztxm.luckprefix.util.Text;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.group.Group;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class LuckPrefixCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-            String[] args) {
+                             String[] args) {
         if (!(sender instanceof Player player)) {
             LuckPrefix.getInstance().getLogger().warning("You must be a player to use this command.");
             return false;
@@ -69,7 +67,7 @@ public class LuckPrefixCommand implements TabExecutor {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-            @NotNull String[] args) {
+                                      @NotNull String[] args) {
         if (args.length == 1) {
             List<String> arguments = new ArrayList<>(List.of("group", "reloadconfigs"));
             arguments.removeIf(argument -> !argument.startsWith(args[0]));

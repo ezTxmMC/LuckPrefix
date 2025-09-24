@@ -4,19 +4,19 @@
 
 ### Added
 
-- 
+-
 
 ### Removed
 
-- 
+-
 
 ### Fixes
 
-- 
+-
 
 ## Known issues:
 
-- 
+-
 
 ---
 
