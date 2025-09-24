@@ -45,30 +45,36 @@ public abstract class AbstractConfig {
     private static void dumpMapToYaml(File targetFile,
                                       Map<String, Object> content,
                                       Map<String, List<String>> comments) {
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setProcessComments(false);
+
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         dumperOptions.setPrettyFlow(true);
         dumperOptions.setIndent(2);
-        dumperOptions.setIndicatorIndent(2);
+        dumperOptions.setIndicatorIndent(1);
+        dumperOptions.setSplitLines(false);
 
-        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions().setProcessComments(false)), new Representer(dumperOptions), dumperOptions);
+        Representer representer = new Representer(dumperOptions);
+        Yaml yaml = new Yaml(new SafeConstructor(loaderOptions), representer, dumperOptions);
 
         Map<String, Object> composite = new LinkedHashMap<>();
-        if (comments != null) {
+        if (comments != null && !comments.isEmpty()) {
             for (Map.Entry<String, List<String>> entry : comments.entrySet()) {
-                String key = entry.getKey();
+                String commentKey = entry.getKey();
                 List<String> lines = entry.getValue();
-                if (key != null && lines != null && !lines.isEmpty()) {
-                    composite.put("# " + key, String.join("\n# ", lines));
+                if (commentKey != null && lines != null && !lines.isEmpty()) {
+                    composite.put("# " + commentKey, String.join("\n# ", lines));
                 }
             }
         }
-        composite.putAll(content == null ? new LinkedHashMap<>() : content);
+        if (content != null) {
+            composite.putAll(content);
+        }
 
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8)) {
             yaml.dump(composite, writer);
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
     }
 
     private static Map<String, Object> deepCopyMap(Map<?, ?> source) {
