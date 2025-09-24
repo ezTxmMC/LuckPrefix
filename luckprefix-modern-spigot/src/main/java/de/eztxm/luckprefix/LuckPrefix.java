@@ -108,9 +108,9 @@ public final class LuckPrefix extends JavaPlugin {
         String pluginVersion = getDescription().getVersion();
         String sqliteDefaultPath = dataFolderPath.resolve("storage").toString().replace("\\", "/");
 
-        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, pluginVersion));
-        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, sqliteDefaultPath));
-        configService.register(GroupsConfig.class, groupsPath, GroupsConfig::new);
+        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
+        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
+        configService.register(GroupsConfig.class, groupsPath, path -> new GroupsConfig(path, debugLog));
 
         MainConfig config = configService.of(MainConfig.class);
         startConfigWatcher(config);

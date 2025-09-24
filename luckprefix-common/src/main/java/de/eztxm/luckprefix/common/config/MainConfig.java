@@ -32,12 +32,12 @@ public final class MainConfig extends AbstractConfig {
 
         addDefault("ColoredPermission", "luckprefix.coloredmessages");
         addDefault("AutoReloadConfig.Enabled", false);
-        addDefault("AutoReloadConfig.Interval", 10);
         addDefault("UpdateTime", 5);
         addDefault("ShowNameTags", true);
         addDefault("UpdateAvailableMessage", true);
         addDefault("Warning-If-Group-Can-Not-Loaded", true);
         addDefault("Auto-Add-Group", true);
+        addDefault("Print-Warnings", false);
 
         addDefault("Logging.ConsoleEnabled", true);
         addDefault("Logging.Debug.Enabled", true);
@@ -51,7 +51,6 @@ public final class MainConfig extends AbstractConfig {
         ));
         setComments("AutoReloadConfig", List.of("Automatically reload of the config"));
         setComments("AutoReloadConfig.Enabled", List.of("If true it automatically reloads the config after the interval"));
-        setComments("AutoReloadConfig.Interval", List.of("Interval in seconds to reload the config"));
         setComments("UpdateTime", List.of("Time in seconds to refresh prefixes"));
         setComments("ShowNameTags", List.of("Shows the nametag above the players"));
         setComments("UpdateAvailableMessage", List.of("Show message when a new update is available"));
@@ -60,6 +59,7 @@ public final class MainConfig extends AbstractConfig {
                 "If true it will automatically insert not existing groups into groups.yml or the database",
                 "ONLY DISABLE IF YOU KNOW WHAT YOU ARE DOING!"
         ));
+
         setComments("Logging", List.of("Logging settings"));
         setComments("Logging.ConsoleEnabled", List.of("If true, prints warnings/info to console"));
         setComments("Logging.Debug.Enabled", List.of("Deprecated toggle; debug file logger is always active"));
@@ -81,10 +81,8 @@ public final class MainConfig extends AbstractConfig {
         return value;
     }
 
-    public int getAutoReloadIntervalSeconds() {
-        int value = getInt("AutoReloadConfig.Interval", 10);
-        getDebugLog().debug("MainConfig.getAutoReloadIntervalSeconds -> " + value);
-        return value;
+    public boolean isPrintWarningsEnabled() {
+        return getBoolean("PrintWarnings", false);
     }
 
     public int getUpdateTimeSeconds() {
