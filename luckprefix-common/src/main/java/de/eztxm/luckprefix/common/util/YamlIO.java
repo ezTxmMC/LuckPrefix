@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.common.util;
 
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -45,7 +46,7 @@ public final class YamlIO {
         opt.setIndent(2);
         opt.setIndicatorIndent(2);
         opt.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
-        Yaml yaml = new Yaml(new SafeConstructor(), new Representer(opt), opt);
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions().setProcessComments(false)), new Representer(opt), opt);
         try (Writer w = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             yaml.dump(data == null ? new LinkedHashMap<>() : data, w);
         }
