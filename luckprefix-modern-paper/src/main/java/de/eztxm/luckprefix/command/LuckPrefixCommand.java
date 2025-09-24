@@ -48,7 +48,7 @@ public class LuckPrefixCommand implements TabExecutor {
                     <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
                     <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
                     <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
-                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
+                    <dark_gray>» <gray>/luckprefix reload - Reloads all configurations
                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""")
                     .miniMessage());
             return false;
@@ -57,7 +57,7 @@ public class LuckPrefixCommand implements TabExecutor {
             case "group" -> {
                 return GroupSubCommand.execute(player, args);
             }
-            case "reloadconfigs" -> {
+            case "reload" -> {
                 return ReloadConfigsSubCommand.execute(player);
             }
         }
@@ -69,7 +69,7 @@ public class LuckPrefixCommand implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
                                       @NotNull String[] args) {
         if (args.length == 1) {
-            List<String> arguments = new ArrayList<>(List.of("group", "reloadconfigs"));
+            List<String> arguments = new ArrayList<>(List.of("group", "reload"));
             arguments.removeIf(argument -> !argument.startsWith(args[0]));
             return arguments;
         }

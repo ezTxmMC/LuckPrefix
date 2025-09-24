@@ -1,17 +1,24 @@
 package de.eztxm.luckprefix.common.config;
 
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.Encoder;
 
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Consumer;
 
 public final class GroupsConfig extends AbstractConfig {
 
-    public GroupsConfig(Path filePath) {
-        super(filePath);
+    public GroupsConfig(Path filePath, DebugLog debugLog) {
+        super(filePath, debugLog);
+        getDebugLog().info("GroupsConfig: constructed for " + filePath);
     }
 
     @Override
     protected void defineDefaults() {
+        getDebugLog().info("GroupsConfig.defineDefaults: applying defaults");
+
         addDefault("default.Prefix", "<gray>Player");
         addDefault("default.Suffix", "");
         addDefault("default.Tabformat", "<prefix> <dark_gray>- <gray><player>");
@@ -20,105 +27,161 @@ public final class GroupsConfig extends AbstractConfig {
         addDefault("default.NameColor", "gray");
 
         saveDefaults();
+        getDebugLog().debug("GroupsConfig.defineDefaults: defaults saved to disk");
 
-        setComments("default", java.util.List.of("The name of the group"));
-        setComments("default.Prefix", java.util.List.of(
+        setComments("default", List.of("The name of the group"));
+        setComments("default.Prefix", List.of(
                 "Prefix/Suffix/Tabformat/Chatformat use Adventure MiniMessage,",
                 "but legacy '&' color codes are also supported.",
                 "https://docs.advntr.dev/minimessage/format.html"
         ));
-        setComments("default.SortID", java.util.List.of(
+        setComments("default.SortID", List.of(
                 "Sort-ID defines tablist order (1..999). Lower is higher on the list."
         ));
-        setComments("default.NameColor", java.util.List.of("Name color above the player"));
+        setComments("default.NameColor", List.of("Name color above the player"));
 
         saveComments();
+        getDebugLog().debug("GroupsConfig.defineDefaults: comments saved");
     }
 
     public boolean hasGroup(String rawGroupName) {
         String sectionKey = Encoder.key(rawGroupName);
-        return contains(sectionKey);
+        boolean present = contains(sectionKey);
+        getDebugLog().debug("GroupsConfig.hasGroup: raw='" + rawGroupName + "' key='" + sectionKey + "' present=" + present);
+        return present;
     }
 
     public String getPrefix(String rawGroupName) {
-        return getString(Encoder.path(rawGroupName, "Prefix"), "");
+        String path = Encoder.path(rawGroupName, "Prefix");
+        String value = getString(path, "");
+        if (value.isEmpty()) getDebugLog().debug("GroupsConfig.getPrefix: missing → '' @ " + path);
+        return value;
     }
 
     public String getSuffix(String rawGroupName) {
-        return getString(Encoder.path(rawGroupName, "Suffix"), "");
+        String path = Encoder.path(rawGroupName, "Suffix");
+        String value = getString(path, "");
+        if (value.isEmpty()) getDebugLog().debug("GroupsConfig.getSuffix: missing → '' @ " + path);
+        return value;
     }
 
     public String getTabFormat(String rawGroupName) {
-        return getString(Encoder.path(rawGroupName, "Tabformat"),
-                "<prefix> <dark_gray>- <gray><player>");
+        String path = Encoder.path(rawGroupName, "Tabformat");
+        String def = "<prefix> <dark_gray>- <gray><player>";
+        String value = getString(path, def);
+        if (def.equals(value)) getDebugLog().debug("GroupsConfig.getTabFormat: missing → default @ " + path);
+        return value;
     }
 
     public String getChatFormat(String rawGroupName) {
-        return getString(Encoder.path(rawGroupName, "Chatformat"),
-                "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>");
+        String path = Encoder.path(rawGroupName, "Chatformat");
+        String def = "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>";
+        String value = getString(path, def);
+        if (def.equals(value)) getDebugLog().debug("GroupsConfig.getChatFormat: missing → default @ " + path);
+        return value;
     }
 
     public int getSortId(String rawGroupName) {
-        return getInt(Encoder.path(rawGroupName, "SortID"), 999);
+        String path = Encoder.path(rawGroupName, "SortID");
+        int value = getInt(path, 999);
+        if (value == 999) getDebugLog().debug("GroupsConfig.getSortId: missing → 999 @ " + path);
+        return value;
     }
 
     public String getNameColor(String rawGroupName) {
-        return getString(Encoder.path(rawGroupName, "NameColor"), "gray");
+        String path = Encoder.path(rawGroupName, "NameColor");
+        String value = getString(path, "gray");
+        if ("gray".equalsIgnoreCase(value)) getDebugLog().debug("GroupsConfig.getNameColor: missing → gray @ " + path);
+        return value;
     }
 
     public void setPrefix(String rawGroupName, String value) {
-        set(Encoder.path(rawGroupName, "Prefix"), value);
+        String path = Encoder.path(rawGroupName, "Prefix");
+        getDebugLog().info("GroupsConfig.setPrefix: " + path + " = " + value);
+        set(path, value);
     }
 
     public void setSuffix(String rawGroupName, String value) {
-        set(Encoder.path(rawGroupName, "Suffix"), value);
+        String path = Encoder.path(rawGroupName, "Suffix");
+        getDebugLog().info("GroupsConfig.setSuffix: " + path + " = " + value);
+        set(path, value);
     }
 
     public void setTabFormat(String rawGroupName, String value) {
-        set(Encoder.path(rawGroupName, "Tabformat"), value);
+        String path = Encoder.path(rawGroupName, "Tabformat");
+        getDebugLog().info("GroupsConfig.setTabFormat: " + path + " = " + value);
+        set(path, value);
     }
 
     public void setChatFormat(String rawGroupName, String value) {
-        set(Encoder.path(rawGroupName, "Chatformat"), value);
+        String path = Encoder.path(rawGroupName, "Chatformat");
+        getDebugLog().info("GroupsConfig.setChatFormat: " + path + " = " + value);
+        set(path, value);
     }
 
     public void setSortId(String rawGroupName, int sortId) {
-        set(Encoder.path(rawGroupName, "SortID"), sortId);
+        String path = Encoder.path(rawGroupName, "SortID");
+        getDebugLog().info("GroupsConfig.setSortId: " + path + " = " + sortId);
+        set(path, sortId);
     }
 
     public void setNameColor(String rawGroupName, String colorName) {
-        set(Encoder.path(rawGroupName, "NameColor"), colorName);
+        String path = Encoder.path(rawGroupName, "NameColor");
+        getDebugLog().info("GroupsConfig.setNameColor: " + path + " = " + colorName);
+        set(path, colorName);
     }
 
-    public void ensureGroupDefaults(String rawGroupName, boolean autoAdd, java.util.function.Consumer<String> warn) {
+    public void ensureGroupDefaults(String rawGroupName,
+                                    boolean autoAdd,
+                                    boolean warn,
+                                    Consumer<String> warnPrint) {
         String sectionKey = Encoder.key(rawGroupName);
+        getDebugLog().info("GroupsConfig.ensureGroupDefaults: checking '" + rawGroupName + "' (section='" + sectionKey + "')");
 
-        if (!contains(sectionKey)) {
-            if (!autoAdd) {
-                if (warn != null) warn.accept("Group '" + rawGroupName + "' not found — skipping.");
-                return;
-            }
-            set(sectionKey, new java.util.LinkedHashMap<String, Object>());
-            if (warn != null)
-                warn.accept("groups.yml: group '" + rawGroupName + "' was missing — creating with defaults.");
+        boolean exists = contains(sectionKey);
+        if (!exists && !autoAdd) {
+            String msg = "Group '" + rawGroupName + "' not found — skipping.";
+            getDebugLog().warn("GroupsConfig.ensureGroupDefaults: " + msg);
+            if (warn && warnPrint != null) warnPrint.accept(msg);
+            return;
         }
-        setIfMissing(Encoder.path(rawGroupName, "Prefix"), "<gray>" + rawGroupName, warn, rawGroupName, "Prefix");
-        setIfMissing(Encoder.path(rawGroupName, "Suffix"), "", warn, rawGroupName, "Suffix");
-        setIfMissing(Encoder.path(rawGroupName, "Tabformat"), "<prefix> <dark_gray>- <gray><player>", warn, rawGroupName, "Tabformat");
-        setIfMissing(Encoder.path(rawGroupName, "Chatformat"), "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>", warn, rawGroupName, "Chatformat");
-        if (!isSet(Encoder.path(rawGroupName, "SortID"))) {
+
+        if (!exists) {
+            set(sectionKey, new LinkedHashMap<String, Object>());
+            String msg = "groups.yml: group '" + rawGroupName + "' was missing — creating with defaults.";
+            getDebugLog().warn("GroupsConfig.ensureGroupDefaults: " + msg);
+            if (warn && warnPrint != null) warnPrint.accept(msg);
+        }
+
+        setIfMissing(Encoder.path(rawGroupName, "Prefix"), "<gray>" + rawGroupName, warn, warnPrint, rawGroupName, "Prefix");
+        setIfMissing(Encoder.path(rawGroupName, "Suffix"), "", warn, warnPrint, rawGroupName, "Suffix");
+        setIfMissing(Encoder.path(rawGroupName, "Tabformat"), "<prefix> <dark_gray>- <gray><player>", warn, warnPrint, rawGroupName, "Tabformat");
+        setIfMissing(Encoder.path(rawGroupName, "Chatformat"), "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>", warn, warnPrint, rawGroupName, "Chatformat");
+
+        boolean hasSortId = isSet(Encoder.path(rawGroupName, "SortID"));
+        if (!hasSortId) {
             set(Encoder.path(rawGroupName, "SortID"), 999);
-            if (warn != null) warn.accept("groups.yml: '" + rawGroupName + ".SortID' was missing — defaulting to 999.");
+            String msg = "groups.yml: '" + rawGroupName + ".SortID' was missing — defaulting to 999.";
+            getDebugLog().warn("GroupsConfig.ensureGroupDefaults: " + msg);
+            if (warn && warnPrint != null) warnPrint.accept(msg);
         }
-        setIfMissing(Encoder.path(rawGroupName, "NameColor"), "gray", warn, rawGroupName, "NameColor");
+
+        setIfMissing(Encoder.path(rawGroupName, "NameColor"), "gray", warn, warnPrint, rawGroupName, "NameColor");
+        getDebugLog().info("GroupsConfig.ensureGroupDefaults: ensured for '" + rawGroupName + "'");
     }
 
-    private void setIfMissing(String dottedPath, Object defaultValue,
-                              java.util.function.Consumer<String> warn,
-                              String groupName, String keyName) {
-        if (isSet(dottedPath)) return;
+    private void setIfMissing(String dottedPath,
+                              Object defaultValue,
+                              boolean warn,
+                              Consumer<String> warnPrint,
+                              String groupName,
+                              String keyName) {
+        boolean present = isSet(dottedPath);
+        if (present) return;
+
         set(dottedPath, defaultValue);
-        if (warn != null)
-            warn.accept("groups.yml: '" + groupName + "." + keyName + "' was missing — setting default: " + defaultValue);
+        String msg = "groups.yml: '" + groupName + "." + keyName + "' was missing — setting default: " + defaultValue;
+        getDebugLog().warn("GroupsConfig.setIfMissing: " + msg);
+        if (warn && warnPrint != null) warnPrint.accept(msg);
     }
 }

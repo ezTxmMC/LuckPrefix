@@ -63,17 +63,22 @@ public final class GroupManager {
 
     public void reloadAllFromConfigs() {
         clearAllCaches();
+
         for (var lpGroup : plugin.getLuckPerms().getGroupManager().getLoadedGroups()) {
             createGroup(lpGroup.getName());
         }
+
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 plugin.getPlayerManager().setPlayerListName(
-                        online.getUniqueId(),
-                        Objects.requireNonNull(plugin.getLuckPerms().getUserManager().getUser(online.getUniqueId())).getPrimaryGroup()
+                        p.getUniqueId(),
+                        Objects.requireNonNull(plugin.getLuckPerms().getUserManager().getUser(p.getUniqueId()))
+                                .getPrimaryGroup()
                 );
             }
         }
+
+        refreshAllScoreboards();
     }
 
     public void reloadGroup(String rawGroupName) {
@@ -100,7 +105,7 @@ public final class GroupManager {
                     Encoder.key(rawGroupName) + "' in groups.yml.");
         }
 
-        groupsConfig.ensureGroupDefaults(rawGroupName, autoAddGroup, plugin.getLogger()::warning);
+        groupsConfig.ensureGroupDefaults(rawGroupName, autoAddGroup, mainConfig.isPrintWarningsEnabled(), plugin.getLogger()::warning);
 
         String prefix = groupsConfig.getPrefix(rawGroupName);
         String suffix = groupsConfig.getSuffix(rawGroupName);
@@ -239,6 +244,21 @@ public final class GroupManager {
                     }
                 }
             }
+        }
+    }
+
+    public void refreshAllScoreboards() {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(plugin, this::refreshAllScoreboards);
+            return;
+        }
+
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            setupGroups(viewer);
+        }
+
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+            setGroups(viewer, viewer.getScoreboard());
         }
     }
 

@@ -1,80 +1,128 @@
 package de.eztxm.luckprefix.common.config;
 
-import org.yaml.snakeyaml.DumperOptions;
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractConfig {
 
     private final Path filePath;
-    private final Map<String, List<String>> commentMap = new LinkedHashMap<>();
+    private final DebugLog debugLog;
+
     private Map<String, Object> dataTree = new LinkedHashMap<>();
+
+    private List<String> headerComments = new ArrayList<>();
+    private final Map<String, List<String>> perKeyComments = new LinkedHashMap<>();
+
     private boolean defaultsWereApplied = false;
 
-    protected AbstractConfig(Path filePath) {
+    protected AbstractConfig(Path filePath, DebugLog debugLog) {
         this.filePath = Objects.requireNonNull(filePath, "filePath");
+        this.debugLog = Objects.requireNonNull(debugLog, "debugLog");
+        this.debugLog.info(getClass().getSimpleName() + ": constructed for " + filePath);
     }
 
-    private static Map<String, Object> loadYamlToMap(File sourceFile) {
+    protected abstract void defineDefaults();
+
+    protected void afterLoad() { }
+
+    public final Path path() {
+        return filePath;
+    }
+
+    public final DebugLog getDebugLog() {
+        return debugLog;
+    }
+
+    public synchronized void load() {
+        debugLog.info(getClass().getSimpleName() + ".load: begin - " + filePath);
+        ensureParentDirectoryExists();
+        dataTree = loadYamlToMap(filePath.toFile(), debugLog);
+
+        if (!defaultsWereApplied) {
+            debugLog.debug(getClass().getSimpleName() + ".load: applying defaults (first run)");
+            defineDefaults();
+            defaultsWereApplied = true;
+        }
+        try {
+            afterLoad();
+            debugLog.debug(getClass().getSimpleName() + ".load: afterLoad hook done");
+        } catch (Exception ex) {
+            debugLog.error(getClass().getSimpleName() + ".load: afterLoad threw", ex);
+        }
+        debugLog.info(getClass().getSimpleName() + ".load: done");
+    }
+
+    public synchronized void reload() {
+        debugLog.info(getClass().getSimpleName() + ".reload");
+        load();
+    }
+
+    public synchronized void save() {
+        debugLog.info(getClass().getSimpleName() + ".save: writing " + filePath);
+        ensureParentDirectoryExists();
+        writeYamlWithComments(filePath.toFile(), dataTree, headerComments, perKeyComments, debugLog);
+        debugLog.info(getClass().getSimpleName() + ".save: done");
+    }
+
+    public synchronized void saveDefaults() {
+        debugLog.debug(getClass().getSimpleName() + ".saveDefaults");
+        save();
+    }
+
+    public synchronized void saveComments() {
+        debugLog.debug(getClass().getSimpleName() + ".saveComments");
+        save();
+    }
+
+    public synchronized long lastModifiedMillis() {
+        File target = filePath.toFile();
+        if (!target.exists()) return 0L;
+        return target.lastModified();
+    }
+
+    private void ensureParentDirectoryExists() {
+        File parent = filePath.toFile().getParentFile();
+        if (parent == null) return;
+        if (parent.exists()) return;
+        boolean ok = parent.mkdirs();
+        if (ok) debugLog.debug(getClass().getSimpleName() + ": created directory " + parent);
+        if (!ok) debugLog.warn(getClass().getSimpleName() + ": failed to create directory " + parent);
+    }
+
+    private static Map<String, Object> loadYamlToMap(File sourceFile, DebugLog debugLog) {
         if (!sourceFile.exists()) {
+            debugLog.debug("AbstractConfig.loadYamlToMap: file missing, returning empty map: " + sourceFile);
             return new LinkedHashMap<>();
         }
-        try (Reader reader = new InputStreamReader(new FileInputStream(sourceFile), StandardCharsets.UTF_8)) {
-            Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions().setProcessComments(false)));
-            Object root = yaml.load(reader);
-            if (root instanceof Map) {
-                return deepCopyMap((Map<?, ?>) root);
-            }
-            return new LinkedHashMap<>();
-        } catch (IOException ioException) {
-            return new LinkedHashMap<>();
-        }
-    }
 
-    private static void dumpMapToYaml(File targetFile,
-                                      Map<String, Object> content,
-                                      Map<String, List<String>> comments) {
         LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setProcessComments(false);
 
-        DumperOptions dumperOptions = new DumperOptions();
-        dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        dumperOptions.setPrettyFlow(true);
-        dumperOptions.setIndent(2);
-        dumperOptions.setIndicatorIndent(1);
-        dumperOptions.setSplitLines(false);
-
-        Representer representer = new Representer(dumperOptions);
-        Yaml yaml = new Yaml(new SafeConstructor(loaderOptions), representer, dumperOptions);
-
-        Map<String, Object> composite = new LinkedHashMap<>();
-        if (comments != null && !comments.isEmpty()) {
-            for (Map.Entry<String, List<String>> entry : comments.entrySet()) {
-                String commentKey = entry.getKey();
-                List<String> lines = entry.getValue();
-                if (commentKey != null && lines != null && !lines.isEmpty()) {
-                    composite.put("# " + commentKey, String.join("\n# ", lines));
-                }
+        try (Reader reader = new InputStreamReader(new FileInputStream(sourceFile), StandardCharsets.UTF_8)) {
+            Yaml yaml = new Yaml(new SafeConstructor(loaderOptions));
+            Object root = yaml.load(reader);
+            if (root instanceof Map) {
+                Map<String, Object> map = deepCopyMap((Map<?, ?>) root);
+                debugLog.debug("AbstractConfig.loadYamlToMap: loaded map with " + map.size() + " top-level keys from " + sourceFile.getName());
+                return map;
             }
+            debugLog.warn("AbstractConfig.loadYamlToMap: root is not a map for " + sourceFile.getName() + " → using empty map");
+            return new LinkedHashMap<>();
+        } catch (IOException io) {
+            debugLog.error("AbstractConfig.loadYamlToMap: IO failure for " + sourceFile.getName(), io);
+            return new LinkedHashMap<>();
+        } catch (Exception ex) {
+            debugLog.error("AbstractConfig.loadYamlToMap: parse failure for " + sourceFile.getName(), ex);
+            return new LinkedHashMap<>();
         }
-        if (content != null) {
-            composite.putAll(content);
-        }
-
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8)) {
-            yaml.dump(composite, writer);
-        } catch (IOException ignored) {}
     }
 
     private static Map<String, Object> deepCopyMap(Map<?, ?> source) {
@@ -82,139 +130,228 @@ public abstract class AbstractConfig {
         for (Map.Entry<?, ?> entry : source.entrySet()) {
             String key = entry.getKey() == null ? "null" : String.valueOf(entry.getKey());
             Object value = entry.getValue();
-            if (value instanceof Map) {
-                copy.put(key, deepCopyMap((Map<?, ?>) value));
-            } else {
-                copy.put(key, value);
-            }
+            Object out = value;
+            if (value instanceof Map) out = deepCopyMap((Map<?, ?>) value);
+            if (value instanceof List) out = deepCopyList((List<?>) value);
+            copy.put(key, out);
         }
         return copy;
     }
 
-    protected abstract void defineDefaults();
-
-    protected void afterLoad() {
-    }
-
-    public final Path path() {
-        return filePath;
-    }
-
-    public synchronized void load() {
-        ensureParentDirectory();
-        dataTree = loadYamlToMap(filePath.toFile());
-        if (!defaultsWereApplied) {
-            defineDefaults();
-            defaultsWereApplied = true;
+    private static List<Object> deepCopyList(List<?> source) {
+        List<Object> copy = new ArrayList<>(source.size());
+        for (Object v : source) {
+            Object out = v;
+            if (v instanceof Map) out = deepCopyMap((Map<?, ?>) v);
+            if (v instanceof List) out = deepCopyList((List<?>) v);
+            copy.add(out);
         }
-        afterLoad();
-    }
-
-    public synchronized void reload() {
-        load();
-    }
-
-    public synchronized void save() {
-        ensureParentDirectory();
-        dumpMapToYaml(filePath.toFile(), dataTree, commentMap);
-    }
-
-    public synchronized long lastModifiedMillis() {
-        File targetFile = filePath.toFile();
-        return targetFile.exists() ? targetFile.lastModified() : 0L;
-    }
-
-    private void ensureParentDirectory() {
-        File parentDirectory = filePath.toFile().getParentFile();
-        if (parentDirectory != null) {
-
-            parentDirectory.mkdirs();
-        }
+        return copy;
     }
 
     public synchronized void addDefault(String dottedPath, Object defaultValue) {
-        if (isSet(dottedPath)) {
-            return;
-        }
+        boolean present = isSet(dottedPath);
+        if (present) return;
+        debugLog.info(getClass().getSimpleName() + ".addDefault: " + dottedPath + " = " + defaultValue);
         set(dottedPath, defaultValue);
     }
 
     public synchronized void setComments(String dottedPath, List<String> commentLines) {
-        commentMap.put(dottedPath, commentLines);
+        List<String> lines = new ArrayList<>();
+        if (commentLines != null) lines.addAll(commentLines);
+        perKeyComments.put(dottedPath, lines);
+        debugLog.debug(getClass().getSimpleName() + ".setComments: " + dottedPath + " (" + lines.size() + " lines)");
     }
 
-    public synchronized void saveDefaults() {
-        save();
-    }
-
-    public synchronized void saveComments() {
-        save();
+    public synchronized void setHeaderComments(List<String> lines) {
+        headerComments = new ArrayList<>();
+        if (lines != null) headerComments.addAll(lines);
+        debugLog.debug(getClass().getSimpleName() + ".setHeaderComments: " + headerComments.size() + " lines");
     }
 
     public synchronized boolean contains(String dottedPath) {
-        return isSet(dottedPath);
+        boolean present = isSet(dottedPath);
+        debugLog.debug(getClass().getSimpleName() + ".contains: " + dottedPath + " -> " + present);
+        return present;
     }
 
     public synchronized boolean isSet(String dottedPath) {
-        return get(dottedPath) != null;
+        Object v = get(dottedPath);
+        return v != null;
     }
 
     public synchronized Object get(String dottedPath) {
-        String[] pathParts = dottedPath.split("\\.");
-        Map<String, Object> currentNode = dataTree;
-        for (int index = 0; index < pathParts.length; index++) {
-            String part = pathParts[index];
-            boolean isLast = index == pathParts.length - 1;
-            Object next = currentNode.get(part);
-            if (isLast) {
-                return next;
-            }
-            if (!(next instanceof Map)) {
-                return null;
-            }
-            currentNode = (Map<String, Object>) next;
+        String[] parts = dottedPath.split("\\.");
+        Map<String, Object> node = dataTree;
+
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            boolean last = i == parts.length - 1;
+            Object next = node.get(part);
+
+            if (last) return next;
+            if (!(next instanceof Map)) return null;
+            node = (Map<String, Object>) next;
         }
         return null;
     }
 
     public synchronized String getString(String dottedPath, String defaultValue) {
         Object raw = get(dottedPath);
-        return raw == null ? defaultValue : String.valueOf(raw);
+        if (raw == null) {
+            debugLog.debug(getClass().getSimpleName() + ".getString: " + dottedPath + " -> <default> '" + defaultValue + "'");
+            return defaultValue;
+        }
+        String out = String.valueOf(raw);
+        debugLog.debug(getClass().getSimpleName() + ".getString: " + dottedPath + " -> '" + out + "'");
+        return out;
     }
 
     public synchronized int getInt(String dottedPath, int defaultValue) {
         Object raw = get(dottedPath);
-        if (raw instanceof Number) return ((Number) raw).intValue();
+        if (raw instanceof Number) {
+            int out = ((Number) raw).intValue();
+            debugLog.debug(getClass().getSimpleName() + ".getInt: " + dottedPath + " -> " + out);
+            return out;
+        }
         if (raw instanceof String) {
             try {
-                return Integer.parseInt((String) raw);
+                int parsed = Integer.parseInt((String) raw);
+                debugLog.debug(getClass().getSimpleName() + ".getInt: " + dottedPath + " -> " + parsed + " (parsed)");
+                return parsed;
             } catch (NumberFormatException ignored) {
+
             }
         }
+        debugLog.debug(getClass().getSimpleName() + ".getInt: " + dottedPath + " -> <default> " + defaultValue);
         return defaultValue;
     }
 
     public synchronized boolean getBoolean(String dottedPath, boolean defaultValue) {
         Object raw = get(dottedPath);
-        if (raw instanceof Boolean) return (Boolean) raw;
-        if (raw instanceof String) return Boolean.parseBoolean((String) raw);
+        if (raw instanceof Boolean) {
+            boolean out = (Boolean) raw;
+            debugLog.debug(getClass().getSimpleName() + ".getBoolean: " + dottedPath + " -> " + out);
+            return out;
+        }
+        if (raw instanceof String) {
+            boolean out = Boolean.parseBoolean((String) raw);
+            debugLog.debug(getClass().getSimpleName() + ".getBoolean: " + dottedPath + " -> " + out + " (parsed)");
+            return out;
+        }
+        debugLog.debug(getClass().getSimpleName() + ".getBoolean: " + dottedPath + " -> <default> " + defaultValue);
         return defaultValue;
     }
 
     public synchronized void set(String dottedPath, Object value) {
-        String[] pathParts = dottedPath.split("\\.");
-        Map<String, Object> currentNode = dataTree;
-        for (int index = 0; index < pathParts.length - 1; index++) {
-            String part = pathParts[index];
-            Object next = currentNode.get(part);
-            if (!(next instanceof Map)) {
-                Map<String, Object> newChild = new LinkedHashMap<>();
-                currentNode.put(part, newChild);
-                currentNode = newChild;
-            } else {
-                currentNode = (Map<String, Object>) next;
+        String[] parts = dottedPath.split("\\.");
+        Map<String, Object> node = dataTree;
+
+        for (int i = 0; i < parts.length - 1; i++) {
+            String part = parts[i];
+            Object next = node.get(part);
+            boolean isMap = next instanceof Map;
+            if (!isMap) {
+                Map<String, Object> child = new LinkedHashMap<>();
+                node.put(part, child);
+                node = child;
+                continue;
             }
+            node = (Map<String, Object>) next;
         }
-        currentNode.put(pathParts[pathParts.length - 1], value);
+        node.put(parts[parts.length - 1], value);
+        debugLog.info(getClass().getSimpleName() + ".set: " + dottedPath + " = " + value);
+    }
+
+    private static void writeYamlWithComments(
+            File targetFile,
+            Map<String, Object> root,
+            List<String> header,
+            Map<String, List<String>> comments,
+            DebugLog debugLog
+    ) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {
+
+            if (header != null && !header.isEmpty()) {
+                for (String line : header) {
+                    writer.write("# " + line);
+                    writer.newLine();
+                }
+                writer.newLine();
+            }
+
+            writeSection(writer, root, comments, "", "");
+            debugLog.debug("AbstractConfig.writeYamlWithComments: wrote " + targetFile.getName());
+        } catch (IOException ex) {
+            debugLog.error("AbstractConfig.writeYamlWithComments: IO failure for " + targetFile.getName(), ex);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void writeSection(
+            BufferedWriter writer,
+            Map<String, Object> section,
+            Map<String, List<String>> comments,
+            String parentPath,
+            String indent
+    ) throws IOException {
+        if (section == null) return;
+
+        for (Map.Entry<String, Object> entry : section.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String fullPath = parentPath.isEmpty() ? key : parentPath + "." + key;
+
+            List<String> lines = comments.get(fullPath);
+            if (lines != null && !lines.isEmpty()) {
+                for (String line : lines) {
+                    writer.write(indent);
+                    writer.write("# ");
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
+            if (value instanceof Map) {
+                writer.write(indent + key + ":");
+                writer.newLine();
+                writeSection(writer, (Map<String, Object>) value, comments, fullPath, indent + "  ");
+                continue;
+            }
+
+            if (value instanceof List) {
+                writer.write(indent + key + ":");
+                writer.newLine();
+                for (Object item : (List<?>) value) {
+                    writer.write(indent + "  - " + renderScalar(item));
+                    writer.newLine();
+                }
+                continue;
+            }
+
+            writer.write(indent + key + ": " + renderScalar(value));
+            writer.newLine();
+        }
+    }
+
+    private static String renderScalar(Object value) {
+        if (value == null) return "null";
+        if (value instanceof Boolean || value instanceof Number) return String.valueOf(value);
+
+        String raw = String.valueOf(value);
+        boolean alreadyQuoted = (raw.startsWith("\"") && raw.endsWith("\"")) || (raw.startsWith("'") && raw.endsWith("'"));
+        if (alreadyQuoted) return raw;
+
+        boolean needsQuotes =
+                raw.isEmpty() ||
+                        raw.startsWith("#") ||
+                        raw.matches(".*[:\\-?&*!|>'\"%@`\\[\\]{}].*") ||
+                        raw.matches(".*\\s.*");
+
+        if (!needsQuotes) return raw;
+
+        String escaped = raw.replace("\\", "\\\\").replace("\"", "\\\"");
+        return "\"" + escaped + "\"";
     }
 }

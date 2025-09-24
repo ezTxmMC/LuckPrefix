@@ -4,7 +4,9 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.DatabaseConfig;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
+import de.eztxm.luckprefix.common.config.MainConfig;
 import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.SneakyThrows;
 import net.kyori.adventure.audience.Audience;
@@ -24,17 +26,8 @@ public class ReloadConfigsSubCommand {
         ConfigService configService = LuckPrefix.getInstance().getConfigService();
         configService.reloadAll();
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.getScoreboard().getTeams().forEach(Team::unregister);
-            if (!groupManager.getLoadedGroups().isEmpty()) {
-                List<String> groups = new ArrayList<>(groupManager.getLoadedGroups());
-                for (String group : groups) {
-                    groupManager.deleteGroup(group);
-                }
-            }
-            onlinePlayer.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-            groupManager.setupGroups(onlinePlayer);
-        }
+        groupManager.reloadAllFromConfigs();
+        LuckPrefix.getInstance().startConfigWatcher(configService.of(MainConfig.class));
         adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
         return true;
     }

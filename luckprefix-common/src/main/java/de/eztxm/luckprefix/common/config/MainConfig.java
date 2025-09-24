@@ -1,153 +1,137 @@
 package de.eztxm.luckprefix.common.config;
 
+import de.eztxm.luckprefix.common.logging.DebugLog;
+
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class MainConfig extends AbstractConfig {
+
     private final String pluginVersion;
 
-    public MainConfig(Path filePath, String pluginVersion) {
-        super(filePath);
-        this.pluginVersion = pluginVersion;
+    public MainConfig(Path filePath, DebugLog debugLog, String pluginVersion) {
+        super(filePath, debugLog);
+        this.pluginVersion = pluginVersion == null ? "unknown" : pluginVersion;
+        getDebugLog().info("MainConfig: constructed, version=" + this.pluginVersion);
     }
 
     @Override
     protected void defineDefaults() {
-        addDefault("ColoredPermission", "luckprefix.coloredmessages");
+        getDebugLog().info("MainConfig.defineDefaults: applying");
 
-        addDefault("AutoReloadConfig.Enabled", false);
-        addDefault("AutoReloadConfig.Interval", 10);
-
-        addDefault("UpdateTime", 5);
-        addDefault("ShowNameTags", true);
-        addDefault("UpdateAvailableMessage", true);
-
-        addDefault("Warning-If-Group-Can-Not-Loaded", true);
-        addDefault("Auto-Add-Group", true);
-
-        addDefault("Logging.ConsoleEnabled", false);
-        addDefault("Logging.Debug.Enabled", false);
-        addDefault("Logging.Debug.File", "luckprefix-debug.log");
-
-        saveDefaults();
-
-        List<String> banner = new ArrayList<>(List.of(
+        setHeaderComments(List.of(
                 " _               _    ____            __ _",
                 "| |   _   _  ___| | _|  _ \\ _ __ ___ / _(_)_  __",
                 "| |  | | | |/ __| |/ / |_) | '__/ _ \\ |_| \\ \\/ /",
                 "| |__| |_| | (__|   <|  __/| | |  __/  _| |>  <",
                 "|_____\\__,_|\\___|_|\\_\\_|   |_|  \\___|_| |_/_/\\_\\",
-                "Modern %s | by ezTxmMC".formatted(pluginVersion),
+                "Modern " + pluginVersion + " | by ezTxmMC",
                 "",
-                "Permission to write with color codes in chat"
+                "This plugin supports MiniMessage and legacy '&' color codes."
         ));
-        setComments("ColoredPermission", banner);
-        setComments("AutoReloadConfig", List.of("Automatically reload configuration files"));
-        setComments("AutoReloadConfig.Enabled", List.of("If true, automatically reload after the interval"));
-        setComments("AutoReloadConfig.Interval", List.of("Interval in seconds for auto-reload"));
-        setComments("UpdateTime", List.of("Interval in seconds to refresh prefixes"));
-        setComments("ShowNameTags", List.of("Show the nametag above players"));
-        setComments("UpdateAvailableMessage", List.of("Show a message if an update is available"));
-        setComments("Warning-If-Group-Can-Not-Loaded", List.of("Warn once per missing group in groups.yml"));
+
+        addDefault("ColoredPermission", "luckprefix.coloredmessages");
+        addDefault("AutoReloadConfig.Enabled", false);
+        addDefault("AutoReloadConfig.Interval", 10);
+        addDefault("UpdateTime", 5);
+        addDefault("ShowNameTags", true);
+        addDefault("UpdateAvailableMessage", true);
+        addDefault("Warning-If-Group-Can-Not-Loaded", true);
+        addDefault("Auto-Add-Group", true);
+
+        addDefault("Logging.ConsoleEnabled", true);
+        addDefault("Logging.Debug.Enabled", true);
+        addDefault("Logging.Debug.File", "luckprefix-debug.log");
+
+        saveDefaults();
+        getDebugLog().debug("MainConfig.defineDefaults: defaults saved");
+
+        setComments("ColoredPermission", List.of(
+                "Permission required to use color codes in chat"
+        ));
+        setComments("AutoReloadConfig", List.of("Automatically reload of the config"));
+        setComments("AutoReloadConfig.Enabled", List.of("If true it automatically reloads the config after the interval"));
+        setComments("AutoReloadConfig.Interval", List.of("Interval in seconds to reload the config"));
+        setComments("UpdateTime", List.of("Time in seconds to refresh prefixes"));
+        setComments("ShowNameTags", List.of("Shows the nametag above the players"));
+        setComments("UpdateAvailableMessage", List.of("Show message when a new update is available"));
+        setComments("Warning-If-Group-Can-Not-Loaded", List.of("Warn for each group missing in groups.yml"));
         setComments("Auto-Add-Group", List.of(
-                "If true, non-existing groups are inserted into groups.yml or DB.",
+                "If true it will automatically insert not existing groups into groups.yml or the database",
                 "ONLY DISABLE IF YOU KNOW WHAT YOU ARE DOING!"
         ));
         setComments("Logging", List.of("Logging settings"));
-        setComments("Logging.ConsoleEnabled", List.of("If true, logs are printed to console"));
-        setComments("Logging.Debug", List.of("Debug file logging"));
-        setComments("Logging.Debug.Enabled", List.of("If true, writes a debug log file"));
-        setComments("Logging.Debug.File", List.of("Debug log file path (relative to plugin folder)"));
+        setComments("Logging.ConsoleEnabled", List.of("If true, prints warnings/info to console"));
+        setComments("Logging.Debug.Enabled", List.of("Deprecated toggle; debug file logger is always active"));
+        setComments("Logging.Debug.File", List.of("Debug log file path"));
 
         saveComments();
+        getDebugLog().debug("MainConfig.defineDefaults: comments saved");
     }
 
     public String getColoredPermission() {
-        return getString("ColoredPermission", "luckprefix.coloredmessages");
-    }
-
-    public void setColoredPermission(String permission) {
-        set("ColoredPermission", permission);
+        String value = getString("ColoredPermission", "luckprefix.coloredmessages");
+        getDebugLog().debug("MainConfig.getColoredPermission -> " + value);
+        return value;
     }
 
     public boolean isAutoReloadEnabled() {
-        return getBoolean("AutoReloadConfig.Enabled", false);
-    }
-
-    public void setAutoReloadEnabled(boolean enabled) {
-        set("AutoReloadConfig.Enabled", enabled);
+        boolean value = getBoolean("AutoReloadConfig.Enabled", false);
+        getDebugLog().debug("MainConfig.isAutoReloadEnabled -> " + value);
+        return value;
     }
 
     public int getAutoReloadIntervalSeconds() {
-        return getInt("AutoReloadConfig.Interval", 10);
-    }
-
-    public void setAutoReloadIntervalSeconds(int seconds) {
-        set("AutoReloadConfig.Interval", seconds);
+        int value = getInt("AutoReloadConfig.Interval", 10);
+        getDebugLog().debug("MainConfig.getAutoReloadIntervalSeconds -> " + value);
+        return value;
     }
 
     public int getUpdateTimeSeconds() {
-        return getInt("UpdateTime", 5);
+        int value = getInt("UpdateTime", 5);
+        getDebugLog().debug("MainConfig.getUpdateTimeSeconds -> " + value);
+        return value;
     }
 
-    public void setUpdateTimeSeconds(int seconds) {
-        set("UpdateTime", seconds);
-    }
-
-    public boolean isShowNameTagsEnabled() {
-        return getBoolean("ShowNameTags", true);
-    }
-
-    public void setShowNameTagsEnabled(boolean enabled) {
-        set("ShowNameTags", enabled);
+    public boolean isShowNameTags() {
+        boolean value = getBoolean("ShowNameTags", true);
+        getDebugLog().debug("MainConfig.isShowNameTags -> " + value);
+        return value;
     }
 
     public boolean isUpdateAvailableMessageEnabled() {
-        return getBoolean("UpdateAvailableMessage", true);
-    }
-
-    public void setUpdateAvailableMessageEnabled(boolean enabled) {
-        set("UpdateAvailableMessage", enabled);
+        boolean value = getBoolean("UpdateAvailableMessage", true);
+        getDebugLog().debug("MainConfig.isUpdateAvailableMessageEnabled -> " + value);
+        return value;
     }
 
     public boolean isWarnIfGroupCannotBeLoaded() {
-        return getBoolean("Warning-If-Group-Can-Not-Loaded", true);
-    }
-
-    public void setWarnIfGroupCannotBeLoaded(boolean enabled) {
-        set("Warning-If-Group-Can-Not-Loaded", enabled);
+        boolean value = getBoolean("Warning-If-Group-Can-Not-Loaded", true);
+        getDebugLog().debug("MainConfig.isWarnIfGroupCannotBeLoaded -> " + value);
+        return value;
     }
 
     public boolean isAutoAddGroupEnabled() {
-        return getBoolean("Auto-Add-Group", true);
-    }
-
-    public void setAutoAddGroupEnabled(boolean enabled) {
-        set("Auto-Add-Group", enabled);
+        boolean value = getBoolean("Auto-Add-Group", true);
+        getDebugLog().debug("MainConfig.isAutoAddGroupEnabled -> " + value);
+        return value;
     }
 
     public boolean isConsoleLoggingEnabled() {
-        return getBoolean("Logging.ConsoleEnabled", false);
+        boolean value = getBoolean("Logging.ConsoleEnabled", true);
+        getDebugLog().debug("MainConfig.isConsoleLoggingEnabled -> " + value);
+        return value;
     }
 
-    public void setConsoleLoggingEnabled(boolean enabled) {
-        set("Logging.ConsoleEnabled", enabled);
-    }
-
-    public boolean isDebugLoggingEnabled() {
-        return getBoolean("Logging.Debug.Enabled", false);
-    }
-
-    public void setDebugLoggingEnabled(boolean enabled) {
-        set("Logging.Debug.Enabled", enabled);
+    public boolean isDebugLoggingFlagEnabled() {
+        boolean value = getBoolean("Logging.Debug.Enabled", true);
+        getDebugLog().debug("MainConfig.isDebugLoggingFlagEnabled -> " + value);
+        return value;
     }
 
     public String getDebugLogFile() {
-        return getString("Logging.Debug.File", "luckprefix-debug.log");
-    }
-
-    public void setDebugLogFile(String fileName) {
-        set("Logging.Debug.File", fileName);
+        String value = getString("Logging.Debug.File", "luckprefix-debug.log");
+        getDebugLog().debug("MainConfig.getDebugLogFile -> " + value);
+        return value;
     }
 }

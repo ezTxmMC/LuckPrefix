@@ -1,22 +1,25 @@
 package de.eztxm.luckprefix.common.config;
 
+import de.eztxm.luckprefix.common.logging.DebugLog;
+
 import java.nio.file.Path;
 import java.util.List;
 
 public final class DatabaseConfig extends AbstractConfig {
-    private final String defaultSqlitePath;
 
-    public DatabaseConfig(Path filePath, String defaultSqlitePath) {
-        super(filePath);
-        this.defaultSqlitePath = defaultSqlitePath;
+    public DatabaseConfig(Path filePath, DebugLog debugLog) {
+        super(filePath, debugLog);
+        getDebugLog().info("DatabaseConfig: constructed for " + filePath);
     }
 
     @Override
     protected void defineDefaults() {
+        getDebugLog().info("DatabaseConfig.defineDefaults: applying");
+
         addDefault("Database.Enabled", false);
         addDefault("Database.Type", "SQLITE");
 
-        addDefault("Database.SQLite.Path", defaultSqlitePath);
+        addDefault("Database.SQLite.Path", path().getParent().resolve("storage").toString().replace("\\", "/"));
         addDefault("Database.SQLite.FileName", "sqlite.db");
 
         addDefault("Database.MariaDB.Host", "localhost");
@@ -32,121 +35,96 @@ public final class DatabaseConfig extends AbstractConfig {
         addDefault("Database.MongoDB.Password", "");
 
         saveDefaults();
-        setComments("Database", List.of(
-                "Supported types: SQLITE and MARIADB; disable to use file-based storage"
-        ));
+        getDebugLog().debug("DatabaseConfig.defineDefaults: defaults saved");
+
+        setComments("Database", List.of("Supported: SQLITE, MARIADB, MONGODB (disable via Enabled=false)"));
         saveComments();
+        getDebugLog().debug("DatabaseConfig.defineDefaults: comments saved");
     }
 
     public boolean isDatabaseEnabled() {
-        return getBoolean("Database.Enabled", false);
-    }
-
-    public void setDatabaseEnabled(boolean enabled) {
-        set("Database.Enabled", enabled);
+        boolean value = getBoolean("Database.Enabled", false);
+        getDebugLog().debug("DatabaseConfig.isDatabaseEnabled -> " + value);
+        return value;
     }
 
     public String getDatabaseType() {
-        return getString("Database.Type", "SQLITE");
-    }
-
-    public void setDatabaseType(String type) {
-        set("Database.Type", type);
+        String value = getString("Database.Type", "SQLITE");
+        getDebugLog().debug("DatabaseConfig.getDatabaseType -> " + value);
+        return value;
     }
 
     public String getSqlitePath() {
-        return getString("Database.SQLite.Path", defaultSqlitePath);
-    }
-
-    public void setSqlitePath(String path) {
-        set("Database.SQLite.Path", path);
+        String value = getString("Database.SQLite.Path", path().getParent().resolve("storage").toString().replace("\\", "/"));
+        getDebugLog().debug("DatabaseConfig.getSqlitePath -> " + value);
+        return value;
     }
 
     public String getSqliteFileName() {
-        return getString("Database.SQLite.FileName", "sqlite.db");
+        String value = getString("Database.SQLite.FileName", "sqlite.db");
+        getDebugLog().debug("DatabaseConfig.getSqliteFileName -> " + value);
+        return value;
     }
 
-    public void setSqliteFileName(String fileName) {
-        set("Database.SQLite.FileName", fileName);
+    public String getMariaHost() {
+        String value = getString("Database.MariaDB.Host", "localhost");
+        getDebugLog().debug("DatabaseConfig.getMariaHost -> " + value);
+        return value;
     }
 
-    public String getMariaDbHost() {
-        return getString("Database.MariaDB.Host", "localhost");
+    public int getMariaPort() {
+        int value = getInt("Database.MariaDB.Port", 3306);
+        getDebugLog().debug("DatabaseConfig.getMariaPort -> " + value);
+        return value;
     }
 
-    public void setMariaDbHost(String host) {
-        set("Database.MariaDB.Host", host);
+    public String getMariaDatabase() {
+        String value = getString("Database.MariaDB.Database", "luckprefix");
+        getDebugLog().debug("DatabaseConfig.getMariaDatabase -> " + value);
+        return value;
     }
 
-    public int getMariaDbPort() {
-        return getInt("Database.MariaDB.Port", 3306);
+    public String getMariaUser() {
+        String value = getString("Database.MariaDB.User", "luckprefix");
+        getDebugLog().debug("DatabaseConfig.getMariaUser -> " + value);
+        return value;
     }
 
-    public void setMariaDbPort(int port) {
-        set("Database.MariaDB.Port", port);
-    }
-
-    public String getMariaDbDatabase() {
-        return getString("Database.MariaDB.Database", "luckprefix");
-    }
-
-    public void setMariaDbDatabase(String database) {
-        set("Database.MariaDB.Database", database);
-    }
-
-    public String getMariaDbUser() {
-        return getString("Database.MariaDB.User", "luckprefix");
-    }
-
-    public void setMariaDbUser(String user) {
-        set("Database.MariaDB.User", user);
-    }
-
-    public String getMariaDbPassword() {
-        return getString("Database.MariaDB.Password", "");
-    }
-
-    public void setMariaDbPassword(String password) {
-        set("Database.MariaDB.Password", password);
+    public String getMariaPassword() {
+        String value = getString("Database.MariaDB.Password", "");
+        String masked = value.isEmpty() ? "(empty)" : "******";
+        getDebugLog().debug("DatabaseConfig.getMariaPassword -> " + masked);
+        return value;
     }
 
     public String getMongoHost() {
-        return getString("Database.MongoDB.Host", "localhost");
-    }
-
-    public void setMongoHost(String host) {
-        set("Database.MongoDB.Host", host);
+        String value = getString("Database.MongoDB.Host", "localhost");
+        getDebugLog().debug("DatabaseConfig.getMongoHost -> " + value);
+        return value;
     }
 
     public int getMongoPort() {
-        return getInt("Database.MongoDB.Port", 27017);
-    }
-
-    public void setMongoPort(int port) {
-        set("Database.MongoDB.Port", port);
+        int value = getInt("Database.MongoDB.Port", 27017);
+        getDebugLog().debug("DatabaseConfig.getMongoPort -> " + value);
+        return value;
     }
 
     public String getMongoDatabase() {
-        return getString("Database.MongoDB.Database", "luckprefix");
-    }
-
-    public void setMongoDatabase(String database) {
-        set("Database.MongoDB.Database", database);
+        String value = getString("Database.MongoDB.Database", "luckprefix");
+        getDebugLog().debug("DatabaseConfig.getMongoDatabase -> " + value);
+        return value;
     }
 
     public String getMongoUser() {
-        return getString("Database.MongoDB.User", "luckprefix");
-    }
-
-    public void setMongoUser(String user) {
-        set("Database.MongoDB.User", user);
+        String value = getString("Database.MongoDB.User", "luckprefix");
+        getDebugLog().debug("DatabaseConfig.getMongoUser -> " + value);
+        return value;
     }
 
     public String getMongoPassword() {
-        return getString("Database.MongoDB.Password", "");
-    }
-
-    public void setMongoPassword(String password) {
-        set("Database.MongoDB.Password", password);
+        String value = getString("Database.MongoDB.Password", "");
+        String masked = value.isEmpty() ? "(empty)" : "******";
+        getDebugLog().debug("DatabaseConfig.getMongoPassword -> " + masked);
+        return value;
     }
 }

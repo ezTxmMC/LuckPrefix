@@ -3,6 +3,7 @@ package de.eztxm.luckprefix;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
@@ -21,6 +22,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Getter
@@ -32,6 +35,8 @@ public final class LuckPrefix extends JavaPlugin {
     private static LuckPrefix instance;
     @Getter
     private static boolean leafCompatibility = false;
+
+    private DebugLog debugLog;
 
     private String prefix;
     private DependUtil dependUtil;
@@ -50,9 +55,11 @@ public final class LuckPrefix extends JavaPlugin {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
+        setupLogger();
         checkCompatibility();
         saveDefaultConfig();
         instance = this;
+        debugLog.info("Initializing LuckPrefix...");
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
         dependUtil = new DependUtil(this);
         if (!dependUtil.isLuckPermsEnabled()) {
@@ -103,15 +110,18 @@ public final class LuckPrefix extends JavaPlugin {
         String pluginVersion = getDescription().getVersion();
         String sqliteDefaultPath = dataFolderPath.resolve("storage").toString().replace("\\", "/");
 
-        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, pluginVersion));
-        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, sqliteDefaultPath));
-        configService.register(GroupsConfig.class, groupsPath, GroupsConfig::new);
+        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
+        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog, sqliteDefaultPath));
+        configService.register(GroupsConfig.class, groupsPath, path -> new GroupsConfig(path, debugLog));
 
         MainConfig config = configService.of(MainConfig.class);
-        if (config.isAutoReloadEnabled()) {
-            this.configWatcher = new ConfigWatcher(dataFolderPath.toFile(), path -> {
-                String fileName = path.getFileName().toString().toLowerCase();
+        startConfigWatcher(config);
+    }
 
+    public void startConfigWatcher(MainConfig config) {
+        if (config.isAutoReloadEnabled()) {
+            this.configWatcher = new ConfigWatcher(getDataPath().toFile(), path -> {
+                String fileName = path.getFileName().toString().toLowerCase();
                 switch (fileName) {
                     case "config.yml" -> {
                         configService.reload(MainConfig.class);
@@ -126,19 +136,26 @@ public final class LuckPrefix extends JavaPlugin {
                         Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
                     }
                     default -> {
+                        getLogger().warning("Unknown config file: " + fileName);
                         return false;
                     }
                 }
                 getLogger().info("Reloading %s file".formatted(fileName));
                 return true;
             });
+            this.configWatcher.start();
         }
+    }
+
+    private void setupLogger() {
+        debugLog = new DebugLog(getDataFolder().toPath().resolve("debug.log"), 1_000_000L);
     }
 
     private void checkCompatibility() {
         String bukkitVersion = Bukkit.getServer().getBukkitVersion();
         String brand = (Bukkit.getName() + " " + bukkitVersion).toLowerCase();
         leafCompatibility = brand.contains("leaf");
+        debugLog.info("LuckPrefix compatibility has been detected in " + brand);
     }
 
     @Override

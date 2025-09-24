@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public final class ConfigWatcher {
@@ -49,7 +50,7 @@ public final class ConfigWatcher {
     public void start() {
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
-            this.directoryToWatch.toPath().register(watchService, ENTRY_MODIFY);
+            this.directoryToWatch.toPath().register(watchService, ENTRY_MODIFY, ENTRY_CREATE);
         } catch (IOException ioException) {
 
             return;
@@ -65,7 +66,7 @@ public final class ConfigWatcher {
                     break;
                 }
                 for (WatchEvent<?> event : watchKey.pollEvents()) {
-                    if (event.kind() != ENTRY_MODIFY) continue;
+                    if (event.kind() != ENTRY_MODIFY && event.kind() != ENTRY_CREATE) continue;
 
                     Object rawContext = event.context();
                     if (!(rawContext instanceof Path)) continue;

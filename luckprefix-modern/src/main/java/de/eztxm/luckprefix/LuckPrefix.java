@@ -4,6 +4,7 @@ import de.eztxm.ezlib.api.database.SQLConnection;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.listener.ChatListener;
@@ -34,6 +35,8 @@ public final class LuckPrefix extends JavaPlugin {
     @Getter
     private static boolean leafCompatibility = false;
 
+    private DebugLog debugLog;
+
     private String prefix;
     private DependUtil dependUtil;
     private ConfigService configService;
@@ -52,6 +55,7 @@ public final class LuckPrefix extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        setupLogger();
         checkCompatibility();
         saveDefaultConfig();
         instance = this;
@@ -109,35 +113,47 @@ public final class LuckPrefix extends JavaPlugin {
         configService.register(GroupsConfig.class, groupsPath, GroupsConfig::new);
 
         MainConfig config = configService.of(MainConfig.class);
-        if (config.isAutoReloadEnabled()) {
-            this.configWatcher = new ConfigWatcher(dataFolderPath.toFile(), path -> {
-                String fileName = path.getFileName().toString().toLowerCase();
+        startConfigWatcher(config);
+    }
 
+    public void startConfigWatcher(MainConfig config) {
+        if (config.isAutoReloadEnabled()) {
+            this.configWatcher = new ConfigWatcher(getDataFolder(), path -> {
+                String fileName = path.getFileName().toString().toLowerCase();
                 switch (fileName) {
                     case "config.yml" -> {
                         configService.reload(MainConfig.class);
                         Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
                     }
-                    case "database.yml" -> configService.reload(DatabaseConfig.class);
+                    case "database.yml" -> {
+                        configService.reload(DatabaseConfig.class);
+                        // TODO: Reload all Group Caches
+                    }
                     case "groups.yml" -> {
                         configService.reload(GroupsConfig.class);
                         Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
                     }
                     default -> {
+                        getLogger().warning("Unknown config file: " + fileName);
                         return false;
                     }
                 }
                 getLogger().info("Reloading %s file".formatted(fileName));
-
                 return true;
             });
+            this.configWatcher.start();
         }
+    }
+
+    private void setupLogger() {
+        debugLog = new DebugLog(getDataFolder().toPath().resolve("debug.log"), 1_000_000L);
     }
 
     private void checkCompatibility() {
         String bukkitVersion = Bukkit.getServer().getBukkitVersion();
         String brand = (Bukkit.getName() + " " + bukkitVersion).toLowerCase();
         leafCompatibility = brand.contains("leaf");
+        debugLog.info("LuckPrefix compatibility has been detected in " + brand);
     }
 
     @Override
