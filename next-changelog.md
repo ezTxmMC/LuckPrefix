@@ -1,4 +1,4 @@
-# LuckPrefix 2.0.0-BETA+11
+# LuckPrefix 2.0.0-BETA+12
 
 ## What's changed?
 

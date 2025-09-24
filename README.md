@@ -17,9 +17,9 @@ player list. This is where dedicated addons come into play.
 >
 > - 1.21.4+:
     >
-- Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10-paper
->   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10-spigot
-> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+10
+- Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11-paper
+>   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11-spigot
+> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11
 > - 1.16 - 1.20.6: https://modrinth.com/plugin/luckprefix/version/1.2.3
 > - 1.8 - 1.15: https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 
@@ -27,7 +27,7 @@ player list. This is where dedicated addons come into play.
 
 - [x] Code optimizing & recode
 - [x] Gradients, only prefix and with playername
-- [ ] Auto-Reload config option
+- [x] Auto-Reload config option
 - [x] LuckPrefix command
 - [ ] Database support
 - [ ] Component-System
