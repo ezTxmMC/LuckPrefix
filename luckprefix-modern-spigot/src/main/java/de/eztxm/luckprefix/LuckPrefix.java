@@ -20,6 +20,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -95,7 +96,14 @@ public final class LuckPrefix extends JavaPlugin {
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
+        MainConfig mainConfig = configService.of(MainConfig.class);
         metrics = new Metrics(instance, 27277);
+        metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
+        metrics.addCustomChart(new SimplePie("auto_reload", () -> String.valueOf(mainConfig.isAutoReloadEnabled())));
+        metrics.addCustomChart(new SimplePie("console_logging", () -> String.valueOf(mainConfig.isConsoleLoggingEnabled())));
+        metrics.addCustomChart(new SimplePie("print_warnings", () -> String.valueOf(mainConfig.isPrintWarningsEnabled())));
+        metrics.addCustomChart(new SimplePie("debug_logging_flag", () -> String.valueOf(mainConfig.isDebugLoggingFlagEnabled())));
+        metrics.addCustomChart(new SimplePie("show_nametags", () -> String.valueOf(mainConfig.isShowNameTags())));
     }
 
     private void setupConfigs() {
