@@ -68,6 +68,7 @@ public final class LuckPrefix extends JavaPlugin {
             return;
         }
         setupConfigs();
+        MainConfig mainConfig = configService.of(MainConfig.class);
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
@@ -87,14 +88,13 @@ public final class LuckPrefix extends JavaPlugin {
             new LuckPrefixPlaceholderExtension(this).register();
             this.getServer().broadcastMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").legacyMiniMessage());
         }
-        updateChecker = new UpdateChecker(getDescription().getVersion());
-        if (!updateChecker.latestVersion(development)) {
+        updateChecker = new UpdateChecker(mainConfig.getUpdateChannel(), getDescription().getVersion(), debugLog);
+        if (!updateChecker.isLatestVersion(development)) {
             getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
         }
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
         }
-        MainConfig mainConfig = configService.of(MainConfig.class);
         metrics = new Metrics(instance, 27277);
         metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
         metrics.addCustomChart(new SimplePie("auto_reload", () -> String.valueOf(mainConfig.isAutoReloadEnabled())));

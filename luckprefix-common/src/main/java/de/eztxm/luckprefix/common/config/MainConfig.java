@@ -30,6 +30,7 @@ public final class MainConfig extends AbstractConfig {
                 "This plugin supports MiniMessage and legacy '&' color codes."
         ));
 
+        addDefault("Update-Channel", "release");
         addDefault("ColoredPermission", "luckprefix.coloredmessages");
         addDefault("AutoReloadConfig.Enabled", false);
         addDefault("UpdateTime", 5);
@@ -46,6 +47,12 @@ public final class MainConfig extends AbstractConfig {
         saveDefaults();
         getDebugLog().debug("MainConfig.defineDefaults: defaults saved");
 
+        setComments("Update-Channel", List.of(
+                "The channel which should be used for the update checker",
+                "Choose between \"release\", \"beta\" and \"snapshot\" version",
+                "Default: release",
+                "ONLY CHANGE IF YOU KNOW WHAT YOU ARE DOING!"
+        ));
         setComments("ColoredPermission", List.of(
                 "Permission required to use color codes in chat"
         ));
@@ -67,6 +74,12 @@ public final class MainConfig extends AbstractConfig {
 
         saveComments();
         getDebugLog().debug("MainConfig.defineDefaults: comments saved");
+    }
+
+    public String getUpdateChannel() {
+        String value = getString("Update-Channel", "release");
+        getDebugLog().debug("MainConfig.getUpdateChannel -> " + value);
+        return value;
     }
 
     public String getColoredPermission() {

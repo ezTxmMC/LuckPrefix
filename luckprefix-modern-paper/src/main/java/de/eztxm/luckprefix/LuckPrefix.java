@@ -23,8 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Getter
@@ -69,6 +67,7 @@ public final class LuckPrefix extends JavaPlugin {
             return;
         }
         setupConfigs();
+        MainConfig mainConfig = configService.of(MainConfig.class);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
@@ -87,8 +86,8 @@ public final class LuckPrefix extends JavaPlugin {
             new LuckPrefixPlaceholderExtension(this.getPluginMeta()).register();
             this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
         }
-        updateChecker = new UpdateChecker(this.getPluginMeta().getVersion());
-        if (!updateChecker.latestVersion(development)) {
+        updateChecker = new UpdateChecker(mainConfig.getUpdateChannel(), this.getPluginMeta().getVersion(), debugLog);
+        if (!updateChecker.isLatestVersion(development)) {
             String message = "Newer version " + updateChecker.getCachedLatestVersion()
                     + " is available at https://modrinth.com/plugin/luckprefix";
             getLogger().warning(message);
@@ -96,7 +95,6 @@ public final class LuckPrefix extends JavaPlugin {
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf compatibility mode.");
         }
-        MainConfig mainConfig = configService.of(MainConfig.class);
         metrics = new Metrics(instance, 27277);
         metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
         metrics.addCustomChart(new SimplePie("auto_reload", () -> String.valueOf(mainConfig.isAutoReloadEnabled())));
