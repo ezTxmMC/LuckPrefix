@@ -1,10 +1,10 @@
 ---
-name: feature_request
+name: Feature Request
 about: Thanks for taking the time to fill out this feature request to help us to improve
   the plugin.
 title: "[FEATURE-REQUEST]: "
 labels: 'feature: discussion-needed, status: waiting-feedback'
-assignees: SyntaxJason, ezTxmMC, Copilot
+assignees: ezTxmMC, SyntaxJason
 
 ---
 

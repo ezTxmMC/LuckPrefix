@@ -1,5 +1,5 @@
 ---
-name: bug_report
+name: Bug Report
 about: Thanks for taking the time to fill out this bug report to help us to improve
   the plugin.
 title: "[BUG-REPORT]: "
