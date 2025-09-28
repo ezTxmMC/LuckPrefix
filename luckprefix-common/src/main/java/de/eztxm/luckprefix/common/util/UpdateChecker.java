@@ -33,7 +33,7 @@ public class UpdateChecker {
         this.debugLog.debug("Checking if version is latest - development mode: " + development);
         this.fetchManifest();
         this.fetchLatestVersion();
-        if (this.isForceUpdate()) {
+        if (this.isForceUpdate() || this.updateChannel.equalsIgnoreCase("snapshot")) {
             this.debugLog.debug("Force update detected, returning false");
             return false;
         }
