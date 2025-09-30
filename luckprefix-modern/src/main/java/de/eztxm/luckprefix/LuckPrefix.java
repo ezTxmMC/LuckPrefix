@@ -30,7 +30,7 @@ import java.nio.file.Path;
 @Getter
 public final class LuckPrefix extends JavaPlugin {
     @Getter
-    private static final boolean development = true;
+    private static final boolean development = false;
     @Getter
     private static LuckPrefix instance;
     @Getter

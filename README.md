@@ -16,9 +16,9 @@ player list. This is where dedicated addons come into play.
 > production use.
 >
 > - 1.21.4+:
->   - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11-paper
->   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11-spigot
-> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+11
+>   - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12-paper
+>   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12-spigot
+> - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12
 > - 1.16 - 1.20.6: https://modrinth.com/plugin/luckprefix/version/1.2.3
 > - 1.8 - 1.15: https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 
