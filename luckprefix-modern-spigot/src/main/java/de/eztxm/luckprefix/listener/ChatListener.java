@@ -4,7 +4,7 @@ import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -30,8 +30,8 @@ public class ChatListener implements Listener {
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
         event.setFormat(new Text(groupsConfig.getChatFormat(group)).placeholders(player).legacyMiniMessage(
-                Placeholder.component("prefix", new Text(groupManager.getPrefixByGroup().get(group)).placeholders(player).miniMessage()),
-                Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup().get(group)).placeholders(player).miniMessage()),
+                Placeholder.component("prefix", new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage()),
+                Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage()),
                 Placeholder.component("player", new Text(player.getName()).placeholders(player).component()),
                 Placeholder.component("message",
                         player.hasPermission(config.getColoredPermission()) ?

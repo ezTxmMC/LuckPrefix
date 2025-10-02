@@ -1,6 +1,6 @@
 package de.eztxm.luckprefix.listener;
 
-import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.EventBus;

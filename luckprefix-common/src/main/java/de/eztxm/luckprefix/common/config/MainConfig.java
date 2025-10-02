@@ -44,7 +44,6 @@ public final class MainConfig extends AbstractConfig {
         addDefault("Logging.Debug.Enabled", true);
         addDefault("Logging.Debug.File", "luckprefix-debug.log");
 
-        saveDefaults();
         getDebugLog().debug("MainConfig.defineDefaults: defaults saved");
 
         setComments("Update-Channel", List.of(
@@ -72,7 +71,6 @@ public final class MainConfig extends AbstractConfig {
         setComments("Logging.Debug.Enabled", List.of("Deprecated toggle; debug file logger is always active"));
         setComments("Logging.Debug.File", List.of("Debug log file path"));
 
-        saveComments();
         getDebugLog().debug("MainConfig.defineDefaults: comments saved");
     }
 
@@ -85,6 +83,15 @@ public final class MainConfig extends AbstractConfig {
     public String getColoredPermission() {
         String value = getString("ColoredPermission", "luckprefix.coloredmessages");
         getDebugLog().debug("MainConfig.getColoredPermission -> " + value);
+        return value;
+    }
+
+    public Long getUpdateTime() {
+        Long value = Long.parseLong(getString("UpdateTime", "5"));
+        getDebugLog().debug("MainConfig.UpdateTime -> " + value);
+        if(value <= 0) {
+            return 5L;
+        }
         return value;
     }
 

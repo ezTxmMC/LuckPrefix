@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.group.GroupManager;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -15,11 +16,9 @@ import java.util.UUID;
 
 @Getter
 public class PlayerManager {
-    private final Map<UUID, BukkitTask> joinSchedulers;
     private final Map<UUID, String> userGroups;
 
     public PlayerManager() {
-        this.joinSchedulers = new HashMap<>();
         this.userGroups = new HashMap<>();
     }
 
@@ -42,40 +41,28 @@ public class PlayerManager {
         if (group.equalsIgnoreCase(luckPermsGroup)) return;
         group = luckPermsGroup;
         userGroups.put(uuid, group);
-        if (groupManager.getPrefixByGroup().get(group) == null) {
-            if (groupManager.getSuffixByGroup().get(group) == null) {
+        if (groupManager.getPrefixByGroup(group) == null) {
+            if (groupManager.getSuffixByGroup(group) == null) {
                 return;
             }
-            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup().get(group)).placeholders(player).miniMessage());
-            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).legacyMiniMessage(
+            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
+            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
                     Placeholder.component("prefix", Component.text("")), suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getPrefixByGroup().get(group)).placeholders(player).miniMessage());
-        if (groupManager.getSuffixByGroup().get(group) == null) {
-            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).legacyMiniMessage(
+        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
+        if (groupManager.getSuffixByGroup(group) == null) {
+            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
                     prefix, Placeholder.component("suffix", Component.text("")), Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup().get(group)).placeholders(player).miniMessage());
-        player.setPlayerListName(new Text(groupManager.getTabFormatByGroup().get(group)).placeholders(player).legacyMiniMessage(
+        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
+        player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
                 prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
-    }
-
-    public void addJoinScheduler(UUID uuid, BukkitTask bukkitTask) {
-        this.joinSchedulers.put(uuid, bukkitTask);
     }
 
     public void setUserGroup(UUID uuid, String group) {
         this.userGroups.put(uuid, group);
-    }
-
-    public void cancelJoinScheduler(UUID uuid) {
-        this.joinSchedulers.get(uuid).cancel();
-    }
-
-    public void removeJoinScheduler(UUID uuid) {
-        this.joinSchedulers.remove(uuid);
     }
 
     public void removeUserGroup(UUID uuid) {

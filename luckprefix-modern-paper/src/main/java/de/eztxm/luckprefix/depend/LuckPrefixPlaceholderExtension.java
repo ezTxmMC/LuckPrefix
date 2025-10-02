@@ -1,7 +1,7 @@
 package de.eztxm.luckprefix.depend;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.group.GroupManager;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.luckperms.api.LuckPerms;
@@ -39,22 +39,22 @@ public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
         String playerGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup().toLowerCase();
         switch (params.toLowerCase()) {
             case "prefix" -> {
-                return groupManager.getPrefixByGroup().get(playerGroup);
+                return groupManager.getPrefixByGroup(playerGroup);
             }
             case "suffix" -> {
-                return groupManager.getSuffixByGroup().get(playerGroup);
+                return groupManager.getSuffixByGroup(playerGroup);
             }
             case "tabformat" -> {
-                return groupManager.getTabFormatByGroup().get(playerGroup);
+                return groupManager.getTabFormatByGroup(playerGroup);
             }
             case "chatformat" -> {
-                return groupManager.getChatFormatByGroup().get(playerGroup);
+                return groupManager.getChatFormatByGroup(playerGroup);
             }
             case "sortid" -> {
-                return groupManager.getSortIdByGroup().get(playerGroup);
+                return groupManager.getSortIdAsStringByGroup(playerGroup);
             }
             case "namecolor" -> {
-                return groupManager.getNameColorByGroup().get(playerGroup).asHexString();
+                return groupManager.getNameColorByGroup(playerGroup).asHexString();
             }
         }
         return null;

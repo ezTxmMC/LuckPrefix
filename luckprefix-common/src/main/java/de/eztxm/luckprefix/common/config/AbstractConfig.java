@@ -37,12 +37,14 @@ public abstract class AbstractConfig {
         return filePath;
     }
 
+
     public final DebugLog getDebugLog() {
         return debugLog;
     }
 
     public synchronized void load() {
         debugLog.info(getClass().getSimpleName() + ".load: begin - " + filePath);
+        boolean existed = filePath.toFile().exists();
         ensureParentDirectoryExists();
         dataTree = loadYamlToMap(filePath.toFile(), debugLog);
 
@@ -50,6 +52,7 @@ public abstract class AbstractConfig {
             debugLog.debug(getClass().getSimpleName() + ".load: applying defaults (first run)");
             defineDefaults();
             defaultsWereApplied = true;
+            if(!existed) save();
         }
         try {
             afterLoad();

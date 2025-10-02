@@ -6,12 +6,12 @@ import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
+import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
 import de.eztxm.luckprefix.util.DependUtil;
-import de.eztxm.luckprefix.util.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
@@ -20,6 +20,7 @@ import net.luckperms.api.LuckPermsProvider;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -29,7 +30,7 @@ import java.nio.file.Path;
 public final class LuckPrefix extends JavaPlugin {
 
     @Getter
-    private static final boolean development = false;
+    private static final boolean development = true;
     @Getter
     private static LuckPrefix instance;
     @Getter
@@ -50,6 +51,8 @@ public final class LuckPrefix extends JavaPlugin {
     private UpdateChecker updateChecker;
     private BukkitTask autoReloadConfigTask;
     private Metrics metrics;
+
+    private BukkitTask tabUpdateTask;
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
@@ -82,6 +85,7 @@ public final class LuckPrefix extends JavaPlugin {
         groupListener.onUpdateGroup();
         groupListener.onUpdateUserGroup();
         groupManager.loadGroups();
+        updateGroups();
         if (dependUtil.isPlaceholderAPIEnabled()) {
             new LuckPrefixPlaceholderExtension(this.getPluginMeta()).register();
             this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
@@ -119,6 +123,21 @@ public final class LuckPrefix extends JavaPlugin {
 
         MainConfig config = configService.of(MainConfig.class);
         startConfigWatcher(config);
+    }
+
+    private void updateGroups() {
+        long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
+        if(periodTicks < 5L) periodTicks = 5L;
+
+        this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
+            try {
+                for(Player viewer : Bukkit.getOnlinePlayers()) {
+                    getGroupManager().setGroups(viewer, viewer.getScoreboard());
+                }
+            } catch (Exception exception) {
+                getDebugLog().error("tabUpdateTask failed", exception);
+            }
+        }, 1L, periodTicks);
     }
 
     public void startConfigWatcher(MainConfig config) {
@@ -168,6 +187,10 @@ public final class LuckPrefix extends JavaPlugin {
         playerManager = null;
         groupManager = null;
         groupListener = null;
+        if(tabUpdateTask != null) {
+            tabUpdateTask.cancel();
+            tabUpdateTask = null;
+        }
         updateChecker = null;
         configService = null;
         if (configWatcher != null) {

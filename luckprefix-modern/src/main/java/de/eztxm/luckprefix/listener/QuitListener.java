@@ -14,11 +14,6 @@ public class QuitListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
-        if (playerManager.getJoinSchedulers().containsKey(player.getUniqueId())) {
-            playerManager.cancelJoinScheduler(player.getUniqueId());
-            playerManager.removeJoinScheduler(player.getUniqueId());
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        }
         if (playerManager.getUserGroups().containsKey(player.getUniqueId())) {
             playerManager.removeUserGroup(player.getUniqueId());
         }

@@ -2,7 +2,7 @@ package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
-import de.eztxm.luckprefix.util.GroupManager;
+import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
@@ -31,10 +31,6 @@ public class JoinListener implements Listener {
         String group = user.getPrimaryGroup();
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
-        BukkitTask bukkitTask = Bukkit.getScheduler().runTaskTimerAsynchronously(LuckPrefix.getInstance(), () ->
-                Bukkit.getOnlinePlayers().forEach(players ->
-                        groupManager.setGroups(players, players.getScoreboard())), 1, config.getLong("UpdateTime") * 20);
-        playerManager.addJoinScheduler(player.getUniqueId(), bukkitTask);
         playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
         if (!checker.isLatestVersion(LuckPrefix.isDevelopment()) && player.hasPermission("luckprefix.update")) {

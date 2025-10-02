@@ -26,7 +26,6 @@ public final class GroupsConfig extends AbstractConfig {
         addDefault("default.SortID", 999);
         addDefault("default.NameColor", "gray");
 
-        saveDefaults();
         getDebugLog().debug("GroupsConfig.defineDefaults: defaults saved to disk");
 
         setComments("default", List.of("The name of the group"));
@@ -40,7 +39,6 @@ public final class GroupsConfig extends AbstractConfig {
         ));
         setComments("default.NameColor", List.of("Name color above the player"));
 
-        saveComments();
         getDebugLog().debug("GroupsConfig.defineDefaults: comments saved");
     }
 
@@ -129,6 +127,10 @@ public final class GroupsConfig extends AbstractConfig {
         String path = Encoder.path(rawGroupName, "NameColor");
         getDebugLog().info("GroupsConfig.setNameColor: " + path + " = " + colorName);
         set(path, colorName);
+    }
+
+    public void removeGroup(String group) {
+        set(group, null);
     }
 
     public void ensureGroupDefaults(String rawGroupName,
