@@ -23,9 +23,10 @@ We aim to respond within **7 business days** and resolve verified issues as quic
 ## 🔒 Supported Versions
 
 | Version | Supported |
-|---------|-----------|
-| `2.0.0` | ✅         |
-| < `1.x` | ❌         |
+| ------- | --------- |
+| `3.0.0` | ✅        |
+| `2.0.0` | ✅        |
+| < `1.x` | ❌        |
 
 ## 🙏 Responsible Disclosure
 

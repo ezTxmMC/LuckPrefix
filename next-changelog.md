@@ -1,4 +1,4 @@
-# LuckPrefix 2.0.0-BETA+12
+# LuckPrefix 3.0.0-ALPHA+1
 
 ## What's changed?
 
@@ -16,10 +16,8 @@
 
 ## Known issues:
 
--
+- ***
 
----
+  3.0.0@[xxx]()
 
-2.0.0@[xxx]()
-
-It's an **beta** version, please report any [issues](https://github.com/ezTxmMC/LuckPrefix/issues) at GitHub.
+It's an **alpha** version, please report any [issues](https://github.com/ezTxmMC/LuckPrefix/issues) at GitHub.

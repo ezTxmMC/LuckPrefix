@@ -8,8 +8,9 @@ player list. This is where dedicated addons come into play.
 > [!CAUTION]
 > These are **unstable builds**. Use at your own risk! They may contain bugs or incomplete features.
 >
-> - Features: https://ci.eztxm.de/job/LuckPrefix-Experimental/lastSuccessfulBuild
+> - New Features and Fixes: https://ci.eztxm.de/job/LuckPrefix-Experimental/lastSuccessfulBuild
 > - Main Branch: https://ci.eztxm.de/job/LuckPrefix/lastSuccessfulBuild
+> - v3 Branch: https://ci.eztxm.de/job/LuckPrefix-v3/lastSuccessfulBuild
 
 > [!NOTE]
 > For most users, the **stable builds** are recommended. They have been thoroughly tested and are suitable for
@@ -22,16 +23,11 @@ player list. This is where dedicated addons come into play.
 > - 1.16 - 1.20.6: https://modrinth.com/plugin/luckprefix/version/1.2.3
 > - 1.8 - 1.15: https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
 
-## ToDo List for 2.0
+## ToDo List for 3.0.0
 
-- [x] Code optimizing & recode
-- [x] Gradients, only prefix and with playername
-- [x] Auto-Reload config option
-- [x] LuckPrefix command
-- [ ] Database support
-- [ ] Option to show all prefixes and suffixes in order of sort-id asc and desc
-- [ ] LuckPerms metadata integration
-- [x] PlaceholderAPI integration
-- [x] Multi-File support
-- [x] Extra groups.yml
-- [x] Spigot/Paper split, causing papers hard-fork
+- [ ] Code optimizing & recode
+- [ ] Better database support
+- [ ] Easier update system
+- [ ] Multiple server software and sub-software support
+- [ ] Folia support (?)
+- [ ] Simplified equal system
