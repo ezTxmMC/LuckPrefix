@@ -14,13 +14,10 @@
         <module>luckprefix-api</module>
         <module>luckprefix-assembler</module>
         <module>luckprefix-common</module>
-        <module>luckprefix-fabric</module>
-        <module>luckprefix-forge</module>
-        <module>luckprefix-neoforge</module>
-        <module>luckprefix-paper</module>
-        <module>luckprefix-spigot</module>
-        <module>luckprefix-sponge</module>
-        <module>luckprefix-velocity</module>
+        <module>luckprefix-core</module>
+        <module>luckprefix-plugin</module>
+        <module>luckprefix-modloader</module>
+        <module>luckprefix-proxy</module>
     </modules>
 
 </project>
