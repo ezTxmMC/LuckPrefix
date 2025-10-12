@@ -16,7 +16,7 @@ public class ReloadConfigsSubCommand {
         ConfigService configService = LuckPrefix.getInstance().getConfigService();
         configService.reloadAll();
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
-        groupManager.reloadAllFromConfigs();
+        groupManager.reloadFromConfigs();
         LuckPrefix.getInstance().startConfigWatcher(configService.of(MainConfig.class));
         adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
         return true;

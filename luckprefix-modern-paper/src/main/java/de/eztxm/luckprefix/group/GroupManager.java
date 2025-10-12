@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix.group;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.config.AbstractConfig;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
@@ -59,7 +58,7 @@ public final class GroupManager {
         debugLog.info("GroupManager.loadGroups: done");
     }
 
-    public void reloadAllFromConfigs() {
+    public void reloadFromConfigs() {
         debugLog.info("GroupManager.reloadAllFromConfigs: start");
         clearAllCaches();
         collectAndLoadFromConfigs();
@@ -119,7 +118,7 @@ public final class GroupManager {
             Scoreboard scoreboard = viewer.getScoreboard();
 
             if(removed != null) {
-                Team team = scoreboard.getTeam(buildTeamKey(removed.getRawName(), removed.getSortId()));
+                Team team = scoreboard.getTeam(buildTeamKey(removed.rawName(), removed.sortId()));
                 if(team != null) {
                     team.unregister();
                 }
@@ -164,7 +163,7 @@ public final class GroupManager {
                 GroupMeta meta = metaByGroup.getOrDefault(groupName, metaByGroup.get(defaultGroupName));
                 if (meta == null) continue;
 
-                String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
+                String teamName = buildTeamKey(meta.rawName(), meta.sortId());
                 Team desired = ensureTeam(scoreboard, teamName);
 
                 Team current = scoreboard.getEntryTeam(target.getName());
@@ -199,50 +198,11 @@ public final class GroupManager {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
 
-            String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
+            String teamName = buildTeamKey(meta.rawName(), meta.sortId());
             Team team = ensureTeam(scoreboard, teamName);
 
             applyTeamDecor(team, meta, viewer);
         }
-    }
-
-    private boolean checkGroup(String rawGroupName, GroupsConfig groups) {
-        if (!groups.hasGroup(rawGroupName)) {
-            groups.setPrefix(rawGroupName, "");
-            groups.setSuffix(rawGroupName, "");
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            groups.setSortId(rawGroupName, nextSortId());
-            groups.setNameColor(rawGroupName, "white");
-            return true;
-        }
-        boolean changed = false;
-
-        if(groups.getPrefix(rawGroupName).isEmpty()) {
-            groups.setPrefix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getSuffix(rawGroupName) == null) {
-            groups.setSuffix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getTabFormat(rawGroupName) == null) {
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            changed = true;
-        }
-        if (groups.getChatFormat(rawGroupName) == null) {
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            changed = true;
-        }
-        int sort = groups.getSortId(rawGroupName);
-        if (sort <= 0) {
-            groups.setSortId(rawGroupName, nextSortId()); changed = true;
-        }
-        if (groups.getNameColor(rawGroupName) == null) {
-            groups.setNameColor(rawGroupName, "white"); changed = true;
-        }
-
-        return changed;
     }
 
     private void refreshAllScoreboards() {
@@ -342,34 +302,34 @@ public final class GroupManager {
 
     private void applyTeamDecor(Team team, GroupMeta meta, Player viewer) {
 
-        String tab = meta.getTabFormat();
+        String tab = meta.tabFormat();
 
-        if (tab != null && tab.contains("<prefix>") && !meta.getPrefix().isEmpty()) {
+        if (tab != null && tab.contains("<prefix>") && !meta.prefix().isEmpty()) {
             try {
                 Component c = new Text(tab
-                        .replace("<prefix>", meta.getPrefix())
+                        .replace("<prefix>", meta.prefix())
                         .replace("<suffix>", "")
                         .replace("<player>", "")
                 ).placeholders(viewer).miniMessage();
                 team.prefix(c);
             } catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: prefix build failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: prefix build failed for group " + meta.rawName(), ex);
             }
         }
 
-        if (tab != null && tab.contains("<suffix>") && !meta.getSuffix().isEmpty()) {
+        if (tab != null && tab.contains("<suffix>") && !meta.suffix().isEmpty()) {
             try {
-                Component c = new Text(meta.getSuffix()).placeholders(viewer).miniMessage();
+                Component c = new Text(meta.suffix()).placeholders(viewer).miniMessage();
                 team.suffix(c);
             } catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: suffix build failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: suffix build failed for group " + meta.rawName(), ex);
             }
         }
 
-        if (meta.getNameColor() != null) {
-            try { team.color(meta.getNameColor()); }
+        if (meta.nameColor() != null) {
+            try { team.color(meta.nameColor()); }
             catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: team.color failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: team.color failed for group " + meta.rawName(), ex);
             }
         }
     }
@@ -384,35 +344,35 @@ public final class GroupManager {
     }
 
     private int nextSortId() {
-        return metaByGroup.values().stream().mapToInt(GroupMeta::getSortId).max().orElse(0) + 10;
+        return metaByGroup.values().stream().mapToInt(GroupMeta::sortId).max().orElse(0) + 10;
     }
 
     public String getPrefixByGroup(String group) {
-        return metaByGroup.get(group).getPrefix();
+        return metaByGroup.get(group).prefix();
     }
 
     public String getSuffixByGroup(String group) {
-        return metaByGroup.get(group).getSuffix();
+        return metaByGroup.get(group).suffix();
     }
 
     public int getSortIdByGroup(String group) {
-        return metaByGroup.get(group).getSortId();
+        return metaByGroup.get(group).sortId();
     }
 
     public String getSortIdAsStringByGroup(String group) {
-        return Integer.toString(metaByGroup.get(group).getSortId());
+        return Integer.toString(metaByGroup.get(group).sortId());
     }
 
     public String getTabFormatByGroup(String group) {
-        return metaByGroup.get(group).getTabFormat();
+        return metaByGroup.get(group).tabFormat();
     }
 
     public String getChatFormatByGroup(String group) {
-        return metaByGroup.get(group).getChatFormat();
+        return metaByGroup.get(group).chatFormat();
     }
 
     public NamedTextColor getNameColorByGroup(String group) {
-        return metaByGroup.get(group).getNameColor();
+        return metaByGroup.get(group).nameColor();
     }
 
     public List<String> getLoadedGroups() {

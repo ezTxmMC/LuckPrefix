@@ -147,7 +147,7 @@ public final class LuckPrefix extends JavaPlugin {
                 switch (fileName) {
                     case "config.yml" -> {
                         configService.reload(MainConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfigs());
                     }
                     case "database.yml" -> {
                         configService.reload(DatabaseConfig.class);
@@ -155,7 +155,7 @@ public final class LuckPrefix extends JavaPlugin {
                     }
                     case "groups.yml" -> {
                         configService.reload(GroupsConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadAllFromConfigs());
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfigs());
                     }
                     default -> {
                         getLogger().warning("Unknown config file: " + fileName);

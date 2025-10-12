@@ -16,6 +16,7 @@
         <module>luckprefix-modern</module>
         <module>luckprefix-modern-paper</module>
         <module>luckprefix-modern-spigot</module>
+        <module>luckprefix-api</module>
     </modules>
 
 </project>
