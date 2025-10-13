@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.group.IGroupManager;
 import de.eztxm.luckprefix.group.GroupManager;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -31,7 +32,7 @@ public class PlayerManager {
     }
 
     public void setPlayerListName(UUID uuid, String luckPermsGroup) {
-        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        GroupManager groupManager = (GroupManager) LuckPrefix.getInstance().getGroupManager();
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;

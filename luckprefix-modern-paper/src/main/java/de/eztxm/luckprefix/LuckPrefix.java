@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix;
 
 import de.eztxm.ezlib.database.MongoDBConnection;
+import de.eztxm.luckprefix.api.group.IGroupManager;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.logging.DebugLog;
@@ -12,6 +13,7 @@ import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
 import de.eztxm.luckprefix.util.DependUtil;
+import de.eztxm.luckprefix.util.LuckPlayer;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
@@ -46,7 +48,7 @@ public final class LuckPrefix extends JavaPlugin {
     private LuckPerms luckPerms;
     private Registry registry;
     private PlayerManager playerManager;
-    private GroupManager groupManager;
+    private IGroupManager groupManager;
     private GroupListener groupListener;
     private UpdateChecker updateChecker;
     private BukkitTask autoReloadConfigTask;
@@ -115,7 +117,7 @@ public final class LuckPrefix extends JavaPlugin {
         Path configPath = dataFolderPath.resolve("config.yml");
         Path databasePath = dataFolderPath.resolve("database.yml");
         Path groupsPath = dataFolderPath.resolve("groups.yml");
-        String pluginVersion = getDescription().getVersion();
+        String pluginVersion = getDescription().getVersion(); // TODO: Implement the paper way to don't use deprecated.
 
         configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
         configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
@@ -132,7 +134,8 @@ public final class LuckPrefix extends JavaPlugin {
         this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
             try {
                 for(Player viewer : Bukkit.getOnlinePlayers()) {
-                    getGroupManager().setGroups(viewer, viewer.getScoreboard());
+                    LuckPlayer luckPlayer = new LuckPlayer(viewer);
+                    getGroupManager().setGroups(luckPlayer, luckPlayer.getScoreboard());
                 }
             } catch (Exception exception) {
                 getDebugLog().error("tabUpdateTask failed", exception);
@@ -147,7 +150,7 @@ public final class LuckPrefix extends JavaPlugin {
                 switch (fileName) {
                     case "config.yml" -> {
                         configService.reload(MainConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfigs());
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
                     }
                     case "database.yml" -> {
                         configService.reload(DatabaseConfig.class);
@@ -155,7 +158,7 @@ public final class LuckPrefix extends JavaPlugin {
                     }
                     case "groups.yml" -> {
                         configService.reload(GroupsConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfigs());
+                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
                     }
                     default -> {
                         getLogger().warning("Unknown config file: " + fileName);

@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.command.subcommand;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.group.IGroupManager;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.MainConfig;
 import de.eztxm.luckprefix.group.GroupManager;
@@ -15,8 +16,8 @@ public class ReloadConfigsSubCommand {
         adventurePlayer.sendMessage(new Text("Reloading configurations...").prefixMiniMessage());
         ConfigService configService = LuckPrefix.getInstance().getConfigService();
         configService.reloadAll();
-        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
-        groupManager.reloadFromConfigs();
+        IGroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        groupManager.reloadFromConfig();
         LuckPrefix.getInstance().startConfigWatcher(configService.of(MainConfig.class));
         adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
         return true;

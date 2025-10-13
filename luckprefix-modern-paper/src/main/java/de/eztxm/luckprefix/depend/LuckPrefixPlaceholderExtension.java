@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.depend;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.group.IGroupManager;
 import de.eztxm.luckprefix.group.GroupManager;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -35,7 +36,7 @@ public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
         LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
-        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        GroupManager groupManager = (GroupManager) LuckPrefix.getInstance().getGroupManager();
         String playerGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup().toLowerCase();
         switch (params.toLowerCase()) {
             case "prefix" -> {
