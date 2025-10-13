@@ -1,4 +1,4 @@
-package de.eztxm.luckprefix.api.group;
+package de.eztxm.luckprefix.api.manager;
 
 import de.eztxm.luckprefix.api.unified.ILuckPlayer;
 import de.eztxm.luckprefix.api.unified.ILuckScoreboard;

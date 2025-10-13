@@ -1,5 +1,6 @@
 package de.eztxm.luckprefix.common.config;
 
+import de.eztxm.luckprefix.api.config.AbstractConfig;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;

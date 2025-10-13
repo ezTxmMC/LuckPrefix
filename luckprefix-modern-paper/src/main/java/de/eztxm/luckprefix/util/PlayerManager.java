@@ -1,7 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.group.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IPlayerManager;
 import de.eztxm.luckprefix.group.GroupManager;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -9,20 +9,19 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Getter
-public class PlayerManager {
+public class PlayerManager implements IPlayerManager {
     private final Map<UUID, String> userGroups;
 
     public PlayerManager() {
         this.userGroups = new HashMap<>();
     }
 
+    @Override
     public void initializePlayer(UUID uuid, String group) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
@@ -31,6 +30,7 @@ public class PlayerManager {
         userGroups.put(uuid, group);
     }
 
+    @Override
     public void setPlayerListName(UUID uuid, String luckPermsGroup) {
         GroupManager groupManager = (GroupManager) LuckPrefix.getInstance().getGroupManager();
         Player player = Bukkit.getPlayer(uuid);
@@ -69,11 +69,18 @@ public class PlayerManager {
                 prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 
+    @Override
     public void setUserGroup(UUID uuid, String group) {
         this.userGroups.put(uuid, group);
     }
 
+    @Override
     public void removeUserGroup(UUID uuid) {
         this.userGroups.remove(uuid);
+    }
+
+    @Override
+    public Map<UUID, String> getUserGroups() {
+        return userGroups;
     }
 }

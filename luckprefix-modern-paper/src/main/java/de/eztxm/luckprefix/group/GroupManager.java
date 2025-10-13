@@ -1,13 +1,14 @@
 package de.eztxm.luckprefix.group;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.group.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.logging.DebugLog;
 import de.eztxm.luckprefix.api.unified.ILuckPlayer;
 import de.eztxm.luckprefix.api.unified.ILuckScoreboard;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.common.group.GroupMeta;
 import de.eztxm.luckprefix.common.util.Encoder;
 import de.eztxm.luckprefix.util.LuckPlayer;
 import de.eztxm.luckprefix.util.LuckScoreboard;

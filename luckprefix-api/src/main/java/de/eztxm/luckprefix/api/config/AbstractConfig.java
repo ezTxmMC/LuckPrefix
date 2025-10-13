@@ -1,6 +1,6 @@
-package de.eztxm.luckprefix.common.config;
+package de.eztxm.luckprefix.api.config;
 
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.DebugLog;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;

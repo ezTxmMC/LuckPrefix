@@ -1,15 +1,14 @@
 package de.eztxm.luckprefix.command.subcommand;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.group.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.SneakyThrows;
 import net.kyori.adventure.audience.Audience;
 
-public class ReloadConfigsSubCommand {
+public class ReloadCommand {
 
     @SneakyThrows
     public static boolean execute(Audience adventurePlayer) {

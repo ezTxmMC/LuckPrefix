@@ -1,10 +1,10 @@
 package de.eztxm.luckprefix.group;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.logging.DebugLog;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.Encoder;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;

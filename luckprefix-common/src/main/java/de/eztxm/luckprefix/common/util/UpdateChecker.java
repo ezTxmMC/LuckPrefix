@@ -1,6 +1,6 @@
 package de.eztxm.luckprefix.common.util;
 
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.DebugLog;
 import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONObject;

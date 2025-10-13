@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix.depend;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.group.IGroupManager;
 import de.eztxm.luckprefix.group.GroupManager;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;

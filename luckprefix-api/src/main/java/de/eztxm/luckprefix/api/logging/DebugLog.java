@@ -1,4 +1,4 @@
-package de.eztxm.luckprefix.common.logging;
+package de.eztxm.luckprefix.api.logging;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

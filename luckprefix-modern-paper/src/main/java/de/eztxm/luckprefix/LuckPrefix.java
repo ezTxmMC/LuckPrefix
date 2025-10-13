@@ -1,10 +1,13 @@
 package de.eztxm.luckprefix;
 
 import de.eztxm.ezlib.database.MongoDBConnection;
-import de.eztxm.luckprefix.api.group.IGroupManager;
+import de.eztxm.luckprefix.api.ILuckPrefixAPI;
+import de.eztxm.luckprefix.api.config.AbstractConfig;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IPlayerManager;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.group.GroupManager;
@@ -29,7 +32,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.nio.file.Path;
 
 @Getter
-public final class LuckPrefix extends JavaPlugin {
+public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
 
     @Getter
     private static final boolean development = true;
@@ -47,7 +50,7 @@ public final class LuckPrefix extends JavaPlugin {
     private MongoDBConnection mongoDBConnection;
     private LuckPerms luckPerms;
     private Registry registry;
-    private PlayerManager playerManager;
+    private IPlayerManager playerManager;
     private IGroupManager groupManager;
     private GroupListener groupListener;
     private UpdateChecker updateChecker;
@@ -56,22 +59,40 @@ public final class LuckPrefix extends JavaPlugin {
 
     private BukkitTask tabUpdateTask;
 
-    @SuppressWarnings("UnstableApiUsage")
+    @Override
+    public void onLoad() {
+        this.loaded();
+    }
+
     @Override
     public void onEnable() {
+        this.enabled();
+    }
+
+    @Override
+    public void onDisable() {
+        this.disabled();
+    }
+
+    @Override
+    public void loaded() {
         setupLogger();
         checkCompatibility();
-        saveDefaultConfig();
+        setupConfigs();
         instance = this;
         debugLog.info("Initializing LuckPrefix...");
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
         dependUtil = new DependUtil(this);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
+    public void enabled() {
         if (!dependUtil.isLuckPermsEnabled()) {
             this.getServer().sendMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").prefixMiniMessage());
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        setupConfigs();
         MainConfig mainConfig = configService.of(MainConfig.class);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
@@ -101,49 +122,36 @@ public final class LuckPrefix extends JavaPlugin {
         if (isLeafCompatibility()) {
             getLogger().info("LuckPrefix is running in Leaf compatibility mode.");
         }
-        metrics = new Metrics(instance, 27277);
-        metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
-        metrics.addCustomChart(new SimplePie("auto_reload", () -> String.valueOf(mainConfig.isAutoReloadEnabled())));
-        metrics.addCustomChart(new SimplePie("console_logging", () -> String.valueOf(mainConfig.isConsoleLoggingEnabled())));
-        metrics.addCustomChart(new SimplePie("print_warnings", () -> String.valueOf(mainConfig.isPrintWarningsEnabled())));
-        metrics.addCustomChart(new SimplePie("debug_logging_flag", () -> String.valueOf(mainConfig.isDebugLoggingFlagEnabled())));
-        metrics.addCustomChart(new SimplePie("show_nametags", () -> String.valueOf(mainConfig.isShowNameTags())));
+        setupMetrics();
     }
 
-    private void setupConfigs() {
-        this.configService = new ConfigService();
-
-        Path dataFolderPath = getDataFolder().toPath();
-        Path configPath = dataFolderPath.resolve("config.yml");
-        Path databasePath = dataFolderPath.resolve("database.yml");
-        Path groupsPath = dataFolderPath.resolve("groups.yml");
-        String pluginVersion = getDescription().getVersion(); // TODO: Implement the paper way to don't use deprecated.
-
-        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
-        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
-        configService.register(GroupsConfig.class, groupsPath, path -> new GroupsConfig(path, debugLog));
-
-        MainConfig config = configService.of(MainConfig.class);
-        startConfigWatcher(config);
+    @Override
+    public void disabled() {
+        instance = null;
+        registry = null;
+        playerManager = null;
+        groupManager = null;
+        groupListener = null;
+        if(tabUpdateTask != null) {
+            tabUpdateTask.cancel();
+            tabUpdateTask = null;
+        }
+        updateChecker = null;
+        configService = null;
+        if (configWatcher != null) {
+            configWatcher.stop();
+        }
+        configWatcher = null;
+        mongoDBConnection = null;
+        luckPerms = null;
+        autoReloadConfigTask = null;
+        metrics.shutdown();
+        metrics = null;
     }
 
-    private void updateGroups() {
-        long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
-        if(periodTicks < 5L) periodTicks = 5L;
-
-        this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
-            try {
-                for(Player viewer : Bukkit.getOnlinePlayers()) {
-                    LuckPlayer luckPlayer = new LuckPlayer(viewer);
-                    getGroupManager().setGroups(luckPlayer, luckPlayer.getScoreboard());
-                }
-            } catch (Exception exception) {
-                getDebugLog().error("tabUpdateTask failed", exception);
-            }
-        }, 1L, periodTicks);
-    }
-
-    public void startConfigWatcher(MainConfig config) {
+    @Override
+    public void startConfigWatcher(AbstractConfig abstractConfig) {
+        MainConfig config = (MainConfig) abstractConfig;
         if (config.isAutoReloadEnabled()) {
             this.configWatcher = new ConfigWatcher(getDataPath().toFile(), path -> {
                 String fileName = path.getFileName().toString().toLowerCase();
@@ -183,27 +191,48 @@ public final class LuckPrefix extends JavaPlugin {
         debugLog.info("LuckPrefix compatibility has been detected in " + brand);
     }
 
-    @Override
-    public void onDisable() {
-        instance = null;
-        registry = null;
-        playerManager = null;
-        groupManager = null;
-        groupListener = null;
-        if(tabUpdateTask != null) {
-            tabUpdateTask.cancel();
-            tabUpdateTask = null;
-        }
-        updateChecker = null;
-        configService = null;
-        if (configWatcher != null) {
-            configWatcher.stop();
-        }
-        configWatcher = null;
-        mongoDBConnection = null;
-        luckPerms = null;
-        autoReloadConfigTask = null;
-        metrics.shutdown();
-        metrics = null;
+    @SuppressWarnings("UnstableApiUsage")
+    private void setupConfigs() {
+        this.configService = new ConfigService();
+
+        Path dataFolderPath = getDataFolder().toPath();
+        Path configPath = dataFolderPath.resolve("config.yml");
+        Path databasePath = dataFolderPath.resolve("database.yml");
+        Path groupsPath = dataFolderPath.resolve("groups.yml");
+        String pluginVersion = getPluginMeta().getVersion();
+
+        configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
+        configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
+        configService.register(GroupsConfig.class, groupsPath, path -> new GroupsConfig(path, debugLog));
+
+        MainConfig config = configService.of(MainConfig.class);
+        startConfigWatcher(config);
+    }
+
+    private void updateGroups() {
+        long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
+        if(periodTicks < 5L) periodTicks = 5L;
+
+        this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
+            try {
+                for(Player viewer : Bukkit.getOnlinePlayers()) {
+                    LuckPlayer luckPlayer = new LuckPlayer(viewer);
+                    getGroupManager().setGroups(luckPlayer, luckPlayer.getScoreboard());
+                }
+            } catch (Exception exception) {
+                getDebugLog().error("tabUpdateTask failed", exception);
+            }
+        }, 1L, periodTicks);
+    }
+
+    private void setupMetrics() {
+        MainConfig mainConfig = configService.of(MainConfig.class);
+        metrics = new Metrics(instance, 27277);
+        metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
+        metrics.addCustomChart(new SimplePie("auto_reload", () -> String.valueOf(mainConfig.isAutoReloadEnabled())));
+        metrics.addCustomChart(new SimplePie("console_logging", () -> String.valueOf(mainConfig.isConsoleLoggingEnabled())));
+        metrics.addCustomChart(new SimplePie("print_warnings", () -> String.valueOf(mainConfig.isPrintWarningsEnabled())));
+        metrics.addCustomChart(new SimplePie("debug_logging_flag", () -> String.valueOf(mainConfig.isDebugLoggingFlagEnabled())));
+        metrics.addCustomChart(new SimplePie("show_nametags", () -> String.valueOf(mainConfig.isShowNameTags())));
     }
 }

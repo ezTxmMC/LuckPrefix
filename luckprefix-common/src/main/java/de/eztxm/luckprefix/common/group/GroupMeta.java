@@ -1,4 +1,4 @@
-package de.eztxm.luckprefix.group;
+package de.eztxm.luckprefix.common.group;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 

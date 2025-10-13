@@ -1,11 +1,10 @@
 package de.eztxm.luckprefix.listener;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.group.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IPlayerManager;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
-import de.eztxm.luckprefix.group.GroupManager;
 import de.eztxm.luckprefix.util.LuckPlayer;
-import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -22,7 +21,7 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
+        IPlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
         IGroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
         playerManager.initializePlayer(player.getUniqueId(), group);
