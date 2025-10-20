@@ -26,27 +26,21 @@ public class ChatListener implements Listener {
         ConfigService service = LuckPrefix.getInstance().getConfigService();
         MainConfig config = service.of(MainConfig.class);
         GroupsConfig groupsConfig = service.of(GroupsConfig.class);
+        assert user != null;
         String group = user.getPrimaryGroup();
-
         String effectiveGroup = groupsConfig.hasGroup(group) ? group : "default";
         if (!effectiveGroup.equals(group)) {
             LuckPrefix.getInstance().getLogger().warning(
                     "Gruppe '" + group + "' nicht in groups.yml gefunden – benutze 'default'.");
         }
-
         String format = groupsConfig.getChatFormat(group);
         if (format == null || format.isBlank()) {
             format = "<prefix> <dark_gray>- <gray><player> <dark_gray>» <gray><message>";
             LuckPrefix.getInstance().getLogger().warning(
                     "Chatformat für '" + effectiveGroup + "' fehlt/leer – nutze Fallback.");
         }
-
         String prefStr = groupsConfig.getPrefix(group);
-        if (prefStr == null) prefStr = "";
-
         String suffStr = groupsConfig.getSuffix(group);
-        if (suffStr == null) suffStr = "";
-
         final String formatFinal = format;
         final String prefixFinal = prefStr;
         final String suffixFinal = suffStr;

@@ -1,8 +1,8 @@
-package de.eztxm.luckprefix.group;
+package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 import de.eztxm.luckprefix.api.manager.IGroupManager;
-import de.eztxm.luckprefix.api.logging.DebugLog;
 import de.eztxm.luckprefix.api.unified.ILuckPlayer;
 import de.eztxm.luckprefix.api.unified.ILuckScoreboard;
 import de.eztxm.luckprefix.common.config.ConfigService;
@@ -29,7 +29,7 @@ public final class GroupManager implements IGroupManager {
     private static final int TEAM_NAME_MAX_LENGTH = 16;
 
     private final LuckPrefix plugin;
-    private final DebugLog debugLog;
+    private final IDebugLog debugLog;
 
     private final Map<String, GroupMeta> metaByGroup = new ConcurrentHashMap<>();
     private final Set<String> loadedGroups = Collections.newSetFromMap(new ConcurrentHashMap<>());

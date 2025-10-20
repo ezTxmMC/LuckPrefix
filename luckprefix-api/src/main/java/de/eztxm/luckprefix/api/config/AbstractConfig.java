@@ -1,6 +1,6 @@
 package de.eztxm.luckprefix.api.config;
 
-import de.eztxm.luckprefix.api.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -14,7 +14,7 @@ import java.util.*;
 public abstract class AbstractConfig {
 
     private final Path filePath;
-    private final DebugLog debugLog;
+    private final IDebugLog debugLog;
 
     private Map<String, Object> dataTree = new LinkedHashMap<>();
 
@@ -23,7 +23,7 @@ public abstract class AbstractConfig {
 
     private boolean defaultsWereApplied = false;
 
-    protected AbstractConfig(Path filePath, DebugLog debugLog) {
+    protected AbstractConfig(Path filePath, IDebugLog debugLog) {
         this.filePath = Objects.requireNonNull(filePath, "filePath");
         this.debugLog = Objects.requireNonNull(debugLog, "debugLog");
         this.debugLog.info(getClass().getSimpleName() + ": constructed for " + filePath);
@@ -38,7 +38,7 @@ public abstract class AbstractConfig {
     }
 
 
-    public final DebugLog getDebugLog() {
+    public final IDebugLog getDebugLog() {
         return debugLog;
     }
 
@@ -100,7 +100,7 @@ public abstract class AbstractConfig {
         if (!ok) debugLog.warn(getClass().getSimpleName() + ": failed to create directory " + parent);
     }
 
-    private static Map<String, Object> loadYamlToMap(File sourceFile, DebugLog debugLog) {
+    private static Map<String, Object> loadYamlToMap(File sourceFile, IDebugLog debugLog) {
         if (!sourceFile.exists()) {
             debugLog.debug("AbstractConfig.loadYamlToMap: file missing, returning empty map: " + sourceFile);
             return new LinkedHashMap<>();
@@ -271,7 +271,7 @@ public abstract class AbstractConfig {
             Map<String, Object> root,
             List<String> header,
             Map<String, List<String>> comments,
-            DebugLog debugLog
+            IDebugLog debugLog
     ) {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {

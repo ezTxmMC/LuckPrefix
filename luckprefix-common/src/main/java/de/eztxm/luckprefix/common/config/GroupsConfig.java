@@ -1,7 +1,8 @@
 package de.eztxm.luckprefix.common.config;
 
 import de.eztxm.luckprefix.api.config.AbstractConfig;
-import de.eztxm.luckprefix.api.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.Encoder;
 
 import java.nio.file.Path;
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
 
 public final class GroupsConfig extends AbstractConfig {
 
-    public GroupsConfig(Path filePath, DebugLog debugLog) {
+    public GroupsConfig(Path filePath, IDebugLog debugLog) {
         super(filePath, debugLog);
         getDebugLog().info("GroupsConfig: constructed for " + filePath);
     }
