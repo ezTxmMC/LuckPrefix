@@ -44,12 +44,11 @@ public class ChatListener implements Listener {
         final String formatFinal = format;
         final String prefixFinal = prefStr;
         final String suffixFinal = suffStr;
-        event.renderer((audience, displayName, message, viewer) -> new Text(formatFinal).miniMessage(
+        event.renderer((audience, displayName, message, viewer) -> new Text(formatFinal).placeholders(audience).miniMessage(
                 Placeholder.component("prefix", new Text(prefixFinal).placeholders(audience).miniMessage()),
                 Placeholder.component("suffix", new Text(suffixFinal).placeholders(audience).miniMessage()),
                 Placeholder.component("player", Component.text(audience.getName())),
                 Placeholder.component("message", player.hasPermission(config.getColoredPermission()) ? Text.parseLegacy(message) : message)
         ));
     }
-
 }
