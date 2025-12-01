@@ -3,21 +3,23 @@ package de.eztxm.luckprefix;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.api.ILuckPrefixAPI;
 import de.eztxm.luckprefix.api.config.AbstractConfig;
+import de.eztxm.luckprefix.api.event.IGroupListener;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 import de.eztxm.luckprefix.api.manager.IGroupManager;
 import de.eztxm.luckprefix.api.manager.IPlayerManager;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
-import de.eztxm.luckprefix.api.logging.DebugLog;
+import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
-import de.eztxm.luckprefix.group.GroupManager;
+import de.eztxm.luckprefix.manager.GroupManager;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
 import de.eztxm.luckprefix.util.DependUtil;
 import de.eztxm.luckprefix.util.LuckPlayer;
-import de.eztxm.luckprefix.util.PlayerManager;
+import de.eztxm.luckprefix.manager.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
@@ -38,10 +40,10 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
     private static final boolean development = true;
     @Getter
     private static LuckPrefix instance;
-    @Getter
-    private static boolean leafCompatibility = false;
 
-    private DebugLog debugLog;
+    private static String serverBrand = "";
+
+    private IDebugLog debugLog;
 
     private String prefix;
     private DependUtil dependUtil;
@@ -52,7 +54,7 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
     private Registry registry;
     private IPlayerManager playerManager;
     private IGroupManager groupManager;
-    private GroupListener groupListener;
+    private IGroupListener groupListener;
     private UpdateChecker updateChecker;
     private BukkitTask autoReloadConfigTask;
     private Metrics metrics;
@@ -74,20 +76,29 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
         this.disabled();
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void loaded() {
         setupLogger();
-        checkCompatibility();
-        setupConfigs();
         instance = this;
         debugLog.info("Initializing LuckPrefix...");
-        prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
+        prefix = "<gradient:#42EC63:#66EC82>LuckPrefix</gradient> <dark_gray>| <gray>";
         dependUtil = new DependUtil(this);
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void enabled() {
+        fetchBrand();
+        if (serverBrand.equalsIgnoreCase("spigot") || serverBrand.equalsIgnoreCase("bukkit")) {
+            getServer().sendMessage(new Text("<#ff2222>LuckPrefix Paper-based is not compatible with %s. Use another version of LuckPrefix instead if available.".formatted(serverBrand)).prefixMiniMessage());
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        getServer().sendMessage(new Text("<gradient:#42EC63:#66EC82>LuckPrefix</gradient> <gray>is running on <aqua>%s".formatted(serverBrand)).miniMessage());
+        getServer().sendMessage(new Text("<gray>Version: <aqua>%s".formatted(this.getPluginMeta().getVersion())).miniMessage());
+        getServer().sendMessage(new Text("<gray>by %s".formatted(String.join(", ", this.getPluginMeta().getAuthors()))).miniMessage());
+        setupConfigs();
         if (!dependUtil.isLuckPermsEnabled()) {
             this.getServer().sendMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").prefixMiniMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -118,9 +129,6 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
             String message = "Newer version " + updateChecker.getCachedLatestVersion()
                     + " is available at https://modrinth.com/plugin/luckprefix";
             getLogger().warning(message);
-        }
-        if (isLeafCompatibility()) {
-            getLogger().info("LuckPrefix is running in Leaf compatibility mode.");
         }
         setupMetrics();
     }
@@ -184,10 +192,30 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
         debugLog = new DebugLog(getDataFolder().toPath().resolve("debug.log"), 1_000_000L);
     }
 
-    private void checkCompatibility() {
+    private void fetchBrand() {
         String bukkitVersion = Bukkit.getServer().getBukkitVersion();
         String brand = (Bukkit.getName() + " " + bukkitVersion).toLowerCase();
-        leafCompatibility = brand.contains("leaf");
+        if (brand.toLowerCase().contains("bukkit")) {
+            serverBrand = "Bukkit";
+            return;
+        }
+        if (brand.toLowerCase().contains("spigot")) {
+            serverBrand = "Spigot";
+            return;
+        }
+        if (brand.toLowerCase().contains("paper")) {
+            serverBrand = "Paper";
+            return;
+        }
+        if (brand.toLowerCase().contains("purpur")) {
+            serverBrand = "Purpur";
+            return;
+        }
+        if (brand.toLowerCase().contains("leaf")) {
+            serverBrand = "Leaf";
+            return;
+        }
+        serverBrand = "Unknown";
         debugLog.info("LuckPrefix compatibility has been detected in " + brand);
     }
 
@@ -212,7 +240,6 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
     private void updateGroups() {
         long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
         if(periodTicks < 5L) periodTicks = 5L;
-
         this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
             try {
                 for(Player viewer : Bukkit.getOnlinePlayers()) {

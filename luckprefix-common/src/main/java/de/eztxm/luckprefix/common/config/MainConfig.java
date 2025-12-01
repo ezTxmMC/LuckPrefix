@@ -1,7 +1,7 @@
 package de.eztxm.luckprefix.common.config;
 
 import de.eztxm.luckprefix.api.config.AbstractConfig;
-import de.eztxm.luckprefix.api.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -10,7 +10,7 @@ public final class MainConfig extends AbstractConfig {
 
     private final String pluginVersion;
 
-    public MainConfig(Path filePath, DebugLog debugLog, String pluginVersion) {
+    public MainConfig(Path filePath, IDebugLog debugLog, String pluginVersion) {
         super(filePath, debugLog);
         this.pluginVersion = pluginVersion == null ? "unknown" : pluginVersion;
         getDebugLog().info("MainConfig: constructed, version=" + this.pluginVersion);

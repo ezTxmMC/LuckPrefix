@@ -1,7 +1,7 @@
 name: ${project.name}
 version: ${project.version}
 main: de.eztxm.luckprefix.LuckPrefix
-author: ezTxmMC
+author: ezTxmMC, SyntaxJason
 api-version: '1.21.4'
 description: The luckperms addon for tab- and chat-prefixes on the market.
 website: https://eztxm.de

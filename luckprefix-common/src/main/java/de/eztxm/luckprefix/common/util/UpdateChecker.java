@@ -1,6 +1,6 @@
 package de.eztxm.luckprefix.common.util;
 
-import de.eztxm.luckprefix.api.logging.DebugLog;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,11 +16,11 @@ import java.net.URL;
 public class UpdateChecker {
     private final String updateChannel;
     private final String currentVersion;
-    private final DebugLog debugLog;
+    private final IDebugLog debugLog;
     private JSONObject manifest;
     private String cachedLatestVersion = "N/A";
 
-    public UpdateChecker(String updateChannel, String version, DebugLog debugLog) {
+    public UpdateChecker(String updateChannel, String version, IDebugLog debugLog) {
         this.updateChannel = updateChannel;
         this.currentVersion = version;
         this.debugLog = debugLog;
