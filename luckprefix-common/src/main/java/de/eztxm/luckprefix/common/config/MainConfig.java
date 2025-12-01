@@ -116,7 +116,7 @@ public final class MainConfig extends AbstractConfig {
     }
 
     public boolean isTabFormattingEnabled() {
-        return getBoolean("Tab-Formatting", false);
+        return getBoolean("Tab-Formatting", true);
     }
 
     public int getUpdateTimeSeconds() {
