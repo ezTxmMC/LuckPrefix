@@ -93,7 +93,13 @@ public final class MainConfig extends AbstractConfig {
     }
 
     public Long getUpdateTime() {
-        long value = Long.parseLong(getString("UpdateTime", "5"));
+        long value;
+        try {
+            value = Long.parseLong(getString("UpdateTime", "5"));
+        } catch (NumberFormatException e) {
+            getDebugLog().warn("MainConfig.getUpdateTime: invalid value for UpdateTime, using default 5L");
+            value = 5L;
+        }
         getDebugLog().debug("MainConfig.UpdateTime -> " + value);
         if(value <= 0) {
             return 5L;
