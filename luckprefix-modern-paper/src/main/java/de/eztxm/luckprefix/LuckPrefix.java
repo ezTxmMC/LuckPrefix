@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix;
 
-import de.eztxm.ezlib.database.MongoDBConnection;
-import de.eztxm.luckprefix.api.ILuckPrefixAPI;
+import de.eztxm.luckprefix.api.ILuckPrefix;
 import de.eztxm.luckprefix.api.config.AbstractConfig;
 import de.eztxm.luckprefix.api.event.IGroupListener;
 import de.eztxm.luckprefix.api.logging.IDebugLog;
@@ -34,7 +33,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.nio.file.Path;
 
 @Getter
-public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
+public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
 
     @Getter
     private static final boolean development = true;
@@ -49,7 +48,6 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
     private DependUtil dependUtil;
     private ConfigService configService;
     private ConfigWatcher configWatcher;
-    private MongoDBConnection mongoDBConnection;
     private LuckPerms luckPerms;
     private Registry registry;
     private IPlayerManager playerManager;
@@ -76,11 +74,11 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
         this.disabled();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void loaded() {
         setupLogger();
         instance = this;
+        ILuckPrefix.register(instance);
         debugLog.info("Initializing LuckPrefix...");
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix</gradient> <dark_gray>| <gray>";
         dependUtil = new DependUtil(this);
@@ -150,7 +148,6 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefixAPI {
             configWatcher.stop();
         }
         configWatcher = null;
-        mongoDBConnection = null;
         luckPerms = null;
         autoReloadConfigTask = null;
         metrics.shutdown();
