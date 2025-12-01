@@ -112,7 +112,7 @@ public final class MainConfig extends AbstractConfig {
     }
 
     public boolean isChatFormattingEnabled() {
-        return getBoolean("Chat-Formatting", false);
+        return getBoolean("Chat-Formatting", true);
     }
 
     public boolean isTabFormattingEnabled() {
