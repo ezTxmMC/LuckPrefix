@@ -127,7 +127,9 @@ public final class LuckPrefix extends JavaPlugin {
     }
 
     private void updateGroups() {
-        long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
+        MainConfig config = getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) return;
+        long periodTicks = config.getUpdateTime();
         if(periodTicks < 5L) periodTicks = 5L;
 
         this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {

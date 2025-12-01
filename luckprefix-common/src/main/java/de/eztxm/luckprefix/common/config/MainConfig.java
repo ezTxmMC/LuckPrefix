@@ -27,7 +27,8 @@ public final class MainConfig extends AbstractConfig {
                 "|_____\\__,_|\\___|_|\\_\\_|   |_|  \\___|_| |_/_/\\_\\",
                 "Modern " + pluginVersion + " | by ezTxmMC",
                 "",
-                "This plugin supports MiniMessage and legacy '&' color codes."
+                "This plugin supports the MiniMessage format of adventure.",
+                "More about this: https://docs.papermc.io/adventure/minimessage/format"
         ));
 
         addDefault("Update-Channel", "release");
@@ -39,6 +40,8 @@ public final class MainConfig extends AbstractConfig {
         addDefault("Warning-If-Group-Can-Not-Loaded", true);
         addDefault("Auto-Add-Group", true);
         addDefault("Print-Warnings", false);
+        addDefault("Chat-Formatting", true);
+        addDefault("Tab-Formatting", true);
 
         addDefault("Logging.ConsoleEnabled", true);
         addDefault("Logging.Debug.Enabled", true);
@@ -65,6 +68,9 @@ public final class MainConfig extends AbstractConfig {
                 "If true it will automatically insert not existing groups into groups.yml or the database",
                 "ONLY DISABLE IF YOU KNOW WHAT YOU ARE DOING!"
         ));
+        setComments("Print-Warnings", List.of("Print warnings in console"));
+        setComments("Chat-Formatting", List.of("Enables the formatting of luckprefix groups in the chat."));
+        setComments("Tab-Formatting", List.of("Enables the formatting of luckprefix groups in the tab."));
 
         setComments("Logging", List.of("Logging settings"));
         setComments("Logging.ConsoleEnabled", List.of("If true, prints warnings/info to console"));
@@ -87,7 +93,7 @@ public final class MainConfig extends AbstractConfig {
     }
 
     public Long getUpdateTime() {
-        Long value = Long.parseLong(getString("UpdateTime", "5"));
+        long value = Long.parseLong(getString("UpdateTime", "5"));
         getDebugLog().debug("MainConfig.UpdateTime -> " + value);
         if(value <= 0) {
             return 5L;
@@ -103,6 +109,14 @@ public final class MainConfig extends AbstractConfig {
 
     public boolean isPrintWarningsEnabled() {
         return getBoolean("PrintWarnings", false);
+    }
+
+    public boolean isChatFormattingEnabled() {
+        return getBoolean("Chat-Formatting", false);
+    }
+
+    public boolean isTabFormattingEnabled() {
+        return getBoolean("Tab-Formatting", false);
     }
 
     public int getUpdateTimeSeconds() {

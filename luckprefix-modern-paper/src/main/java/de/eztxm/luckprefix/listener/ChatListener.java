@@ -20,11 +20,12 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onChat(AsyncChatEvent event) {
+        ConfigService service = LuckPrefix.getInstance().getConfigService();
+        MainConfig config = service.of(MainConfig.class);
+        if (!config.isChatFormattingEnabled()) return;
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        ConfigService service = LuckPrefix.getInstance().getConfigService();
-        MainConfig config = service.of(MainConfig.class);
         GroupsConfig groupsConfig = service.of(GroupsConfig.class);
         assert user != null;
         String group = user.getPrimaryGroup();

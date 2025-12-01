@@ -21,11 +21,12 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
+        ConfigService service = LuckPrefix.getInstance().getConfigService();
+        MainConfig config = service.of(MainConfig.class);
+        if (!config.isChatFormattingEnabled()) return;
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        ConfigService service = LuckPrefix.getInstance().getConfigService();
-        MainConfig config = service.of(MainConfig.class);
         GroupsConfig groupsConfig = service.of(GroupsConfig.class);
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
