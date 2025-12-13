@@ -59,7 +59,6 @@ public final class LuckPrefix extends JavaPlugin {
     public void onEnable() {
         setupLogger();
         checkCompatibility();
-        saveDefaultConfig();
         instance = this;
         debugLog.info("Initializing LuckPrefix...");
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
