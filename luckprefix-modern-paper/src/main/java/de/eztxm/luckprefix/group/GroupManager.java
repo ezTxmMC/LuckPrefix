@@ -1,7 +1,6 @@
 package de.eztxm.luckprefix.group;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.config.AbstractConfig;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
@@ -188,61 +187,23 @@ public final class GroupManager {
     }
 
     public void setupGroups(Player viewer) {
+        MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) {
+            return;
+        }
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(plugin, () -> setupGroups(viewer));
             return;
         }
         if (viewer == null) return;
-
         Scoreboard scoreboard = viewer.getScoreboard();
         for (String groupName : new ArrayList<>(loadedGroups)) {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
-
             String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
             Team team = ensureTeam(scoreboard, teamName);
-
             applyTeamDecor(team, meta, viewer);
         }
-    }
-
-    private boolean checkGroup(String rawGroupName, GroupsConfig groups) {
-        if (!groups.hasGroup(rawGroupName)) {
-            groups.setPrefix(rawGroupName, "");
-            groups.setSuffix(rawGroupName, "");
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            groups.setSortId(rawGroupName, nextSortId());
-            groups.setNameColor(rawGroupName, "white");
-            return true;
-        }
-        boolean changed = false;
-
-        if(groups.getPrefix(rawGroupName).isEmpty()) {
-            groups.setPrefix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getSuffix(rawGroupName) == null) {
-            groups.setSuffix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getTabFormat(rawGroupName) == null) {
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            changed = true;
-        }
-        if (groups.getChatFormat(rawGroupName) == null) {
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            changed = true;
-        }
-        int sort = groups.getSortId(rawGroupName);
-        if (sort <= 0) {
-            groups.setSortId(rawGroupName, nextSortId()); changed = true;
-        }
-        if (groups.getNameColor(rawGroupName) == null) {
-            groups.setNameColor(rawGroupName, "white"); changed = true;
-        }
-
-        return changed;
     }
 
     private void refreshAllScoreboards() {

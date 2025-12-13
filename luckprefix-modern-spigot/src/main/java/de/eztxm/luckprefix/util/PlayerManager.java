@@ -1,6 +1,7 @@
 package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.common.config.MainConfig;
 import de.eztxm.luckprefix.group.GroupManager;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -8,7 +9,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +23,10 @@ public class PlayerManager {
     }
 
     public void initializePlayer(UUID uuid, String group) {
+        MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) {
+            return;
+        }
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;
