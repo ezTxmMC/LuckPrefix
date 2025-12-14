@@ -5,6 +5,7 @@ import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.common.metadata.LuckPermsDataHandler;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.group.GroupManager;
@@ -47,6 +48,7 @@ public final class LuckPrefix extends JavaPlugin {
     private SQLConnection sqlConnection;
     private BukkitAudiences adventure;
     private LuckPerms luckPerms;
+    private LuckPermsDataHandler luckPermsDataHandler;
     private Registry registry;
     private PlayerManager playerManager;
     private GroupManager groupManager;
@@ -74,6 +76,7 @@ public final class LuckPrefix extends JavaPlugin {
         MainConfig mainConfig = configService.of(MainConfig.class);
         adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
+        luckPermsDataHandler = new LuckPermsDataHandler();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
         registry.registerListener(new JoinListener());
@@ -116,7 +119,6 @@ public final class LuckPrefix extends JavaPlugin {
         Path databasePath = dataFolderPath.resolve("database.yml");
         Path groupsPath = dataFolderPath.resolve("groups.yml");
         String pluginVersion = getDescription().getVersion();
-        String sqliteDefaultPath = dataFolderPath.resolve("storage").toString().replace("\\", "/");
 
         configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
         configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
@@ -186,26 +188,53 @@ public final class LuckPrefix extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
-        registry = null;
-        playerManager = null;
-        groupManager = null;
-        groupListener = null;
+        if (registry != null) {
+            registry = null;
+        }
+        if (playerManager != null) {
+            playerManager = null;
+        }
+        if (groupManager != null) {
+            groupManager = null;
+        }
+        if (groupListener != null) {
+            groupListener = null;
+        }
         if(tabUpdateTask != null) {
             tabUpdateTask.cancel();
             tabUpdateTask = null;
         }
-        updateChecker = null;
-        configService = null;
+        if (updateChecker != null) {
+            updateChecker = null;
+        }
+        if (configService != null) {
+            configService = null;
+        }
         if (configWatcher != null) {
             configWatcher.stop();
+            configWatcher = null;
         }
-        configWatcher = null;
-        mongoDBConnection = null;
-        sqlConnection = null;
-        adventure = null;
-        luckPerms = null;
-        autoReloadConfigTask = null;
-        metrics.shutdown();
-        metrics = null;
+        if (mongoDBConnection != null) {
+            mongoDBConnection = null;
+        }
+        if (sqlConnection != null) {
+            sqlConnection = null;
+        }
+        if (adventure != null) {
+            adventure = null;
+        }
+        if (luckPermsDataHandler != null) {
+            luckPermsDataHandler = null;
+        }
+        if (luckPerms != null) {
+            luckPerms = null;
+        }
+        if (autoReloadConfigTask != null) {
+            autoReloadConfigTask = null;
+        }
+        if (metrics != null) {
+            metrics.shutdown();
+            metrics = null;
+        }
     }
 }

@@ -4,6 +4,7 @@ import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.common.metadata.LuckPermsDataHandler;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
 import de.eztxm.luckprefix.group.GroupManager;
@@ -44,6 +45,7 @@ public final class LuckPrefix extends JavaPlugin {
     private ConfigWatcher configWatcher;
     private MongoDBConnection mongoDBConnection;
     private LuckPerms luckPerms;
+    private LuckPermsDataHandler luckPermsDataHandler;
     private Registry registry;
     private PlayerManager playerManager;
     private GroupManager groupManager;
@@ -71,6 +73,7 @@ public final class LuckPrefix extends JavaPlugin {
         setupConfigs();
         MainConfig mainConfig = configService.of(MainConfig.class);
         luckPerms = LuckPermsProvider.get();
+        luckPermsDataHandler = new LuckPermsDataHandler();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
         registry.registerListener(new JoinListener());

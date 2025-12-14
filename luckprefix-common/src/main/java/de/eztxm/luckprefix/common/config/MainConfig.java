@@ -40,6 +40,7 @@ public final class MainConfig extends AbstractConfig {
         addDefault("Warning-If-Group-Can-Not-Loaded", true);
         addDefault("Auto-Add-Group", true);
         addDefault("Print-Warnings", false);
+        addDefault("Use-LuckPerms-Meta-Data", false);
         addDefault("Chat-Formatting", true);
         addDefault("Tab-Formatting", true);
 
@@ -69,6 +70,7 @@ public final class MainConfig extends AbstractConfig {
                 "ONLY DISABLE IF YOU KNOW WHAT YOU ARE DOING!"
         ));
         setComments("Print-Warnings", List.of("Print warnings in console"));
+        setComments("Use-LuckPerms-Meta-Data", List.of("Enables the usage of the luckperms metadata for prefixes and suffixes."));
         setComments("Chat-Formatting", List.of("Enables the formatting of luckprefix groups in the chat."));
         setComments("Tab-Formatting", List.of("Enables the formatting of luckprefix groups in the tab."));
 
@@ -115,6 +117,10 @@ public final class MainConfig extends AbstractConfig {
 
     public boolean isPrintWarningsEnabled() {
         return getBoolean("PrintWarnings", false);
+    }
+
+    public boolean isUseLuckPermsMetaDataEnabled() {
+        return getBoolean("Use-LuckPerms-Meta-Data", false);
     }
 
     public boolean isChatFormattingEnabled() {
