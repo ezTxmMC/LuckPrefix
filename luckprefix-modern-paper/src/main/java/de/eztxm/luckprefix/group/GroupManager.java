@@ -294,7 +294,6 @@ public final class GroupManager {
         if (team != null) return team;
         try { return scoreboard.registerNewTeam(teamName); }
         catch (IllegalArgumentException ex) {
-
             String fallback = (teamName + "_" + System.nanoTime());
             if (fallback.length() > TEAM_NAME_MAX_LENGTH) fallback = fallback.substring(0, TEAM_NAME_MAX_LENGTH);
             return scoreboard.getTeam(fallback) != null ? scoreboard.getTeam(fallback) : scoreboard.registerNewTeam(fallback);
