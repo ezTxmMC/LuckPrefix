@@ -1,7 +1,10 @@
 package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.common.config.AbstractConfig;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.unified.ILuckPlayer;
+import de.eztxm.luckprefix.api.unified.ILuckScoreboard;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
@@ -214,7 +217,7 @@ public final class GroupManager implements IGroupManager {
         for (String groupName : new ArrayList<>(loadedGroups)) {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
-            String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
+            String teamName = buildTeamKey(meta.rawName(), meta.sortId());
             Team team = ensureTeam(scoreboard, teamName);
             applyTeamDecor(team, meta, viewer);
         }

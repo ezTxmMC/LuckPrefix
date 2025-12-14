@@ -11,14 +11,15 @@ import de.eztxm.luckprefix.common.config.*;
 import de.eztxm.luckprefix.common.logging.DebugLog;
 import de.eztxm.luckprefix.common.util.UpdateChecker;
 import de.eztxm.luckprefix.depend.LuckPrefixPlaceholderExtension;
-import de.eztxm.luckprefix.manager.GroupManager;
 import de.eztxm.luckprefix.listener.ChatListener;
 import de.eztxm.luckprefix.listener.GroupListener;
 import de.eztxm.luckprefix.listener.JoinListener;
 import de.eztxm.luckprefix.listener.QuitListener;
+import de.eztxm.luckprefix.manager.GroupManager;
+import de.eztxm.luckprefix.manager.PlayerManager;
 import de.eztxm.luckprefix.util.DependUtil;
 import de.eztxm.luckprefix.util.LuckPlayer;
-import de.eztxm.luckprefix.manager.PlayerManager;
+import de.eztxm.luckprefix.util.LuckScoreboard;
 import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
@@ -27,6 +28,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -77,7 +79,6 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
     @Override
     public void loaded() {
         setupLogger();
-        checkCompatibility();
         instance = this;
         ILuckPrefix.register(instance);
         debugLog.info("Initializing LuckPrefix...");
@@ -134,40 +135,35 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
 
     @Override
     public void disabled() {
-        instance = null;
+        debugLog.info("Shutting down LuckPrefix...");
+        HandlerList.unregisterAll(this);
+        Bukkit.getScheduler().cancelTasks(this);
+        if (tabUpdateTask != null) {
+            tabUpdateTask.cancel();
+            tabUpdateTask = null;
+        }
+        if (autoReloadConfigTask != null) {
+            autoReloadConfigTask.cancel();
+            autoReloadConfigTask = null;
+        }
+        if (metrics != null) {
+            metrics.shutdown();
+            metrics = null;
+        }
+        if (configWatcher != null) {
+            configWatcher.stop();
+            configWatcher = null;
+        }
         registry = null;
         playerManager = null;
         groupManager = null;
         groupListener = null;
-        if(tabUpdateTask != null) {
-            tabUpdateTask.cancel();
-            tabUpdateTask = null;
-        }
         updateChecker = null;
         configService = null;
-        if (configWatcher != null) {
-            configWatcher.stop();
-        }
-        configWatcher = null;
         luckPerms = null;
-        autoReloadConfigTask = null;
-        metrics.shutdown();
-        metrics = null;
-    }
-
-        if (!config.isTabFormattingEnabled()) return;
-        long periodTicks = config.getUpdateTime();
-        if(periodTicks < 5L) periodTicks = 5L;
-
-        this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
-            try {
-                for(Player viewer : Bukkit.getOnlinePlayers()) {
-                    getGroupManager().setGroups(viewer, viewer.getScoreboard());
-                }
-            } catch (Exception exception) {
-                getDebugLog().error("tabUpdateTask failed", exception);
-            }
-        }, 1L, periodTicks);
+        dependUtil = null;
+        debugLog = null;
+        instance = null;
     }
 
     @Override
@@ -251,13 +247,14 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
     }
 
     private void updateGroups() {
-        long periodTicks = getConfigService().of(MainConfig.class).getUpdateTime();
+        MainConfig config = getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) return;
+        long periodTicks = config.getUpdateTime();
         if(periodTicks < 5L) periodTicks = 5L;
         this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
             try {
                 for(Player viewer : Bukkit.getOnlinePlayers()) {
-                    LuckPlayer luckPlayer = new LuckPlayer(viewer);
-                    getGroupManager().setGroups(luckPlayer, luckPlayer.getScoreboard());
+                    getGroupManager().setGroups(new LuckPlayer(viewer), new LuckScoreboard(viewer.getScoreboard()));
                 }
             } catch (Exception exception) {
                 getDebugLog().error("tabUpdateTask failed", exception);
