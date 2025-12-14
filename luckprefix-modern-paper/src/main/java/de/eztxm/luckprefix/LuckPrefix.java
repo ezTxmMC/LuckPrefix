@@ -77,6 +77,7 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
     @Override
     public void loaded() {
         setupLogger();
+        checkCompatibility();
         instance = this;
         ILuckPrefix.register(instance);
         debugLog.info("Initializing LuckPrefix...");
@@ -152,6 +153,21 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
         autoReloadConfigTask = null;
         metrics.shutdown();
         metrics = null;
+    }
+
+        if (!config.isTabFormattingEnabled()) return;
+        long periodTicks = config.getUpdateTime();
+        if(periodTicks < 5L) periodTicks = 5L;
+
+        this.tabUpdateTask = Bukkit.getScheduler().runTaskTimer(this, () -> {
+            try {
+                for(Player viewer : Bukkit.getOnlinePlayers()) {
+                    getGroupManager().setGroups(viewer, viewer.getScoreboard());
+                }
+            } catch (Exception exception) {
+                getDebugLog().error("tabUpdateTask failed", exception);
+            }
+        }, 1L, periodTicks);
     }
 
     @Override

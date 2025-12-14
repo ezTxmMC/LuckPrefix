@@ -1,10 +1,7 @@
 package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.logging.IDebugLog;
-import de.eztxm.luckprefix.api.manager.IGroupManager;
-import de.eztxm.luckprefix.api.unified.ILuckPlayer;
-import de.eztxm.luckprefix.api.unified.ILuckScoreboard;
+import de.eztxm.luckprefix.common.config.AbstractConfig;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
@@ -204,20 +201,21 @@ public final class GroupManager implements IGroupManager {
     @Override
     public void setupGroups(ILuckPlayer luckPlayer) {
         Player viewer = ((LuckPlayer)luckPlayer).player();
+        MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) {
+            return;
+        }
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(plugin, () -> setupGroups(luckPlayer));
             return;
         }
         if (viewer == null) return;
-
         Scoreboard scoreboard = viewer.getScoreboard();
         for (String groupName : new ArrayList<>(loadedGroups)) {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
-
-            String teamName = buildTeamKey(meta.rawName(), meta.sortId());
+            String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
             Team team = ensureTeam(scoreboard, teamName);
-
             applyTeamDecor(team, meta, viewer);
         }
     }
@@ -311,7 +309,6 @@ public final class GroupManager implements IGroupManager {
         if (team != null) return team;
         try { return scoreboard.registerNewTeam(teamName); }
         catch (IllegalArgumentException ex) {
-
             String fallback = (teamName + "_" + System.nanoTime());
             if (fallback.length() > TEAM_NAME_MAX_LENGTH) fallback = fallback.substring(0, TEAM_NAME_MAX_LENGTH);
             return scoreboard.getTeam(fallback) != null ? scoreboard.getTeam(fallback) : scoreboard.registerNewTeam(fallback);

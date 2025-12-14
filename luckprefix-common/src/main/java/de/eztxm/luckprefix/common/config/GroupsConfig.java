@@ -32,9 +32,8 @@ public final class GroupsConfig extends AbstractConfig {
 
         setComments("default", List.of("The name of the group"));
         setComments("default.Prefix", List.of(
-                "Prefix/Suffix/Tabformat/Chatformat use Adventure MiniMessage,",
-                "but legacy '&' color codes are also supported.",
-                "https://docs.advntr.dev/minimessage/format.html"
+                "Prefix/Suffix/Tabformat/Chatformat uses the MiniMessage format of adventure.",
+                "More about this: https://docs.papermc.io/adventure/minimessage/format"
         ));
         setComments("default.SortID", List.of(
                 "Sort-ID defines tablist order (1..999). Lower is higher on the list."

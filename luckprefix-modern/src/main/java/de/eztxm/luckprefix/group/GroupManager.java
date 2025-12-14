@@ -189,6 +189,10 @@ public final class GroupManager {
     }
 
     public void setupGroups(Player viewer) {
+        MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) {
+            return;
+        }
         if (!Bukkit.isPrimaryThread()) {
             Bukkit.getScheduler().runTask(plugin, () -> setupGroups(viewer));
             return;

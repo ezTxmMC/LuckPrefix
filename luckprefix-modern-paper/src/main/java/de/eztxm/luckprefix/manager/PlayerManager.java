@@ -1,8 +1,9 @@
 package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.manager.IPlayerManager;
-import de.eztxm.luckprefix.util.Text;
+import de.eztxm.luckprefix.common.config.MainConfig;
+import de.eztxm.luckprefix.group.GroupManager;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -22,6 +23,8 @@ public class PlayerManager implements IPlayerManager {
 
     @Override
     public void initializePlayer(UUID uuid, String group) {
+        MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
+        if (!config.isTabFormattingEnabled()) return;
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;

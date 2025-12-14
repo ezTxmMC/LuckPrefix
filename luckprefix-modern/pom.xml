@@ -62,6 +62,11 @@
                                     <include>org.json:json</include>
                                     <include>org.bstats:bstats-bukkit</include>
                                     <include>org.bstats:bstats-base</include>
+                                    <include>net.kyori:adventure-api</include>
+                                    <include>net.kyori:adventure-platform-api</include>
+                                    <include>net.kyori:adventure-platform-bukkit</include>
+                                    <include>net.kyori:adventure-text-minimessage</include>
+                                    <include>net.kyori:adventure-text-serializer-legacy</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -124,7 +129,7 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.11.6</version>
+            <version>2.11.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
