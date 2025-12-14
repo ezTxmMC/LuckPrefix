@@ -18,7 +18,7 @@
 ### Fixes
 
 - Fixed no config issue ([@ezTxmMC](https://github.com/ezTxmMC))
-- 
+- Possible fixed locator bar issues and network protocol errors
 
 ## Known issues:
 

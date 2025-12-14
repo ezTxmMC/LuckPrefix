@@ -8,6 +8,8 @@ import de.eztxm.luckprefix.util.Text;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +25,14 @@ public class JoinListener implements Listener {
         PlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
         GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
-
+        AttributeInstance waypointReceive = player.getAttribute(Attribute.WAYPOINT_RECEIVE_RANGE);
+        if (waypointReceive != null) {
+            waypointReceive.setBaseValue(500);
+        }
+        AttributeInstance waypointTransmit = player.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE);
+        if (waypointTransmit != null) {
+            waypointTransmit.setBaseValue(500);
+        }
         playerManager.initializePlayer(player.getUniqueId(), group);
         groupManager.setupGroups(player);
         playerManager.setUserGroup(player.getUniqueId(), group);
