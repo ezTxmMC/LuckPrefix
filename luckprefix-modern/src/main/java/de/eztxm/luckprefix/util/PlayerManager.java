@@ -24,9 +24,7 @@ public class PlayerManager {
 
     public void initializePlayer(UUID uuid, String group) {
         MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
-        if (!config.isTabFormattingEnabled()) {
-            return;
-        }
+        if (!config.isTabFormattingEnabled()) return;
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;
@@ -40,28 +38,35 @@ public class PlayerManager {
         if (player == null) {
             return;
         }
-        if (!userGroups.containsKey(uuid)) return;
+        if (!userGroups.containsKey(uuid))
+            return;
         String group = userGroups.get(uuid);
-        if (group.equalsIgnoreCase(luckPermsGroup)) return;
+        if (group.equalsIgnoreCase(luckPermsGroup))
+            return;
         group = luckPermsGroup;
         userGroups.put(uuid, group);
         if (groupManager.getPrefixByGroup(group) == null) {
             if (groupManager.getSuffixByGroup(group) == null) {
                 return;
             }
-            TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
-            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
-                    Placeholder.component("prefix", Component.text("")), suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
+            TagResolver.Single suffix = Placeholder.component("suffix",
+                    new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
+            player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
+                    Placeholder.component("prefix", Component.text("")), suffix,
+                    Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single prefix = Placeholder.component("prefix", new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
+        TagResolver.Single prefix = Placeholder.component("prefix",
+                new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
         if (groupManager.getSuffixByGroup(group) == null) {
-            player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
-                    prefix, Placeholder.component("suffix", Component.text("")), Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
+            player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
+                    prefix, Placeholder.component("suffix", Component.text("")),
+                    Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
-        TagResolver.Single suffix = Placeholder.component("suffix", new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
-        player.setPlayerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).legacyMiniMessage(
+        TagResolver.Single suffix = Placeholder.component("suffix",
+                new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
+        player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
                 prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 

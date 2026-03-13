@@ -9,10 +9,8 @@ import de.eztxm.luckprefix.common.util.Encoder;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.model.group.Group;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -89,7 +87,7 @@ public final class GroupManager {
             GroupsConfig groups = cfg.of(GroupsConfig.class);
             MainConfig main = cfg.of(MainConfig.class);
             groups.ensureGroupDefaults(rawGroupName, main.isAutoAddGroupEnabled(), main.isPrintWarningsEnabled(), debugLog::warn);
-           groups.save();
+            groups.save();
         } catch (Exception exception) {
             debugLog.warn("createGroup: couldn't ensure defaults for " + rawGroupName + ":" + exception.getMessage());
         }
@@ -198,56 +196,14 @@ public final class GroupManager {
             return;
         }
         if (viewer == null) return;
-
         Scoreboard scoreboard = viewer.getScoreboard();
         for (String groupName : new ArrayList<>(loadedGroups)) {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
-
             String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
             Team team = ensureTeam(scoreboard, teamName);
-
             applyTeamDecor(team, meta, viewer);
         }
-    }
-
-    private boolean checkGroup(String rawGroupName, GroupsConfig groups) {
-        if (!groups.hasGroup(rawGroupName)) {
-            groups.setPrefix(rawGroupName, "");
-            groups.setSuffix(rawGroupName, "");
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            groups.setSortId(rawGroupName, nextSortId());
-            groups.setNameColor(rawGroupName, "white");
-            return true;
-        }
-        boolean changed = false;
-
-        if(groups.getPrefix(rawGroupName).isEmpty()) {
-            groups.setPrefix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getSuffix(rawGroupName) == null) {
-            groups.setSuffix(rawGroupName, "");
-            changed = true;
-        }
-        if (groups.getTabFormat(rawGroupName) == null) {
-            groups.setTabFormat(rawGroupName, "<prefix><player>");
-            changed = true;
-        }
-        if (groups.getChatFormat(rawGroupName) == null) {
-            groups.setChatFormat(rawGroupName, "<prefix><player>: <message>");
-            changed = true;
-        }
-        int sort = groups.getSortId(rawGroupName);
-        if (sort <= 0) {
-            groups.setSortId(rawGroupName, nextSortId()); changed = true;
-        }
-        if (groups.getNameColor(rawGroupName) == null) {
-            groups.setNameColor(rawGroupName, "white"); changed = true;
-        }
-
-        return changed;
     }
 
     private void refreshAllScoreboards() {
@@ -338,7 +294,6 @@ public final class GroupManager {
         if (team != null) return team;
         try { return scoreboard.registerNewTeam(teamName); }
         catch (IllegalArgumentException ex) {
-
             String fallback = (teamName + "_" + System.nanoTime());
             if (fallback.length() > TEAM_NAME_MAX_LENGTH) fallback = fallback.substring(0, TEAM_NAME_MAX_LENGTH);
             return scoreboard.getTeam(fallback) != null ? scoreboard.getTeam(fallback) : scoreboard.registerNewTeam(fallback);
@@ -356,7 +311,7 @@ public final class GroupManager {
                         .replace("<suffix>", "")
                         .replace("<player>", "")
                 ).placeholders(viewer).miniMessage();
-                team.setPrefix(LegacyComponentSerializer.legacySection().serialize(c));
+                team.prefix(c);
             } catch (Exception ex) {
                 plugin.getDebugLog().error("applyTeamDecor: prefix build failed for group " + meta.getRawName(), ex);
             }
@@ -365,14 +320,14 @@ public final class GroupManager {
         if (tab != null && tab.contains("<suffix>") && !meta.getSuffix().isEmpty()) {
             try {
                 Component c = new Text(meta.getSuffix()).placeholders(viewer).miniMessage();
-                team.setSuffix(LegacyComponentSerializer.legacySection().serialize(c));
+                team.suffix(c);
             } catch (Exception ex) {
                 plugin.getDebugLog().error("applyTeamDecor: suffix build failed for group " + meta.getRawName(), ex);
             }
         }
 
         if (meta.getNameColor() != null) {
-            try { team.setColor(convertNamedTextColorToChatColor(meta.getNameColor())); }
+            try { team.color(meta.getNameColor()); }
             catch (Exception ex) {
                 plugin.getDebugLog().error("applyTeamDecor: team.color failed for group " + meta.getRawName(), ex);
             }
@@ -422,26 +377,5 @@ public final class GroupManager {
 
     public List<String> getLoadedGroups() {
         return List.copyOf(loadedGroups);
-    }
-
-    public ChatColor convertNamedTextColorToChatColor(NamedTextColor color) {
-        if (color.equals(NamedTextColor.BLACK)) return ChatColor.BLACK;
-        if (color.equals(NamedTextColor.DARK_BLUE)) return ChatColor.DARK_BLUE;
-        if (color.equals(NamedTextColor.DARK_GREEN)) return ChatColor.DARK_GREEN;
-        if (color.equals(NamedTextColor.DARK_AQUA)) return ChatColor.DARK_AQUA;
-        if (color.equals(NamedTextColor.DARK_RED)) return ChatColor.DARK_RED;
-        if (color.equals(NamedTextColor.DARK_PURPLE)) return ChatColor.DARK_PURPLE;
-        if (color.equals(NamedTextColor.GOLD)) return ChatColor.GOLD;
-        if (color.equals(NamedTextColor.GRAY)) return ChatColor.GRAY;
-        if (color.equals(NamedTextColor.DARK_GRAY)) return ChatColor.DARK_GRAY;
-        if (color.equals(NamedTextColor.BLUE)) return ChatColor.BLUE;
-        if (color.equals(NamedTextColor.GREEN)) return ChatColor.GREEN;
-        if (color.equals(NamedTextColor.AQUA)) return ChatColor.AQUA;
-        if (color.equals(NamedTextColor.RED)) return ChatColor.RED;
-        if (color.equals(NamedTextColor.LIGHT_PURPLE)) return ChatColor.LIGHT_PURPLE;
-        if (color.equals(NamedTextColor.YELLOW)) return ChatColor.YELLOW;
-        if (color.equals(NamedTextColor.WHITE)) return ChatColor.WHITE;
-
-        return ChatColor.WHITE;
     }
 }

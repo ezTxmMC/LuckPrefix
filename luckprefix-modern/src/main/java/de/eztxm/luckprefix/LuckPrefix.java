@@ -1,6 +1,5 @@
 package de.eztxm.luckprefix;
 
-import de.eztxm.ezlib.api.database.SQLConnection;
 import de.eztxm.ezlib.database.MongoDBConnection;
 import de.eztxm.luckprefix.command.LuckPrefixCommand;
 import de.eztxm.luckprefix.common.config.*;
@@ -16,7 +15,6 @@ import de.eztxm.luckprefix.util.DependUtil;
 import de.eztxm.luckprefix.util.PlayerManager;
 import de.eztxm.luckprefix.util.Text;
 import lombok.Getter;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bstats.bukkit.Metrics;
@@ -30,8 +28,9 @@ import java.nio.file.Path;
 
 @Getter
 public final class LuckPrefix extends JavaPlugin {
+
     @Getter
-    private static final boolean development = false;
+    private static final boolean development = true;
     @Getter
     private static LuckPrefix instance;
     @Getter
@@ -44,8 +43,6 @@ public final class LuckPrefix extends JavaPlugin {
     private ConfigService configService;
     private ConfigWatcher configWatcher;
     private MongoDBConnection mongoDBConnection;
-    private SQLConnection sqlConnection;
-    private BukkitAudiences adventure;
     private LuckPerms luckPerms;
     private Registry registry;
     private PlayerManager playerManager;
@@ -57,22 +54,22 @@ public final class LuckPrefix extends JavaPlugin {
 
     private BukkitTask tabUpdateTask;
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onEnable() {
         setupLogger();
         checkCompatibility();
-        saveDefaultConfig();
         instance = this;
+        debugLog.info("Initializing LuckPrefix...");
         prefix = "<gradient:#42EC63:#66EC82>LuckPrefix <dark_gray>| <gray>";
         dependUtil = new DependUtil(this);
         if (!dependUtil.isLuckPermsEnabled()) {
-            this.getServer().broadcastMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").legacyMiniMessage());
+            this.getServer().sendMessage(new Text("<#ff2222>LuckPerms can't be found. Disabling LuckPrefix...").prefixMiniMessage());
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
         setupConfigs();
         MainConfig mainConfig = configService.of(MainConfig.class);
-        adventure = BukkitAudiences.create(instance);
         luckPerms = LuckPermsProvider.get();
         registry = new Registry(instance);
         registry.registerCommand("luckprefix", new LuckPrefixCommand());
@@ -89,15 +86,17 @@ public final class LuckPrefix extends JavaPlugin {
         groupManager.loadGroups();
         updateGroups();
         if (dependUtil.isPlaceholderAPIEnabled()) {
-            new LuckPrefixPlaceholderExtension(this).register();
-            this.getServer().broadcastMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").legacyMiniMessage());
+            new LuckPrefixPlaceholderExtension(this.getPluginMeta()).register();
+            this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
         }
-        updateChecker = new UpdateChecker(mainConfig.getUpdateChannel(), getDescription().getVersion(), debugLog);
+        updateChecker = new UpdateChecker(mainConfig.getUpdateChannel(), this.getPluginMeta().getVersion(), debugLog);
         if (!updateChecker.isLatestVersion(development)) {
-            getLogger().warning("Newer version " + updateChecker.getCachedLatestVersion() + " is available at https://modrinth.com/plugin/luckprefix");
+            String message = "Newer version " + updateChecker.getCachedLatestVersion()
+                    + " is available at https://modrinth.com/plugin/luckprefix";
+            getLogger().warning(message);
         }
         if (isLeafCompatibility()) {
-            getLogger().info("LuckPrefix is running in Leaf Compatibility mode.");
+            getLogger().info("LuckPrefix is running in Leaf compatibility mode.");
         }
         metrics = new Metrics(instance, 27277);
         metrics.addCustomChart(new SimplePie("used_groups", () -> String.valueOf(groupManager.getLoadedGroups().size())));
@@ -116,7 +115,6 @@ public final class LuckPrefix extends JavaPlugin {
         Path databasePath = dataFolderPath.resolve("database.yml");
         Path groupsPath = dataFolderPath.resolve("groups.yml");
         String pluginVersion = getDescription().getVersion();
-        String sqliteDefaultPath = dataFolderPath.resolve("storage").toString().replace("\\", "/");
 
         configService.register(MainConfig.class, configPath, path -> new MainConfig(path, debugLog, pluginVersion));
         configService.register(DatabaseConfig.class, databasePath, path -> new DatabaseConfig(path, debugLog));
@@ -145,7 +143,7 @@ public final class LuckPrefix extends JavaPlugin {
 
     public void startConfigWatcher(MainConfig config) {
         if (config.isAutoReloadEnabled()) {
-            this.configWatcher = new ConfigWatcher(getDataFolder(), path -> {
+            this.configWatcher = new ConfigWatcher(getDataPath().toFile(), path -> {
                 String fileName = path.getFileName().toString().toLowerCase();
                 switch (fileName) {
                     case "config.yml" -> {
@@ -201,8 +199,6 @@ public final class LuckPrefix extends JavaPlugin {
         }
         configWatcher = null;
         mongoDBConnection = null;
-        sqlConnection = null;
-        adventure = null;
         luckPerms = null;
         autoReloadConfigTask = null;
         metrics.shutdown();
