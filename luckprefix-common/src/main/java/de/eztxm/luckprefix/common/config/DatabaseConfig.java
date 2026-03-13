@@ -1,13 +1,14 @@
 package de.eztxm.luckprefix.common.config;
 
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.api.config.AbstractConfig;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
 
 import java.nio.file.Path;
 import java.util.List;
 
 public final class DatabaseConfig extends AbstractConfig {
 
-    public DatabaseConfig(Path filePath, DebugLog debugLog) {
+    public DatabaseConfig(Path filePath, IDebugLog debugLog) {
         super(filePath, debugLog);
         getDebugLog().info("DatabaseConfig: constructed for " + filePath);
     }

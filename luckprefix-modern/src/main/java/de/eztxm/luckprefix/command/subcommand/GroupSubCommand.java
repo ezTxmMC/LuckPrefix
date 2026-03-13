@@ -29,7 +29,7 @@ public class GroupSubCommand {
                     <dark_gray>» <gray>/luckprefix group <name> sortid set <string> - Set the current sortid
                     <dark_gray>» <gray>/luckprefix group <name> namecolor - Shows the current namecolor
                     <dark_gray>» <gray>/luckprefix group <name> namecolor set <string> - Set the current namecolor
-                    <dark_gray>» <gray>/luckprefix reloadconfigs - Reloads all configurations
+                    <dark_gray>» <gray>/luckprefix reload - Reloads all configurations
                     <dark_gray><st>------------</st><#77ef77>LuckPrefix<dark_gray><st>------------</st>""").miniMessage());
             return false;
         }

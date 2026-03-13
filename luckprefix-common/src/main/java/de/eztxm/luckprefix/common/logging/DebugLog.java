@@ -1,5 +1,7 @@
 package de.eztxm.luckprefix.common.logging;
 
+import de.eztxm.luckprefix.api.logging.IDebugLog;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -8,7 +10,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class DebugLog {
+public final class DebugLog implements IDebugLog {
     private final Path logFilePath;
     private final long rotateBytes;
     private final ReentrantLock lock = new ReentrantLock();
@@ -18,11 +20,30 @@ public final class DebugLog {
         this.rotateBytes = Math.max(256 * 1024, rotateBytes);
     }
 
-    public void info(String msg)  { write("INFO", msg, null); }
-    public void warn(String msg)  { write("WARN", msg, null); }
-    public void error(String msg) { write("ERROR", msg, null); }
-    public void error(String msg, Throwable t) { write("ERROR", msg, t); }
-    public void debug(String msg) { write("DEBUG", msg, null); }
+    @Override
+    public void info(String msg) {
+        write("INFO", msg, null);
+    }
+
+    @Override
+    public void warn(String msg) {
+        write("WARN", msg, null);
+    }
+
+    @Override
+    public void error(String msg) {
+        write("ERROR", msg, null);
+    }
+
+    @Override
+    public void error(String msg, Throwable t) {
+        write("ERROR", msg, t);
+    }
+
+    @Override
+    public void debug(String msg) {
+        write("DEBUG", msg, null);
+    }
 
     private void write(String level, String msg, Throwable t) {
         lock.lock();
@@ -61,6 +82,7 @@ public final class DebugLog {
         }
     }
 
+    @Override
     public String tailBytes(int maxBytes) {
         lock.lock();
         try {
@@ -81,5 +103,8 @@ public final class DebugLog {
         }
     }
 
-    public Path getPath() { return logFilePath; }
+    @Override
+    public Path getPath() {
+        return logFilePath;
+    }
 }
