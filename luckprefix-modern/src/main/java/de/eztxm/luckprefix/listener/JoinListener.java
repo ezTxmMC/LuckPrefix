@@ -21,6 +21,9 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         LuckPerms luckPerms = LuckPermsProvider.get();
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) {
+            return;
+        }
         IPlayerManager playerManager = LuckPrefix.getInstance().getPlayerManager();
         IGroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
         String group = user.getPrimaryGroup();
@@ -28,7 +31,7 @@ public class JoinListener implements Listener {
         groupManager.setupGroups(new LuckPlayer(player));
         playerManager.setUserGroup(player.getUniqueId(), group);
         UpdateChecker checker = LuckPrefix.getInstance().getUpdateChecker();
-        if (!checker.isLatestVersion(LuckPrefix.isDevelopment()) && player.hasPermission("luckprefix.update")) {
+        if (player.hasPermission("luckprefix.update") && !checker.isLatestVersion(LuckPrefix.isDevelopment())) {
             player.sendMessage(new Text("There is a new update available: <u><click:open_url:https://modrinth.com/plugin/luckprefix>" + checker.getCachedLatestVersion() + "</click></u>").prefixMiniMessage());
         }
     }

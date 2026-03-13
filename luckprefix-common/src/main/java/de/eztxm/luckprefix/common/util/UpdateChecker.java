@@ -11,29 +11,38 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
-public class UpdateChecker {
+public class UpdateChecker implements AutoCloseable {
     private final String updateChannel;
     private final String currentVersion;
     private final IDebugLog debugLog;
-    private JSONObject manifest;
-    private String cachedLatestVersion = "N/A";
+    private final ExecutorService executorService;
+    private final AtomicBoolean refreshInFlight = new AtomicBoolean(false);
+    private volatile JSONObject manifest;
+    private volatile String cachedLatestVersion = "N/A";
+    private volatile boolean forceUpdate;
 
     public UpdateChecker(String updateChannel, String version, IDebugLog debugLog) {
         this.updateChannel = updateChannel;
         this.currentVersion = version;
         this.debugLog = debugLog;
+        this.executorService = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = new Thread(r, "LuckPrefix-UpdateChecker");
+            thread.setDaemon(true);
+            return thread;
+        });
         this.debugLog.debug("Initializing UpdateChecker with channel: " + updateChannel + ", version: " + version);
-        this.fetchManifest();
-        this.fetchLatestVersion();
     }
 
     public boolean isLatestVersion(boolean development) {
         this.debugLog.debug("Checking if version is latest - development mode: " + development);
-        this.fetchManifest();
-        this.fetchLatestVersion();
-        if (this.isForceUpdate() || this.updateChannel.equalsIgnoreCase("snapshot")) {
+        if (this.forceUpdate || this.updateChannel.equalsIgnoreCase("snapshot")) {
             this.debugLog.debug("Force update detected, returning false");
             return false;
         }
@@ -50,7 +59,33 @@ public class UpdateChecker {
         return isLatest;
     }
 
-    private void fetchManifest() {
+    public CompletableFuture<Boolean> refreshAsync(boolean development) {
+        if (!refreshInFlight.compareAndSet(false, true)) {
+            return CompletableFuture.completedFuture(isLatestVersion(development));
+        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                refreshCache();
+                return isLatestVersion(development);
+            } finally {
+                refreshInFlight.set(false);
+            }
+        }, executorService);
+    }
+
+    @Override
+    public void close() {
+        executorService.shutdownNow();
+    }
+
+    private void refreshCache() {
+        JSONObject fetchedManifest = fetchManifest();
+        this.manifest = fetchedManifest;
+        this.forceUpdate = resolveForceUpdate(fetchedManifest);
+        this.cachedLatestVersion = resolveLatestVersion(fetchedManifest);
+    }
+
+    private JSONObject fetchManifest() {
         String urlString = "https://cdn.eztxm.de/addon/luckprefix/manifest.json";
         this.debugLog.debug("Fetching manifest from: " + urlString);
         HttpURLConnection connection = null;
@@ -64,10 +99,9 @@ public class UpdateChecker {
             this.debugLog.debug("Manifest fetch response code: " + responseCode);
             if (responseCode != 200) {
                 this.debugLog.warn("Failed to fetch manifest, response code: " + responseCode);
-                this.manifest = null;
-                return;
+                return null;
             }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -75,15 +109,15 @@ public class UpdateChecker {
                 }
                 if (response.isEmpty()) {
                     this.debugLog.warn("Manifest response is empty");
-                    this.manifest = null;
-                    return;
+                    return null;
                 }
-                this.manifest = new JSONObject(response.toString());
+                JSONObject parsedManifest = new JSONObject(response.toString());
                 this.debugLog.debug("Successfully parsed manifest JSON");
+                return parsedManifest;
             }
         } catch (IOException e) {
             this.debugLog.error("Error fetching manifest", e);
-            this.manifest = null;
+            return null;
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -91,49 +125,53 @@ public class UpdateChecker {
         }
     }
 
-    private void fetchLatestVersion() {
+    private String resolveLatestVersion(JSONObject currentManifest) {
         this.debugLog.debug("Fetching latest version for channel: " + updateChannel);
         
-        if (this.manifest == null) {
+        if (currentManifest == null) {
             this.debugLog.debug("Manifest is null, skipping version fetch");
-            return;
+            return "N/A";
         }
         
-        JSONObject latestVersion = this.manifest.getJSONObject("Latest-Version");
+        JSONObject latestVersion = currentManifest.optJSONObject("Latest-Version");
         if (latestVersion == null) {
             this.debugLog.warn("Latest-Version object not found in manifest");
-            return;
+            return "N/A";
         }
         
         String capitalizedUpdateChannel = this.updateChannel.substring(0, 1).toUpperCase() + this.updateChannel.substring(1).toLowerCase();
         this.debugLog.debug("Looking for version in channel: " + capitalizedUpdateChannel);
         
-        String latestVersionByChannel = latestVersion.getString(capitalizedUpdateChannel);
-        if (latestVersionByChannel == null) {
+        String latestVersionByChannel = latestVersion.optString(capitalizedUpdateChannel, "N/A");
+        if (latestVersionByChannel == null || latestVersionByChannel.isBlank()) {
             this.debugLog.warn("No version found for channel: " + capitalizedUpdateChannel);
-            return;
+            return "N/A";
         }
         
-        this.cachedLatestVersion = latestVersionByChannel;
         this.debugLog.debug("Latest version for channel " + capitalizedUpdateChannel + ": " + latestVersionByChannel);
+        return latestVersionByChannel;
     }
 
-    private boolean isForceUpdate() {
+    private boolean resolveForceUpdate(JSONObject currentManifest) {
         this.debugLog.debug("Checking for force update");
         
-        if (this.manifest == null) {
+        if (currentManifest == null) {
             this.debugLog.debug("Manifest is null, no force update");
             return false;
         }
         
-        boolean forceUpdate = this.manifest.getBoolean("Force-Update");
+        boolean forceUpdate = currentManifest.optBoolean("Force-Update", false);
         this.debugLog.debug("Force-Update flag: " + forceUpdate);
         
         if (!forceUpdate) {
             return false;
         }
         
-        JSONArray forceUpdateVersions = this.manifest.getJSONArray("Force-Update-Versions");
+        JSONArray forceUpdateVersions = currentManifest.optJSONArray("Force-Update-Versions");
+        if (forceUpdateVersions == null) {
+            this.debugLog.warn("Force-Update is enabled but Force-Update-Versions is missing");
+            return false;
+        }
         this.debugLog.debug("Checking " + forceUpdateVersions.length() + " force update versions");
         
         for (int i = 0; i < forceUpdateVersions.length(); i++) {

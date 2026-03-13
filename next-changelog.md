@@ -5,15 +5,15 @@
 ### Added
 
 - Toggling of tab- and chat-formatting ([@ezTxmMC](https://github.com/ezTxmMC))
-- 
 
 ### Removed
 
--
+- Spigot-Version
+- Support for <1.21.4
 
 ### Changed
 
-- Updated Paper-API to 1.21.6 – should break nothing
+- Updated Paper-API to 1.21.4 – should break nothing
 
 ### Fixes
 

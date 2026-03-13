@@ -7,18 +7,30 @@ import de.eztxm.luckprefix.common.config.MainConfig;
 import de.eztxm.luckprefix.util.Text;
 import lombok.SneakyThrows;
 import net.kyori.adventure.audience.Audience;
+import org.bukkit.Bukkit;
 
 public class ReloadCommand {
 
     @SneakyThrows
     public static boolean execute(Audience adventurePlayer) {
         adventurePlayer.sendMessage(new Text("Reloading configurations...").prefixMiniMessage());
-        ConfigService configService = LuckPrefix.getInstance().getConfigService();
-        configService.reloadAll();
-        IGroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
-        groupManager.reloadFromConfig();
-        LuckPrefix.getInstance().startConfigWatcher(configService.of(MainConfig.class));
-        adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
+        LuckPrefix plugin = LuckPrefix.getInstance();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            ConfigService configService = plugin.getConfigService();
+            try {
+                configService.reloadAll();
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    IGroupManager groupManager = plugin.getGroupManager();
+                    groupManager.reloadFromConfig();
+                    plugin.startConfigWatcher(configService.of(MainConfig.class));
+                    adventurePlayer.sendMessage(new Text("Reloaded configurations.").prefixMiniMessage());
+                });
+            } catch (Exception exception) {
+                plugin.getDebugLog().error("Reload command failed", exception);
+                Bukkit.getScheduler().runTask(plugin, () ->
+                        adventurePlayer.sendMessage(new Text("Reload failed. Check debug.log for details.").prefixMiniMessage()));
+            }
+        });
         return true;
     }
 }

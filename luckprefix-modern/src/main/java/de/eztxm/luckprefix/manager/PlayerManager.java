@@ -10,15 +10,15 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerManager implements IPlayerManager {
     private final Map<UUID, String> userGroups;
 
     public PlayerManager() {
-        this.userGroups = new HashMap<>();
+        this.userGroups = new ConcurrentHashMap<>();
     }
 
     @Override

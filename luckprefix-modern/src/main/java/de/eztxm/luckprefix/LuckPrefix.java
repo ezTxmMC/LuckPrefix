@@ -113,7 +113,7 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
         registry.registerListener(new ChatListener());
         playerManager = new PlayerManager();
         groupManager = new GroupManager(instance);
-        groupListener = new GroupListener(this.luckPerms, this.groupManager, this.playerManager);
+        groupListener = new GroupListener(this, this.luckPerms, this.groupManager, this.playerManager);
         groupListener.onCreateGroup();
         groupListener.onDeleteGroup();
         groupListener.onUpdateGroup();
@@ -125,11 +125,13 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
             this.getServer().sendMessage(new Text("<#33ffff>PlaceholderAPI <gray>was detected successfully.").prefixMiniMessage());
         }
         updateChecker = new UpdateChecker(mainConfig.getUpdateChannel(), this.getPluginMeta().getVersion(), debugLog);
-        if (!updateChecker.isLatestVersion(development)) {
-            String message = "Newer version " + updateChecker.getCachedLatestVersion()
-                    + " is available at https://modrinth.com/plugin/luckprefix";
-            getLogger().warning(message);
-        }
+        updateChecker.refreshAsync(development).thenAccept(isLatest -> {
+            if (!isLatest) {
+                String message = "Newer version " + updateChecker.getCachedLatestVersion()
+                        + " is available at https://modrinth.com/plugin/luckprefix";
+                getLogger().warning(message);
+            }
+        });
         setupMetrics();
     }
 
@@ -150,9 +152,21 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
             metrics.shutdown();
             metrics = null;
         }
+        if (groupListener != null) {
+            try {
+                groupListener.close();
+            } catch (Exception ignored) {
+            }
+        }
         if (configWatcher != null) {
             configWatcher.stop();
             configWatcher = null;
+        }
+        if (updateChecker != null) {
+            updateChecker.close();
+        }
+        if (playerManager != null) {
+            playerManager.getUserGroups().clear();
         }
         registry = null;
         playerManager = null;
@@ -169,32 +183,37 @@ public final class LuckPrefix extends JavaPlugin implements ILuckPrefix {
     @Override
     public void startConfigWatcher(AbstractConfig abstractConfig) {
         MainConfig config = (MainConfig) abstractConfig;
-        if (config.isAutoReloadEnabled()) {
-            this.configWatcher = new ConfigWatcher(getDataPath().toFile(), path -> {
-                String fileName = path.getFileName().toString().toLowerCase();
-                switch (fileName) {
-                    case "config.yml" -> {
-                        configService.reload(MainConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
-                    }
-                    case "database.yml" -> {
-                        configService.reload(DatabaseConfig.class);
-                        // TODO: Reload all Group Caches
-                    }
-                    case "groups.yml" -> {
-                        configService.reload(GroupsConfig.class);
-                        Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
-                    }
-                    default -> {
-                        getLogger().warning("Unknown config file: " + fileName);
-                        return false;
-                    }
-                }
-                getLogger().info("Reloading %s file".formatted(fileName));
-                return true;
-            });
-            this.configWatcher.start();
+        if (this.configWatcher != null) {
+            this.configWatcher.stop();
+            this.configWatcher = null;
         }
+        if (!config.isAutoReloadEnabled()) {
+            return;
+        }
+        this.configWatcher = new ConfigWatcher(getDataPath().toFile(), path -> {
+            String fileName = path.getFileName().toString().toLowerCase();
+            switch (fileName) {
+                case "config.yml" -> {
+                    configService.reload(MainConfig.class);
+                    Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
+                }
+                case "database.yml" -> {
+                    configService.reload(DatabaseConfig.class);
+                    // TODO: Reload all Group Caches
+                }
+                case "groups.yml" -> {
+                    configService.reload(GroupsConfig.class);
+                    Bukkit.getScheduler().runTask(this, () -> groupManager.reloadFromConfig());
+                }
+                default -> {
+                    getLogger().warning("Unknown config file: " + fileName);
+                    return false;
+                }
+            }
+            getLogger().info("Reloading %s file".formatted(fileName));
+            return true;
+        });
+        this.configWatcher.start();
     }
 
     private void setupLogger() {
