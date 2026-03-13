@@ -2,18 +2,113 @@ package de.eztxm.luckprefix.util;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.BuildableComponent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Text {
     private String input;
 
     public Text(String input) {
         this.input = input;
+    }
+
+    public static NamedTextColor fromString(String colorName) {
+        if (colorName == null)
+            return null;
+        try {
+            return NamedTextColor.NAMES.value(colorName.toLowerCase());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Component parseLegacy(Component component) {
+        return processComponent(component, null);
+    }
+
+    private static Component processComponent(Component comp, TextColor currentColor) {
+        ComponentBuilder<?, ?> builder = null;
+        if (comp instanceof BuildableComponent<?, ?> buildable) {
+            builder = buildable.toBuilder();
+        }
+        TextColor color = (comp.color() != null) ? comp.color() : currentColor;
+        if (comp instanceof TextComponent) {
+            String text = ((TextComponent) comp).content();
+            Component parsedText = parseText(text, color);
+            if (parsedText instanceof BuildableComponent<?, ?> buildableText) {
+                builder = buildableText.toBuilder();
+            }
+        }
+        for (Component child : comp.children().stream()
+                .map(child -> processComponent(child, color))
+                .toList()) {
+            if (builder != null) {
+                builder.append(child);
+            }
+        }
+        if (builder == null) {
+            return comp;
+        }
+        return builder.build();
+    }
+
+    private static Component parseText(String text, TextColor baseColor) {
+        Map<Character, NamedTextColor> colorMap = new HashMap<>();
+        colorMap.put('0', NamedTextColor.BLACK);
+        colorMap.put('1', NamedTextColor.DARK_BLUE);
+        colorMap.put('2', NamedTextColor.DARK_GREEN);
+        colorMap.put('3', NamedTextColor.DARK_AQUA);
+        colorMap.put('4', NamedTextColor.DARK_RED);
+        colorMap.put('5', NamedTextColor.DARK_PURPLE);
+        colorMap.put('6', NamedTextColor.GOLD);
+        colorMap.put('7', NamedTextColor.GRAY);
+        colorMap.put('8', NamedTextColor.DARK_GRAY);
+        colorMap.put('9', NamedTextColor.BLUE);
+        colorMap.put('a', NamedTextColor.GREEN);
+        colorMap.put('b', NamedTextColor.AQUA);
+        colorMap.put('c', NamedTextColor.RED);
+        colorMap.put('d', NamedTextColor.LIGHT_PURPLE);
+        colorMap.put('e', NamedTextColor.YELLOW);
+        colorMap.put('f', NamedTextColor.WHITE);
+        Pattern pattern = Pattern.compile("(&[0-9a-fk-or])|(&#[a-f0-9]{6})", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+        TextComponent.Builder result = Component.text();
+        int lastIndex = 0;
+        TextColor currentColor = baseColor;
+        while (matcher.find()) {
+            if (matcher.start() > lastIndex) {
+                result.append(Component.text(
+                        text.substring(lastIndex, matcher.start()),
+                        currentColor));
+            }
+            String code = matcher.group().substring(1);
+            if (code.startsWith("#")) {
+                currentColor = TextColor.fromHexString(code);
+            } else {
+                NamedTextColor namedColor = colorMap.get(Character.toLowerCase(code.charAt(0)));
+                currentColor = (namedColor != null) ? namedColor : currentColor;
+            }
+            lastIndex = matcher.end();
+        }
+        if (lastIndex < text.length()) {
+            result.append(Component.text(
+                    text.substring(lastIndex),
+                    currentColor));
+        }
+        return result.build();
     }
 
     public Text placeholders(Player player) {
@@ -27,27 +122,23 @@ public class Text {
         return this.miniMessage(LuckPrefix.getInstance().getPrefix() + this.input);
     }
 
-    public Component miniMessage() {
-        return MiniMessage.miniMessage().deserialize(this.input);
+    public Component miniMessage(TagResolver... tagResolvers) {
+        if (this.input == null) {
+            return Component.empty();
+        }
+        return MiniMessage.miniMessage().deserialize(this.input, tagResolvers);
     }
 
-    public Component miniMessage(String input) {
-        return MiniMessage.miniMessage().deserialize(input);
+    public Component miniMessage(String input, TagResolver... tagResolvers) {
+        return MiniMessage.miniMessage().deserialize(input, tagResolvers);
     }
 
     public Component component() {
         return Component.text(this.input);
     }
 
-    public String legacyMiniMessage(TagResolver... tagResolvers) {
-        return this.alternateColorCodes(this.legacy(MiniMessage.miniMessage().deserialize(this.input, tagResolvers)));
-    }
-
     public String legacy(Component component) {
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
-    public String alternateColorCodes(String string) {
-        return ChatColor.translateAlternateColorCodes('&', string);
-    }
 }

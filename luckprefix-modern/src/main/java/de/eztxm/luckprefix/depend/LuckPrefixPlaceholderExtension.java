@@ -1,19 +1,20 @@
 package de.eztxm.luckprefix.depend;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.group.GroupManager;
+import de.eztxm.luckprefix.manager.GroupManager;
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.luckperms.api.LuckPerms;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("UnstableApiUsage")
 public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
-    private final Plugin plugin;
+    private final PluginMeta pluginMeta;
 
-    public LuckPrefixPlaceholderExtension(Plugin plugin) {
-        this.plugin = plugin;
+    public LuckPrefixPlaceholderExtension(PluginMeta pluginMeta) {
+        this.pluginMeta = pluginMeta;
     }
 
     @Override
@@ -23,18 +24,18 @@ public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return String.join(", ", plugin.getDescription().getAuthors());
+        return String.join(", ", pluginMeta.getAuthors());
     }
 
     @Override
     public @NotNull String getVersion() {
-        return plugin.getDescription().getVersion();
+        return pluginMeta.getVersion();
     }
 
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
         LuckPerms luckPerms = LuckPrefix.getInstance().getLuckPerms();
-        GroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        GroupManager groupManager = (GroupManager) LuckPrefix.getInstance().getGroupManager();
         String playerGroup = luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup().toLowerCase();
         switch (params.toLowerCase()) {
             case "prefix" -> {
@@ -53,7 +54,7 @@ public class LuckPrefixPlaceholderExtension extends PlaceholderExpansion {
                 return groupManager.getSortIdAsStringByGroup(playerGroup);
             }
             case "namecolor" -> {
-                return groupManager.getNameColorByGroup(playerGroup).toString();
+                return groupManager.getNameColorByGroup(playerGroup).asHexString();
             }
         }
         return null;

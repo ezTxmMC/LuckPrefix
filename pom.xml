@@ -11,12 +11,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>luckprefix-common</module>
-        <module>luckprefix-legacy</module>
-        <module>luckprefix-modern</module>
-        <module>luckprefix-modern-paper</module>
-        <module>luckprefix-modern-spigot</module>
         <module>luckprefix-api</module>
+        <module>luckprefix-common</module>
+        <module>luckprefix-modern</module>
     </modules>
 
 </project>
