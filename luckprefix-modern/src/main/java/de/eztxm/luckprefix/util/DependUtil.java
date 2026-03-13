@@ -2,12 +2,7 @@ package de.eztxm.luckprefix.util;
 
 import org.bukkit.plugin.Plugin;
 
-public class DependUtil {
-    private final Plugin plugin;
-
-    public DependUtil(Plugin plugin) {
-        this.plugin = plugin;
-    }
+public record DependUtil(Plugin plugin) {
 
     public boolean isLuckPermsEnabled() {
         return this.plugin.getServer().getPluginManager().isPluginEnabled("LuckPerms");

@@ -1,28 +1,27 @@
-package de.eztxm.luckprefix.util;
+package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
-import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.manager.IPlayerManager;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.manager.GroupManager;
-import lombok.Getter;
+import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-@Getter
-public class PlayerManager {
+public class PlayerManager implements IPlayerManager {
     private final Map<UUID, String> userGroups;
 
     public PlayerManager() {
-        this.userGroups = new HashMap<>();
+        this.userGroups = new ConcurrentHashMap<>();
     }
 
+    @Override
     public void initializePlayer(UUID uuid, String group) {
         MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
         if (!config.isTabFormattingEnabled()) return;
@@ -33,8 +32,9 @@ public class PlayerManager {
         userGroups.put(uuid, group);
     }
 
+    @Override
     public void setPlayerListName(UUID uuid, String luckPermsGroup) {
-        IGroupManager groupManager = LuckPrefix.getInstance().getGroupManager();
+        GroupManager groupManager = (GroupManager) LuckPrefix.getInstance().getGroupManager();
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             return;
@@ -46,36 +46,43 @@ public class PlayerManager {
             return;
         group = luckPermsGroup;
         userGroups.put(uuid, group);
-        if (((GroupManager)groupManager).getPrefixByGroup(group) == null) {
-            if (((GroupManager)groupManager).getSuffixByGroup(group) == null) {
+        if (groupManager.getPrefixByGroup(group) == null) {
+            if (groupManager.getSuffixByGroup(group) == null) {
                 return;
             }
             TagResolver.Single suffix = Placeholder.component("suffix",
-                    new Text(((GroupManager)groupManager).getPrefixByGroup(group)).placeholders(player).miniMessage());
-            player.playerListName(new Text(((GroupManager)groupManager).getTabFormatByGroup(group)).placeholders(player).miniMessage(
+                    new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
+            player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
                     Placeholder.component("prefix", Component.text("")), suffix,
                     Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single prefix = Placeholder.component("prefix",
-                new Text(((GroupManager)groupManager).getPrefixByGroup(group)).placeholders(player).miniMessage());
-        if (((GroupManager)groupManager).getSuffixByGroup(group) == null) {
-            player.playerListName(new Text(((GroupManager)groupManager).getTabFormatByGroup(group)).placeholders(player).miniMessage(
+                new Text(groupManager.getPrefixByGroup(group)).placeholders(player).miniMessage());
+        if (groupManager.getSuffixByGroup(group) == null) {
+            player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
                     prefix, Placeholder.component("suffix", Component.text("")),
                     Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
             return;
         }
         TagResolver.Single suffix = Placeholder.component("suffix",
-                new Text(((GroupManager)groupManager).getSuffixByGroup(group)).placeholders(player).miniMessage());
-        player.playerListName(new Text(((GroupManager)groupManager).getTabFormatByGroup(group)).placeholders(player).miniMessage(
+                new Text(groupManager.getSuffixByGroup(group)).placeholders(player).miniMessage());
+        player.playerListName(new Text(groupManager.getTabFormatByGroup(group)).placeholders(player).miniMessage(
                 prefix, suffix, Placeholder.component("player", new Text(player.getName()).placeholders(player).component())));
     }
 
+    @Override
     public void setUserGroup(UUID uuid, String group) {
         this.userGroups.put(uuid, group);
     }
 
+    @Override
     public void removeUserGroup(UUID uuid) {
         this.userGroups.remove(uuid);
+    }
+
+    @Override
+    public Map<UUID, String> getUserGroups() {
+        return userGroups;
     }
 }

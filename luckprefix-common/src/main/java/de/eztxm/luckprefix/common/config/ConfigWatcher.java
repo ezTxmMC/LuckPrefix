@@ -100,6 +100,8 @@ public final class ConfigWatcher {
             if (watchService != null) watchService.close();
         } catch (IOException ignored) {
         }
+        watchTask = null;
+        watchService = null;
         executorService.shutdownNow();
         lastTriggerByFile.clear();
     }

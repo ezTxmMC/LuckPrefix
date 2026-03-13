@@ -15,9 +15,7 @@ player list. This is where dedicated addons come into play.
 > For most users, the **stable builds** are recommended. They have been thoroughly tested and are suitable for
 > production use.
 >
-> - 1.21.4+:
->   - Paper: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12-paper
->   - Spigot: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12-spigot
+> - 1.21.4+: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+13
 > - 1.20.5 - 1.21.3: https://modrinth.com/plugin/luckprefix/version/2.0.0-BETA+12
 > - 1.16 - 1.20.6: https://modrinth.com/plugin/luckprefix/version/1.2.3
 > - 1.8 - 1.15: https://modrinth.com/plugin/luckprefix/version/legacy-1.2.1
@@ -28,6 +26,7 @@ player list. This is where dedicated addons come into play.
 - [x] Gradients, only prefix and with playername
 - [x] Auto-Reload config option
 - [x] LuckPrefix command
+- [x] API
 - [ ] Database support
 - [ ] Option to show all prefixes and suffixes in order of sort-id asc and desc
 - [ ] LuckPerms metadata integration
