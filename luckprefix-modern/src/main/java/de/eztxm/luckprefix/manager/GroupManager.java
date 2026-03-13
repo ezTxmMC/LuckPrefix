@@ -1,11 +1,17 @@
-package de.eztxm.luckprefix.group;
+package de.eztxm.luckprefix.manager;
 
 import de.eztxm.luckprefix.LuckPrefix;
+import de.eztxm.luckprefix.api.logging.IDebugLog;
+import de.eztxm.luckprefix.api.manager.IGroupManager;
+import de.eztxm.luckprefix.api.unified.ILuckPlayer;
+import de.eztxm.luckprefix.api.unified.ILuckScoreboard;
 import de.eztxm.luckprefix.common.config.ConfigService;
 import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.common.config.MainConfig;
-import de.eztxm.luckprefix.common.logging.DebugLog;
+import de.eztxm.luckprefix.common.group.GroupMeta;
 import de.eztxm.luckprefix.common.util.Encoder;
+import de.eztxm.luckprefix.util.LuckPlayer;
+import de.eztxm.luckprefix.util.LuckScoreboard;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,16 +24,16 @@ import org.bukkit.scoreboard.Team;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class GroupManager {
+public final class GroupManager implements IGroupManager {
 
     private static final int TEAM_NAME_MAX_LENGTH = 16;
 
     private final LuckPrefix plugin;
-    private final DebugLog debugLog;
+    private final IDebugLog debugLog;
 
     private final Map<String, GroupMeta> metaByGroup = new ConcurrentHashMap<>();
     private final Set<String> loadedGroups = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private volatile String defaultGroupName = "default";
+    private final String defaultGroupName = "default";
 
     public GroupManager(LuckPrefix plugin) {
         if(plugin == null) {
@@ -37,6 +43,7 @@ public final class GroupManager {
         this.debugLog = plugin.getDebugLog();
     }
 
+    @Override
     public void loadGroups() {
         debugLog.info("GroupManager.loadGroups: start");
 
@@ -54,27 +61,30 @@ public final class GroupManager {
             }
         }
 
-        refreshAllScoreboards();
+        refreshScoreboards();
         debugLog.info("GroupManager.loadGroups: done");
     }
 
-    public void reloadAllFromConfigs() {
+    @Override
+    public void reloadFromConfig() {
         debugLog.info("GroupManager.reloadAllFromConfigs: start");
         clearAllCaches();
         collectAndLoadFromConfigs();
-        refreshAllScoreboards();
+        refreshScoreboards();
         debugLog.info("GroupManager.reloadAllFromConfigs: done");
     }
 
+    @Override
     public void reloadGroup(String rawGroupName) {
         if(rawGroupName == null || rawGroupName.isEmpty()) return;
         debugLog.info("GroupManager.reloadGroup: " + rawGroupName);
 
         loadSingleGroupFromConfigs(rawGroupName);
 
-        refreshAllScoreboards();
+        refreshScoreboards();
     }
 
+    @Override
     public void createGroup(String rawGroupName) {
         if(rawGroupName == null || rawGroupName.isEmpty()) return;
         if(!Bukkit.isPrimaryThread()) {
@@ -95,13 +105,15 @@ public final class GroupManager {
         loadSingleGroupFromConfigs(rawGroupName);
 
         for(Player viewer : Bukkit.getOnlinePlayers()) {
-            setupGroups(viewer);
-            setGroups(viewer, viewer.getScoreboard());
+            LuckPlayer luckPlayer = new LuckPlayer(viewer);
+            setupGroups(luckPlayer);
+            setGroups(luckPlayer, luckPlayer.getScoreboard());
         }
 
         debugLog.info("GroupManager.createGroup: created '" + rawGroupName + "'");
     }
 
+    @Override
     public void deleteGroup(String rawGroupName) {
         if (rawGroupName == null || rawGroupName.isBlank()) return;
         if(!Bukkit.isPrimaryThread()) {
@@ -118,7 +130,7 @@ public final class GroupManager {
             Scoreboard scoreboard = viewer.getScoreboard();
 
             if(removed != null) {
-                Team team = scoreboard.getTeam(buildTeamKey(removed.getRawName(), removed.getSortId()));
+                Team team = scoreboard.getTeam(buildTeamKey(removed.rawName(), removed.sortId()));
                 if(team != null) {
                     team.unregister();
                 }
@@ -144,18 +156,21 @@ public final class GroupManager {
             debugLog.warn("deleteGroup: couldn't purge config for '" + rawGroupName + "': " + exception.getMessage());
         }
 
-        refreshAllScoreboards();
+        refreshScoreboards();
         debugLog.info("GroupManager.deleteGroup: deleted '" + rawGroupName + "'");
     }
 
-    public void setGroups(Player viewer, Scoreboard scoreboard) {
+    @Override
+    public void setGroups(ILuckPlayer luckPlayer, ILuckScoreboard luckScoreboard) {
+        Player viewer = ((LuckPlayer)luckPlayer).player();
+        Scoreboard scoreboard = ((LuckScoreboard)luckScoreboard).scoreboard();
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(plugin, () -> setGroups(viewer, scoreboard));
+            Bukkit.getScheduler().runTask(plugin, () -> setGroups(luckPlayer, luckScoreboard));
             return;
         }
         if (viewer == null || scoreboard == null) return;
 
-        setupGroups(viewer);
+        setupGroups(luckPlayer);
 
         for (Player target : Bukkit.getOnlinePlayers()) {
             try {
@@ -163,7 +178,7 @@ public final class GroupManager {
                 GroupMeta meta = metaByGroup.getOrDefault(groupName, metaByGroup.get(defaultGroupName));
                 if (meta == null) continue;
 
-                String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
+                String teamName = buildTeamKey(meta.rawName(), meta.sortId());
                 Team desired = ensureTeam(scoreboard, teamName);
 
                 Team current = scoreboard.getEntryTeam(target.getName());
@@ -186,13 +201,15 @@ public final class GroupManager {
         }
     }
 
-    public void setupGroups(Player viewer) {
+    @Override
+    public void setupGroups(ILuckPlayer luckPlayer) {
+        Player viewer = ((LuckPlayer)luckPlayer).player();
         MainConfig config = LuckPrefix.getInstance().getConfigService().of(MainConfig.class);
         if (!config.isTabFormattingEnabled()) {
             return;
         }
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(plugin, () -> setupGroups(viewer));
+            Bukkit.getScheduler().runTask(plugin, () -> setupGroups(luckPlayer));
             return;
         }
         if (viewer == null) return;
@@ -200,27 +217,28 @@ public final class GroupManager {
         for (String groupName : new ArrayList<>(loadedGroups)) {
             GroupMeta meta = metaByGroup.get(groupName);
             if (meta == null) continue;
-            String teamName = buildTeamKey(meta.getRawName(), meta.getSortId());
+            String teamName = buildTeamKey(meta.rawName(), meta.sortId());
             Team team = ensureTeam(scoreboard, teamName);
             applyTeamDecor(team, meta, viewer);
         }
     }
 
-    private void refreshAllScoreboards() {
+    private void refreshScoreboards() {
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().runTask(plugin, this::refreshAllScoreboards);
+            Bukkit.getScheduler().runTask(plugin, this::refreshScoreboards);
             return;
         }
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             try {
-                setupGroups(viewer);
+                setupGroups(new LuckPlayer(viewer));
             } catch (Exception ex) {
                 plugin.getDebugLog().error("refreshAllScoreboards: setupGroups failed for viewer " + viewer.getName(), ex);
             }
         }
         for (Player viewer : Bukkit.getOnlinePlayers()) {
             try {
-                setGroups(viewer, viewer.getScoreboard());
+                LuckPlayer luckPlayer = new LuckPlayer(viewer);
+                setGroups(luckPlayer, luckPlayer.getScoreboard());
             } catch (Exception ex) {
                 plugin.getDebugLog().error("refreshAllScoreboards: setGroups failed for viewer " + viewer.getName(), ex);
             }
@@ -260,7 +278,7 @@ public final class GroupManager {
         int sortId = 9999;
         try {
             String id = Integer.toString(groups.getSortId(rawGroupName));
-            if (id != null && !id.isBlank()) sortId = Integer.parseInt(id.trim());
+            if (!id.isBlank()) sortId = Integer.parseInt(id.trim());
         } catch (Exception ex) {
             plugin.getLogger().warning("groups.yml: '" + rawGroupName + ".SortId' invalid – using 9999");
         }
@@ -284,7 +302,7 @@ public final class GroupManager {
         if (fromCache != null && !fromCache.isBlank()) return fromCache;
 
         var user = plugin.getLuckPerms().getUserManager().getUser(playerId);
-        if (user != null && user.getPrimaryGroup() != null && !user.getPrimaryGroup().isBlank()) return user.getPrimaryGroup();
+        if (user != null && !user.getPrimaryGroup().isBlank()) return user.getPrimaryGroup();
 
         return defaultGroupName;
     }
@@ -302,34 +320,34 @@ public final class GroupManager {
 
     private void applyTeamDecor(Team team, GroupMeta meta, Player viewer) {
 
-        String tab = meta.getTabFormat();
+        String tab = meta.tabFormat();
 
-        if (tab != null && tab.contains("<prefix>") && !meta.getPrefix().isEmpty()) {
+        if (tab != null && tab.contains("<prefix>") && !meta.prefix().isEmpty()) {
             try {
                 Component c = new Text(tab
-                        .replace("<prefix>", meta.getPrefix())
+                        .replace("<prefix>", meta.prefix())
                         .replace("<suffix>", "")
                         .replace("<player>", "")
                 ).placeholders(viewer).miniMessage();
                 team.prefix(c);
             } catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: prefix build failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: prefix build failed for group " + meta.rawName(), ex);
             }
         }
 
-        if (tab != null && tab.contains("<suffix>") && !meta.getSuffix().isEmpty()) {
+        if (tab != null && tab.contains("<suffix>") && !meta.suffix().isEmpty()) {
             try {
-                Component c = new Text(meta.getSuffix()).placeholders(viewer).miniMessage();
+                Component c = new Text(meta.suffix()).placeholders(viewer).miniMessage();
                 team.suffix(c);
             } catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: suffix build failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: suffix build failed for group " + meta.rawName(), ex);
             }
         }
 
-        if (meta.getNameColor() != null) {
-            try { team.color(meta.getNameColor()); }
+        if (meta.nameColor() != null) {
+            try { team.color(meta.nameColor()); }
             catch (Exception ex) {
-                plugin.getDebugLog().error("applyTeamDecor: team.color failed for group " + meta.getRawName(), ex);
+                plugin.getDebugLog().error("applyTeamDecor: team.color failed for group " + meta.rawName(), ex);
             }
         }
     }
@@ -344,35 +362,35 @@ public final class GroupManager {
     }
 
     private int nextSortId() {
-        return metaByGroup.values().stream().mapToInt(GroupMeta::getSortId).max().orElse(0) + 10;
+        return metaByGroup.values().stream().mapToInt(GroupMeta::sortId).max().orElse(0) + 10;
     }
 
     public String getPrefixByGroup(String group) {
-        return metaByGroup.get(group).getPrefix();
+        return metaByGroup.get(group).prefix();
     }
 
     public String getSuffixByGroup(String group) {
-        return metaByGroup.get(group).getSuffix();
+        return metaByGroup.get(group).suffix();
     }
 
     public int getSortIdByGroup(String group) {
-        return metaByGroup.get(group).getSortId();
+        return metaByGroup.get(group).sortId();
     }
 
     public String getSortIdAsStringByGroup(String group) {
-        return Integer.toString(metaByGroup.get(group).getSortId());
+        return Integer.toString(metaByGroup.get(group).sortId());
     }
 
     public String getTabFormatByGroup(String group) {
-        return metaByGroup.get(group).getTabFormat();
+        return metaByGroup.get(group).tabFormat();
     }
 
     public String getChatFormatByGroup(String group) {
-        return metaByGroup.get(group).getChatFormat();
+        return metaByGroup.get(group).chatFormat();
     }
 
     public NamedTextColor getNameColorByGroup(String group) {
-        return metaByGroup.get(group).getNameColor();
+        return metaByGroup.get(group).nameColor();
     }
 
     public List<String> getLoadedGroups() {

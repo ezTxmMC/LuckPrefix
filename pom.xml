@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>luckprefix-api</module>
         <module>luckprefix-common</module>
         <module>luckprefix-modern</module>
     </modules>

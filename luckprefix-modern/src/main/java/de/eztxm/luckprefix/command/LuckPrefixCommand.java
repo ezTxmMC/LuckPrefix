@@ -2,7 +2,7 @@ package de.eztxm.luckprefix.command;
 
 import de.eztxm.luckprefix.LuckPrefix;
 import de.eztxm.luckprefix.command.subcommand.GroupSubCommand;
-import de.eztxm.luckprefix.command.subcommand.ReloadConfigsSubCommand;
+import de.eztxm.luckprefix.command.subcommand.ReloadCommand;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
@@ -13,6 +13,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class LuckPrefixCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-                             String[] args) {
+                             String @NonNull [] args) {
         if (!(sender instanceof Player player)) {
             LuckPrefix.getInstance().getLogger().warning("You must be a player to use this command.");
             return false;
@@ -58,7 +59,7 @@ public class LuckPrefixCommand implements TabExecutor {
                 return GroupSubCommand.execute(player, args);
             }
             case "reload" -> {
-                return ReloadConfigsSubCommand.execute(player);
+                return ReloadCommand.execute(player);
             }
         }
         return false;
@@ -66,8 +67,7 @@ public class LuckPrefixCommand implements TabExecutor {
 
     @Nullable
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-                                      @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String @NonNull [] args) {
         if (args.length == 1) {
             List<String> arguments = new ArrayList<>(List.of("group", "reload"));
             arguments.removeIf(argument -> !argument.startsWith(args[0]));

@@ -7,7 +7,6 @@ import de.eztxm.luckprefix.common.config.GroupsConfig;
 import de.eztxm.luckprefix.util.Text;
 import net.kyori.adventure.audience.Audience;
 import net.luckperms.api.model.group.Group;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Arrays;
 
@@ -17,7 +16,7 @@ public class PrefixSubCommand {
         GroupsConfig groupsConfig = configService.of(GroupsConfig.class);
         if (args.length > 4) {
             String value = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
-            DatabaseConfig  databaseConfig = configService.of(DatabaseConfig.class);
+            DatabaseConfig databaseConfig = configService.of(DatabaseConfig.class);
             if (databaseConfig.isDatabaseEnabled()) {
                 // TODO: Database integration
                 return;

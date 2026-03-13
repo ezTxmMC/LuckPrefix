@@ -18,9 +18,8 @@
 
     <properties>
         <id>luckprefix</id>
-        <loader>paper</loader>
         <build.number>dev</build.number>
-        <build.name>${id}-${project.version}-${loader}-${build.number}</build.name>
+        <build.name>${id}-${project.version}-${build.number}</build.name>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -58,6 +57,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>de.eztxm:luckprefix-common</include>
+                                    <include>de.eztxm:luckprefix-api</include>
                                     <include>de.eztxm:ezlib-*</include>
                                     <include>org.json:json</include>
                                     <include>org.bstats:bstats-bukkit</include>
@@ -148,45 +148,6 @@
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>luckprefix-common</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>26.0.2-1</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-database-mariadb</artifactId>
-            <version>1.0-ALPHA11</version>
-        </dependency>
-        <dependency>
-            <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-database-sqlite</artifactId>
-            <version>1.0-ALPHA11</version>
-        </dependency>
-        <dependency>
-            <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-database-mongodb</artifactId>
-            <version>1.0-ALPHA11</version>
-        </dependency>
-        <dependency>
-            <groupId>de.eztxm</groupId>
-            <artifactId>ezlib-common</artifactId>
-            <version>1.0-ALPHA11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20251224</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
