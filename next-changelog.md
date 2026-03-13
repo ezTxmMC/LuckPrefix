@@ -4,6 +4,7 @@
 
 ### Added
 
+- API
 - Toggling of tab- and chat-formatting ([@ezTxmMC](https://github.com/ezTxmMC))
 
 ### Removed
